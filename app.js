@@ -42,7 +42,7 @@ function renderCategory(key) {
 }
 
 document.querySelectorAll(".waste-tab").forEach(tab => tab.addEventListener("click", () => renderCategory(tab.dataset.category)));
-renderCategory("organico");
+if (document.getElementById("category-panel")) renderCategory("organico");
 
 const stationMaterials = {
   organic: { name: "Orgánico", color: "#4b9d61", icon: "♧", recovery: .9, action: "Separar los restos de cocina puede reducir rápidamente la basura general. Empieza una composta o define una entrega frecuente." },
@@ -58,15 +58,17 @@ const stationRanges = Object.keys(stationMaterials).reduce((ranges, key) => {
 }, {});
 
 function updateStationControls() {
-  document.getElementById("people-value").textContent = peopleCount;
+  const peopleValue = document.getElementById("people-value");
+  if (!peopleValue) return;
+  peopleValue.textContent = peopleCount;
   Object.entries(stationRanges).forEach(([key, range]) => {
     document.getElementById(`${key}-output`).textContent = amountLabels[Number(range.value)];
   });
 }
 
-document.getElementById("people-minus").addEventListener("click", () => { peopleCount = Math.max(1, peopleCount - 1); updateStationControls(); });
-document.getElementById("people-plus").addEventListener("click", () => { peopleCount = Math.min(8, peopleCount + 1); updateStationControls(); });
-Object.values(stationRanges).forEach(range => range.addEventListener("input", updateStationControls));
+document.getElementById("people-minus")?.addEventListener("click", () => { peopleCount = Math.max(1, peopleCount - 1); updateStationControls(); });
+document.getElementById("people-plus")?.addEventListener("click", () => { peopleCount = Math.min(8, peopleCount + 1); updateStationControls(); });
+Object.values(stationRanges).filter(Boolean).forEach(range => range.addEventListener("input", updateStationControls));
 
 function containerSize(amount) {
   const adjusted = amount * (.72 + peopleCount * .16);
@@ -109,20 +111,22 @@ function buildStationPlan(plan, shouldSave = true) {
   if (shouldSave) localStorage.setItem("ecoguia-station", JSON.stringify(plan));
 }
 
-document.getElementById("build-station").addEventListener("click", () => {
+document.getElementById("build-station")?.addEventListener("click", () => {
   const amounts = Object.fromEntries(Object.entries(stationRanges).map(([key, range]) => [key, Number(range.value)]));
   buildStationPlan({ people: peopleCount, amounts });
 });
-document.getElementById("reset-station").addEventListener("click", () => {
+document.getElementById("reset-station")?.addEventListener("click", () => {
   document.getElementById("result-content").hidden = true;
   document.getElementById("result-placeholder").hidden = false;
   document.getElementById("result-placeholder").innerHTML = `<div class="mini-station"><span></span><span></span><span></span></div><h3>Haz nuevos ajustes</h3><p>Cambia las cantidades y vuelve a generar tu recomendación.</p>`;
 });
-updateStationControls();
-try {
-  const savedStation = JSON.parse(localStorage.getItem("ecoguia-station"));
-  if (savedStation?.people && savedStation?.amounts) buildStationPlan(savedStation, false);
-} catch { localStorage.removeItem("ecoguia-station"); }
+if (document.getElementById("station-result")) {
+  updateStationControls();
+  try {
+    const savedStation = JSON.parse(localStorage.getItem("ecoguia-station"));
+    if (savedStation?.people && savedStation?.amounts) buildStationPlan(savedStation, false);
+  } catch { localStorage.removeItem("ecoguia-station"); }
+}
 
 const visualWasteRules = [
   { terms: ["cellular telephone", "laptop", "notebook computer", "desktop computer", "computer keyboard", "mouse", "remote control", "monitor", "screen", "radio", "cassette player", "digital clock", "electric fan", "hair dryer", "lighter"], category: "Residuo especial", icon: "⚡", instruction: "Es un aparato o componente que requiere un punto de recolección de electrónicos. No lo mezcles con la basura común." },
@@ -311,8 +315,8 @@ async function analyzeImage(source) {
   }
 }
 
-document.getElementById("start-camera").addEventListener("click", startCamera);
-document.getElementById("capture-photo").addEventListener("click", async () => {
+document.getElementById("start-camera")?.addEventListener("click", startCamera);
+document.getElementById("capture-photo")?.addEventListener("click", async () => {
   if (!cameraVideo.videoWidth) return;
   captureCanvas.width = cameraVideo.videoWidth;
   captureCanvas.height = cameraVideo.videoHeight;
@@ -325,7 +329,7 @@ document.getElementById("capture-photo").addEventListener("click", async () => {
   await analyzeImage(captureCanvas);
 });
 
-document.getElementById("image-upload").addEventListener("change", event => {
+document.getElementById("image-upload")?.addEventListener("change", event => {
   const file = event.target.files?.[0];
   if (!file) return;
   if (!file.type.startsWith("image/")) { setScanMessage("Selecciona un archivo de imagen válido.", true); return; }
@@ -338,7 +342,7 @@ document.getElementById("image-upload").addEventListener("change", event => {
   document.getElementById("start-camera").hidden = false;
 });
 
-document.getElementById("material-options").addEventListener("click", event => {
+document.getElementById("material-options")?.addEventListener("click", event => {
   const button = event.target.closest("[data-material]");
   if (!button || !pendingVisualAnalysis) return;
   const result = materialResults[button.dataset.material];
@@ -348,7 +352,7 @@ document.getElementById("material-options").addEventListener("click", event => {
   setScanMessage("Clasificación completada combinando visión artificial y confirmación del material.");
 });
 
-document.getElementById("scan-again").addEventListener("click", () => {
+document.getElementById("scan-again")?.addEventListener("click", () => {
   stopCamera();
   pendingVisualAnalysis = null;
   document.getElementById("scan-result").hidden = true;
@@ -383,8 +387,8 @@ function classifyWaste(query) {
   }, 320);
 }
 
-chatForm.addEventListener("submit", event => { event.preventDefault(); const value = wasteInput.value.trim(); if (!value) return; classifyWaste(value); wasteInput.value = ""; });
-document.addEventListener("click", event => { const queryButton = event.target.closest("[data-query]"); if (queryButton) classifyWaste(queryButton.dataset.query); });
+chatForm?.addEventListener("submit", event => { event.preventDefault(); const value = wasteInput.value.trim(); if (!value) return; classifyWaste(value); wasteInput.value = ""; });
+document.addEventListener("click", event => { const queryButton = event.target.closest("[data-query]"); if (queryButton && chatArea) classifyWaste(queryButton.dataset.query); });
 
 const options = ["Orgánico", "Plástico", "Papel", "Vidrio", "Especial"];
 let questionIndex = 0, score = 0, answered = false;
@@ -396,7 +400,7 @@ function renderQuiz() {
   document.getElementById("quiz-options").innerHTML = options.map(option => `<button class="quiz-option" type="button" data-answer="${option}">${option}</button>`).join("");
 }
 
-document.getElementById("quiz-options").addEventListener("click", event => {
+document.getElementById("quiz-options")?.addEventListener("click", event => {
   const button = event.target.closest(".quiz-option"); if (!button || answered) return; answered = true;
   const question = quiz[questionIndex], correct = button.dataset.answer === question.answer; if (correct) score += 1;
   document.querySelectorAll(".quiz-option").forEach(option => { option.disabled = true; if (option.dataset.answer === question.answer) option.classList.add("correct"); });
@@ -404,7 +408,7 @@ document.getElementById("quiz-options").addEventListener("click", event => {
   const next = document.getElementById("next-question"); next.hidden = false; next.firstChild.textContent = questionIndex === quiz.length - 1 ? "Ver resultado " : "Siguiente ";
 });
 
-document.getElementById("next-question").addEventListener("click", () => {
+document.getElementById("next-question")?.addEventListener("click", () => {
   if (questionIndex < quiz.length - 1) { questionIndex += 1; renderQuiz(); return; }
   const previousBest = Number(localStorage.getItem("ecoguia-best") || 0), best = Math.max(previousBest, score); localStorage.setItem("ecoguia-best", String(best)); updateBest(best);
   const quizCard = document.getElementById("quiz-card"); quizCard.innerHTML = `<div class="quiz-object">${score >= 4 ? "🌱" : "💚"}</div><h3>¡Reto completado!</h3><p>Obtuviste <strong>${score} de ${quiz.length}</strong> respuestas correctas.</p><p class="quiz-feedback">${score === 5 ? "Excelente: ya dominas la separación básica." : "Cada intento mejora tus hábitos. Repasa la guía y vuelve a probar."}</p><button class="button button-primary" id="restart-quiz" type="button">Intentar de nuevo ↻</button>`;
@@ -412,10 +416,10 @@ document.getElementById("next-question").addEventListener("click", () => {
 });
 
 function updateBest(best) { document.getElementById("best-score").textContent = best; document.getElementById("best-progress").style.width = `${(best / quiz.length) * 100}%`; }
-updateBest(Number(localStorage.getItem("ecoguia-best") || 0)); renderQuiz();
+if (document.getElementById("quiz-options")) { updateBest(Number(localStorage.getItem("ecoguia-best") || 0)); renderQuiz(); }
 
 const observer = new IntersectionObserver(entries => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add("visible"); observer.unobserve(entry.target); } }); }, { threshold: .12 });
 document.querySelectorAll(".reveal").forEach(element => observer.observe(element));
 const menuButton = document.querySelector(".menu-button"), navLinks = document.getElementById("nav-links");
-menuButton.addEventListener("click", () => { const open = navLinks.classList.toggle("open"); menuButton.setAttribute("aria-expanded", String(open)); });
-navLinks.addEventListener("click", event => { if (event.target.matches("a")) { navLinks.classList.remove("open"); menuButton.setAttribute("aria-expanded", "false"); } });
+menuButton?.addEventListener("click", () => { const open = navLinks.classList.toggle("open"); menuButton.setAttribute("aria-expanded", String(open)); });
+navLinks?.addEventListener("click", event => { if (event.target.matches("a")) { navLinks.classList.remove("open"); menuButton.setAttribute("aria-expanded", "false"); } });

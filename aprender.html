@@ -17,7 +17,7 @@
     <nav class="nav container" aria-label="Navegación principal">
       <a class="brand" href="index.html" aria-label="EcoGuía, volver al inicio"><span class="brand-mark" aria-hidden="true">↻</span><span>EcoGuía</span></a>
       <button class="menu-button" type="button" aria-expanded="false" aria-controls="nav-links"><span class="sr-only">Abrir menú</span><span></span><span></span><span></span></button>
-      <div class="nav-links" id="nav-links"><a href="index.html">Inicio</a><a class="active" href="#aprende">Aprende</a><a href="#estacion">Mi estación</a><a href="#ecoscan">EcoScan IA</a><a href="#asistente">EcoIA</a><a href="juegos.html">Juegos</a><a class="nav-cta" href="#ecoscan">Usar cámara</a></div>
+      <div class="nav-links" id="nav-links"><a href="index.html">Inicio</a><a class="active" href="aprender.html">Aprende</a><a href="estacion.html">Mi estación</a><a href="ecoscan.html">EcoScan IA</a><a href="ecoia.html">EcoIA</a><a href="juegos.html">Juegos</a><a class="nav-cta" href="ecoscan.html">Usar cámara</a></div>
     </nav>
   </header>
   <main id="contenido">
@@ -28,7 +28,7 @@
           <p class="eyebrow"><span></span> Pequeñas decisiones, un gran cambio</p>
           <h1>Tu basura aún tiene <em>mucho que contar.</em></h1>
           <p class="hero-lead">Aprende a separar los residuos que usamos cada día. Pregúntale a EcoIA dónde va cada objeto y conviértete en parte de la solución.</p>
-          <div class="hero-actions"><a class="button button-primary" href="#asistente">Probar EcoIA <span>→</span></a><a class="button button-ghost" href="juegos.html">Ir a los juegos</a></div>
+          <div class="hero-actions"><a class="button button-primary" href="ecoia.html">Probar EcoIA <span>→</span></a><a class="button button-ghost" href="juegos.html">Ir a los juegos</a></div>
           <div class="hero-facts" aria-label="Beneficios del proyecto"><div><strong>5</strong><span>categorías<br>esenciales</span></div><div><strong>0</strong><span>registros<br>necesarios</span></div><div><strong>100%</strong><span>gratis y<br>educativo</span></div></div>
         </div>
         <div class="hero-visual reveal" aria-label="Ilustración de separación de residuos">
@@ -59,7 +59,7 @@
         </article>
       </div>
     </section>
-    <section class="section station-section" id="estacion">
+    <section class="section station-section" id="estacion" hidden>
       <div class="container">
         <div class="station-heading reveal">
           <div><p class="eyebrow dark"><span></span> Organizador inteligente</p><h2>Diseña tu propia<br>estación de reciclaje</h2></div>
@@ -93,7 +93,7 @@
         </div>
       </div>
     </section>
-    <section class="section scan-section" id="ecoscan">
+    <section class="section scan-section" id="ecoscan" hidden>
       <div class="container scan-grid">
         <div class="scan-heading-layout reveal">
           <div><p class="eyebrow dark"><span></span> Visión artificial en tu navegador</p><h2>Apunta, captura y<br><em>descubre dónde va.</em></h2></div>
@@ -137,7 +137,7 @@
         </div>
       </div>
     </section>
-    <section class="section assistant-section" id="asistente">
+    <section class="section assistant-section" id="asistente" hidden>
       <div class="container assistant-grid">
         <div class="assistant-copy reveal"><p class="eyebrow light"><span></span> Tu asistente de reciclaje</p><h2>¿No sabes dónde va?<br><em>Pregúntale a EcoIA.</em></h2><p>Escribe el nombre de un residuo común. EcoIA reconocerá su categoría y te dará instrucciones claras para prepararlo antes de desecharlo.</p><div class="privacy-note"><span>◉</span><p><b>Funciona en tu navegador</b><small>No enviamos ni guardamos tus consultas.</small></p></div></div>
         <div class="assistant-card reveal">
@@ -148,7 +148,7 @@
         </div>
       </div>
     </section>
-    <section class="section challenge" id="reto">
+    <section class="section challenge" id="reto" hidden>
       <div class="container challenge-grid">
         <div class="challenge-copy reveal"><p class="eyebrow dark"><span></span> Aprende jugando</p><h2>El reto de los<br>5 residuos</h2><p>Clasifica cada objeto en su contenedor correcto. Equivocarse también enseña: recibirás una explicación en cada intento.</p><div class="score-card"><div><span>Tu mejor resultado</span><strong><b id="best-score">0</b>/5</strong></div><div class="progress-track"><span id="best-progress"></span></div></div></div>
         <div class="quiz-card reveal" id="quiz-card"><div class="quiz-progress"><span id="quiz-step">Pregunta 1 de 5</span><div><i id="quiz-progress"></i></div></div><div class="quiz-object" id="quiz-icon" aria-hidden="true">🍌</div><p class="quiz-question">¿Dónde depositarías <strong id="quiz-item">una cáscara de banano</strong>?</p><div class="quiz-options" id="quiz-options"></div><p class="quiz-feedback" id="quiz-feedback" aria-live="polite"></p><button class="button button-primary next-button" id="next-question" type="button" hidden>Siguiente <span>→</span></button></div>
@@ -158,9 +158,6 @@
     <section class="closing"><div class="container closing-inner reveal"><div><p class="eyebrow light"><span></span> Sigue practicando</p><h2>Cada residuo bien separado<br>es una oportunidad recuperada.</h2></div><a class="button button-light" href="juegos.html">Abrir juegos <span>→</span></a></div></section>
   </main>
   <footer><div class="container footer-inner"><a class="brand footer-brand" href="index.html"><span class="brand-mark">↻</span><span>EcoGuía</span></a><p>Proyecto educativo para aprender a reciclar mejor.</p><p>Hecho con cuidado por nuestro planeta <span>♥</span></p></div></footer>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

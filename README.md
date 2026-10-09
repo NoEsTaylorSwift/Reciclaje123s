@@ -22,7 +22,10 @@ Después visita `http://localhost:8000`.
 ## Archivos
 
 - `index.html`: bienvenida y acceso a cada experiencia
-- `aprender.html`: guía, planificador, EcoScan IA, EcoIA y reto breve
+- `aprender.html`: guía visual y regla de las 3R
+- `estacion.html`: planificador de la estación doméstica
+- `ecoscan.html`: clasificación de fotografías con IA
+- `ecoia.html`: asistente local para consultar residuos
 - `juegos.html`: zona de juegos y perfil de EcoPuntos
 - `styles.css`: diseño adaptable, componentes e ilustraciones
 - `app.js`: lógica de las herramientas educativas
