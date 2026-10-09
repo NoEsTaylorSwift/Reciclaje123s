@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="EcoGuía: aprende a separar residuos y consulta un asistente inteligente de reciclaje.">
+  <meta name="theme-color" content="#18392f">
+  <title>Aprende y clasifica | EcoGuía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <header class="site-header" id="inicio">
+    <nav class="nav container" aria-label="Navegación principal">
+      <a class="brand" href="index.html" aria-label="EcoGuía, volver al inicio"><span class="brand-mark" aria-hidden="true">↻</span><span>EcoGuía</span></a>
+      <button class="menu-button" type="button" aria-expanded="false" aria-controls="nav-links"><span class="sr-only">Abrir menú</span><span></span><span></span><span></span></button>
+      <div class="nav-links" id="nav-links"><a href="index.html">Inicio</a><a class="active" href="#aprende">Aprende</a><a href="#estacion">Mi estación</a><a href="#ecoscan">EcoScan IA</a><a href="#asistente">EcoIA</a><a href="juegos.html">Juegos</a><a class="nav-cta" href="#ecoscan">Usar cámara</a></div>
+    </nav>
+  </header>
+  <main id="contenido">
+    <section class="hero">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="container hero-grid">
+        <div class="hero-copy reveal">
+          <p class="eyebrow"><span></span> Pequeñas decisiones, un gran cambio</p>
+          <h1>Tu basura aún tiene <em>mucho que contar.</em></h1>
+          <p class="hero-lead">Aprende a separar los residuos que usamos cada día. Pregúntale a EcoIA dónde va cada objeto y conviértete en parte de la solución.</p>
+          <div class="hero-actions"><a class="button button-primary" href="#asistente">Probar EcoIA <span>→</span></a><a class="button button-ghost" href="juegos.html">Ir a los juegos</a></div>
+          <div class="hero-facts" aria-label="Beneficios del proyecto"><div><strong>5</strong><span>categorías<br>esenciales</span></div><div><strong>0</strong><span>registros<br>necesarios</span></div><div><strong>100%</strong><span>gratis y<br>educativo</span></div></div>
+        </div>
+        <div class="hero-visual reveal" aria-label="Ilustración de separación de residuos">
+          <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+          <div class="planet"><span class="planet-leaf leaf-a"></span><span class="planet-leaf leaf-b"></span><span class="planet-face"><i></i><i></i><b></b></span></div>
+          <div class="float-card card-plastic"><span>♳</span><p><b>Plástico</b><small>Limpio y seco</small></p></div>
+          <div class="float-card card-organic"><span>♧</span><p><b>Orgánico</b><small>Haz composta</small></p></div>
+          <div class="float-card card-paper"><span>▤</span><p><b>Papel</b><small>Sin grasa</small></p></div>
+          <div class="spark spark-a">✦</div><div class="spark spark-b">✦</div>
+        </div>
+      </div>
+      <div class="hero-wave" aria-hidden="true"></div>
+    </section>
+    <section class="section learn" id="aprende">
+      <div class="container">
+        <div class="section-heading reveal"><div><p class="eyebrow dark"><span></span> Separar es sencillo</p><h2>Conoce las familias<br>de los residuos</h2></div><p>No todo lo que desechamos es basura. Toca cada categoría y descubre qué pertenece ahí y qué debes evitar.</p></div>
+        <div class="waste-tabs reveal" role="tablist" aria-label="Categorías de residuos">
+          <button class="waste-tab active" role="tab" aria-selected="true" data-category="organico"><span>♧</span> Orgánico</button><button class="waste-tab" role="tab" aria-selected="false" data-category="plastico"><span>♳</span> Plástico</button><button class="waste-tab" role="tab" aria-selected="false" data-category="papel"><span>▤</span> Papel</button><button class="waste-tab" role="tab" aria-selected="false" data-category="vidrio"><span>◇</span> Vidrio</button><button class="waste-tab" role="tab" aria-selected="false" data-category="especial"><span>⚡</span> Especial</button>
+        </div>
+        <article class="category-panel reveal" id="category-panel" aria-live="polite">
+          <div class="bin-illustration" id="bin-illustration" aria-hidden="true"><div class="bin-lid"></div><div class="bin-body"><span id="bin-icon">♧</span></div><div class="bin-shadow"></div></div>
+          <div class="category-content">
+            <div class="category-title-row"><span class="category-number" id="category-number">01</span><div><p id="category-kicker">Vuelve a la tierra</p><h3 id="category-title">Residuos orgánicos</h3></div></div>
+            <p class="category-description" id="category-description">Son restos de origen vegetal o animal que pueden transformarse naturalmente en abono.</p>
+            <div class="examples-grid"><div><h4><span class="yes-dot">✓</span> Sí va aquí</h4><ul id="category-yes"></ul></div><div><h4><span class="no-dot">×</span> Evita mezclar</h4><ul id="category-no"></ul></div></div>
+            <p class="tip-line"><span>💡</span><span><b>Consejo:</b> <span id="category-tip"></span></span></p>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="section station-section" id="estacion">
+      <div class="container">
+        <div class="station-heading reveal">
+          <div><p class="eyebrow dark"><span></span> Organizador inteligente</p><h2>Diseña tu propia<br>estación de reciclaje</h2></div>
+          <p>Cuéntanos cómo es tu hogar y qué residuos genera. El simulador calculará una estación práctica, una prioridad de acción y una rutina semanal hecha para ti.</p>
+        </div>
+        <div class="station-app reveal">
+          <div class="station-controls">
+            <div class="people-control">
+              <div><span class="control-label">Personas en casa</span><strong><b id="people-value">3</b> personas</strong></div>
+              <div class="stepper"><button type="button" id="people-minus" aria-label="Restar una persona">−</button><button type="button" id="people-plus" aria-label="Agregar una persona">+</button></div>
+            </div>
+            <p class="control-intro">¿Cuánto generan por semana?</p>
+            <div class="waste-sliders">
+              <label><span><i class="material-dot organic"></i> Orgánico <b id="organic-output">Medio</b></span><input type="range" id="organic-range" min="0" max="3" value="2" aria-label="Cantidad de residuos orgánicos"></label>
+              <label><span><i class="material-dot plastic"></i> Plástico <b id="plastic-output">Medio</b></span><input type="range" id="plastic-range" min="0" max="3" value="2" aria-label="Cantidad de plástico"></label>
+              <label><span><i class="material-dot paper"></i> Papel <b id="paper-output">Poco</b></span><input type="range" id="paper-range" min="0" max="3" value="1" aria-label="Cantidad de papel y cartón"></label>
+              <label><span><i class="material-dot glass"></i> Vidrio <b id="glass-output">Poco</b></span><input type="range" id="glass-range" min="0" max="3" value="1" aria-label="Cantidad de vidrio"></label>
+            </div>
+            <button class="button station-button" id="build-station" type="button">Generar mi plan <span>✦</span></button>
+          </div>
+          <div class="station-result" id="station-result" aria-live="polite">
+            <div class="result-placeholder" id="result-placeholder"><div class="mini-station" aria-hidden="true"><span></span><span></span><span></span></div><h3>Tu estación aparecerá aquí</h3><p>Ajusta los controles y genera una recomendación personalizada.</p></div>
+            <div class="result-content" id="result-content" hidden>
+              <div class="result-top"><div><span class="result-kicker">PLAN PERSONALIZADO</span><h3 id="plan-title">Estación familiar</h3></div><span class="saved-pill" id="saved-pill">Guardado localmente</span></div>
+              <div class="recommended-bins" id="recommended-bins"></div>
+              <div class="impact-row"><div class="impact-ring" id="impact-ring"><strong id="impact-number">0%</strong><span>recuperable</span></div><div><span class="result-kicker">TU MAYOR OPORTUNIDAD</span><h4 id="priority-title">Orgánicos</h4><p id="priority-text"></p></div></div>
+              <div class="weekly-plan"><span>Tu rutina sugerida</span><p id="routine-text"></p></div>
+              <button type="button" class="text-button" id="reset-station">Volver a calcular ↻</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="section scan-section" id="ecoscan">
+      <div class="container scan-grid">
+        <div class="scan-heading-layout reveal">
+          <div><p class="eyebrow dark"><span></span> Visión artificial en tu navegador</p><h2>Apunta, captura y<br><em>descubre dónde va.</em></h2></div>
+          <p>EcoScan combina dos modelos visuales: primero localiza el objeto y después confirma qué es. Si el material no puede verse con certeza, te hará una pregunta breve antes de clasificarlo.</p>
+        </div>
+        <div class="scan-workspace">
+          <div class="scanner reveal">
+            <div class="scanner-top"><div><span class="scan-live-dot"></span><strong>EcoScan IA</strong></div><span id="model-status">Modelos pendientes</span></div>
+            <div class="camera-stage" id="camera-stage">
+              <video id="camera-video" autoplay playsinline muted hidden></video>
+              <img id="scan-image" alt="Fotografía seleccionada para analizar" hidden>
+              <canvas id="capture-canvas" hidden></canvas>
+              <div class="camera-placeholder" id="camera-placeholder"><span class="camera-icon">⌾</span><h3>Escanea un residuo</h3><p>Acerca un solo objeto y evita fondos con muchas cosas.</p></div>
+              <div class="focus-frame" id="focus-frame" hidden><i></i><i></i><i></i><i></i></div>
+              <div class="analyzing-layer" id="analyzing-layer" hidden><span></span><p>Comparando dos modelos...</p></div>
+            </div>
+            <div class="scanner-actions" id="scanner-actions">
+              <button class="scan-button primary" id="start-camera" type="button"><span>◉</span> Abrir cámara</button>
+              <label class="scan-button" for="image-upload"><span>↑</span> Elegir foto</label>
+              <input class="sr-only" id="image-upload" type="file" accept="image/*" capture="environment">
+              <button class="scan-button primary" id="capture-photo" type="button" hidden><span>◉</span> Capturar y analizar</button>
+            </div>
+            <div class="scan-message" id="scan-message" aria-live="polite">Los modelos se descargarán la primera vez que analices una imagen.</div>
+          </div>
+          <aside class="scan-side reveal">
+            <div class="scan-guide" id="scan-guide">
+              <span class="side-kicker">PARA UN MEJOR RESULTADO</span><h3>Una foto clara hace la diferencia</h3>
+              <ol class="scan-steps"><li><span>01</span><p><b>Un objeto a la vez</b>Ocupa el centro de la imagen.</p></li><li><span>02</span><p><b>Buena iluminación</b>Evita sombras y reflejos fuertes.</p></li><li><span>03</span><p><b>Confirma el material</b>Una botella puede ser vidrio o plástico.</p></li></ol>
+              <div class="privacy-note scan-privacy"><span>◎</span><p><b>Privado por diseño</b><small>La fotografía no se sube ni se guarda.</small></p></div>
+            </div>
+            <div class="material-question" id="material-question" hidden>
+              <span class="side-kicker">FALTA UN DATO</span><h3 id="material-question-title">¿De qué material es?</h3><p id="material-question-text">La cámara reconoció el objeto, pero el material define cómo reciclarlo.</p>
+              <div class="material-options" id="material-options"><button type="button" data-material="plastic">♳ Plástico</button><button type="button" data-material="glass">◇ Vidrio</button><button type="button" data-material="paper">▤ Papel o cartón</button><button type="button" data-material="metal">◉ Metal</button><button type="button" data-material="general">× Otro material</button></div>
+            </div>
+            <div class="scan-result" id="scan-result" hidden>
+              <div class="scan-result-head"><div class="scan-result-icon" id="scan-result-icon">♳</div><div class="scan-result-copy"><span id="scan-confidence">CONFIANZA 0%</span><h3 id="scan-category">Plástico reciclable</h3></div><button type="button" id="scan-again" aria-label="Escanear otro residuo">↻</button></div>
+              <p id="scan-instruction"></p><small id="scan-detected"></small>
+              <div class="detection-evidence"><span>Lo que vio la IA</span><div id="detection-list"></div></div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+    <section class="section assistant-section" id="asistente">
+      <div class="container assistant-grid">
+        <div class="assistant-copy reveal"><p class="eyebrow light"><span></span> Tu asistente de reciclaje</p><h2>¿No sabes dónde va?<br><em>Pregúntale a EcoIA.</em></h2><p>Escribe el nombre de un residuo común. EcoIA reconocerá su categoría y te dará instrucciones claras para prepararlo antes de desecharlo.</p><div class="privacy-note"><span>◉</span><p><b>Funciona en tu navegador</b><small>No enviamos ni guardamos tus consultas.</small></p></div></div>
+        <div class="assistant-card reveal">
+          <div class="assistant-topbar"><div class="ai-avatar">✦</div><div><strong>EcoIA</strong><span><i></i> Lista para ayudarte</span></div><span class="local-badge">LOCAL</span></div>
+          <div class="chat-area" id="chat-area" aria-live="polite"><div class="message bot-message"><span class="mini-avatar">✦</span><p>¡Hola! Soy EcoIA. Dime qué objeto quieres desechar; por ejemplo: <button class="inline-example" data-query="botella de plástico">“botella de plástico”</button>.</p></div></div>
+          <form class="chat-form" id="chat-form"><label class="sr-only" for="waste-input">Escribe un residuo</label><input id="waste-input" type="text" autocomplete="off" maxlength="80" placeholder="Ej. caja de pizza, lata, pila..." required><button type="submit" aria-label="Enviar consulta">➜</button></form>
+          <div class="quick-questions" aria-label="Ejemplos rápidos"><span>Prueba:</span><button data-query="cáscara de banano">Cáscara</button><button data-query="lata de aluminio">Lata</button><button data-query="pila usada">Pila</button></div>
+        </div>
+      </div>
+    </section>
+    <section class="section challenge" id="reto">
+      <div class="container challenge-grid">
+        <div class="challenge-copy reveal"><p class="eyebrow dark"><span></span> Aprende jugando</p><h2>El reto de los<br>5 residuos</h2><p>Clasifica cada objeto en su contenedor correcto. Equivocarse también enseña: recibirás una explicación en cada intento.</p><div class="score-card"><div><span>Tu mejor resultado</span><strong><b id="best-score">0</b>/5</strong></div><div class="progress-track"><span id="best-progress"></span></div></div></div>
+        <div class="quiz-card reveal" id="quiz-card"><div class="quiz-progress"><span id="quiz-step">Pregunta 1 de 5</span><div><i id="quiz-progress"></i></div></div><div class="quiz-object" id="quiz-icon" aria-hidden="true">🍌</div><p class="quiz-question">¿Dónde depositarías <strong id="quiz-item">una cáscara de banano</strong>?</p><div class="quiz-options" id="quiz-options"></div><p class="quiz-feedback" id="quiz-feedback" aria-live="polite"></p><button class="button button-primary next-button" id="next-question" type="button" hidden>Siguiente <span>→</span></button></div>
+      </div>
+    </section>
+    <section class="section habits"><div class="container"><div class="section-heading compact reveal"><div><p class="eyebrow dark"><span></span> Antes de reciclar</p><h2>La regla de las 3R</h2></div><p>El mejor residuo es el que no se genera. Sigue este orden para reducir tu impacto.</p></div><div class="three-r-grid"><article class="r-card reduce reveal"><span class="r-number">01</span><div class="r-icon">−</div><h3>Reduce</h3><p>Compra solo lo necesario y elige productos con menos empaque.</p><small>Primero, evita generar</small></article><article class="r-card reuse reveal"><span class="r-number">02</span><div class="r-icon">↻</div><h3>Reutiliza</h3><p>Repara, dona o encuentra un nuevo uso antes de desechar.</p><small>Después, alarga su vida</small></article><article class="r-card recycle reveal"><span class="r-number">03</span><div class="r-icon">♻</div><h3>Recicla</h3><p>Separa limpio y seco para que el material pueda recuperarse.</p><small>Finalmente, transforma</small></article></div></div></section>
+    <section class="closing"><div class="container closing-inner reveal"><div><p class="eyebrow light"><span></span> Sigue practicando</p><h2>Cada residuo bien separado<br>es una oportunidad recuperada.</h2></div><a class="button button-light" href="juegos.html">Abrir juegos <span>→</span></a></div></section>
+  </main>
+  <footer><div class="container footer-inner"><a class="brand footer-brand" href="index.html"><span class="brand-mark">↻</span><span>EcoGuía</span></a><p>Proyecto educativo para aprender a reciclar mejor.</p><p>Hecho con cuidado por nuestro planeta <span>♥</span></p></div></footer>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

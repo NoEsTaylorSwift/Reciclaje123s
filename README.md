@@ -1,6 +1,6 @@
 # EcoGuía
 
-Sitio web educativo para aprender a separar residuos de uso común. Incluye una guía interactiva, un planificador inteligente para organizar una estación doméstica, reconocimiento visual con cámara, un asistente local llamado EcoIA y un reto de cinco preguntas.
+Sitio web educativo de varias páginas para aprender a separar residuos de uso común. Incluye una bienvenida, una guía interactiva, un planificador inteligente, reconocimiento visual con cámara, un asistente local llamado EcoIA y una zona de juegos.
 
 ## Uso local
 
@@ -17,7 +17,17 @@ Después visita `http://localhost:8000`.
 - HTML5 semántico
 - CSS3 adaptable a móviles
 - JavaScript sin dependencias
-- `localStorage` para guardar el mejor resultado del reto y el plan doméstico
+- `localStorage` para guardar puntuaciones, EcoPuntos y el plan doméstico
+
+## Archivos
+
+- `index.html`: bienvenida y acceso a cada experiencia
+- `aprender.html`: guía, planificador, EcoScan IA, EcoIA y reto breve
+- `juegos.html`: zona de juegos y perfil de EcoPuntos
+- `styles.css`: diseño adaptable, componentes e ilustraciones
+- `app.js`: lógica de las herramientas educativas
+- `games.js`: lógica de los tres juegos
+- `site.js`: navegación y animaciones compartidas
 
 ## Funciones principales
 
@@ -27,6 +37,10 @@ Después visita `http://localhost:8000`.
 - EcoScan IA para reconocer residuos mediante cámara o fotografía
 - Asistente local para consultar objetos comunes
 - Reto educativo con explicaciones y puntuación
+- Clasificación rápida de diez residuos
+- Memoria ecológica que relaciona objetos con categorías
+- Juego de mito o realidad con explicaciones
+- Perfil por niveles con EcoPuntos guardados localmente
 
 ## EcoScan IA
 
