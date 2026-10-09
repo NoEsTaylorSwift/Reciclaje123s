@@ -44,6 +44,86 @@ function renderCategory(key) {
 document.querySelectorAll(".waste-tab").forEach(tab => tab.addEventListener("click", () => renderCategory(tab.dataset.category)));
 renderCategory("organico");
 
+const stationMaterials = {
+  organic: { name: "Orgánico", color: "#4b9d61", icon: "♧", recovery: .9, action: "Separar los restos de cocina puede reducir rápidamente la basura general. Empieza una composta o define una entrega frecuente." },
+  plastic: { name: "Plástico", color: "#529eb4", icon: "♳", recovery: .65, action: "Prioriza envases limpios y secos. Reduce primero los empaques de un solo uso y compacta las botellas." },
+  paper: { name: "Papel", color: "#c69258", icon: "▤", recovery: .8, action: "Mantén papel y cartón secos. Dobla las cajas para que tu estación ocupe menos espacio." },
+  glass: { name: "Vidrio", color: "#7769a9", icon: "◇", recovery: .95, action: "Reserva un contenedor firme. Retira tapas y lleva los envases juntos para reducir viajes." }
+};
+const amountLabels = ["Nada", "Poco", "Medio", "Mucho"];
+let peopleCount = 3;
+const stationRanges = Object.keys(stationMaterials).reduce((ranges, key) => {
+  ranges[key] = document.getElementById(`${key}-range`);
+  return ranges;
+}, {});
+
+function updateStationControls() {
+  document.getElementById("people-value").textContent = peopleCount;
+  Object.entries(stationRanges).forEach(([key, range]) => {
+    document.getElementById(`${key}-output`).textContent = amountLabels[Number(range.value)];
+  });
+}
+
+document.getElementById("people-minus").addEventListener("click", () => { peopleCount = Math.max(1, peopleCount - 1); updateStationControls(); });
+document.getElementById("people-plus").addEventListener("click", () => { peopleCount = Math.min(8, peopleCount + 1); updateStationControls(); });
+Object.values(stationRanges).forEach(range => range.addEventListener("input", updateStationControls));
+
+function containerSize(amount) {
+  const adjusted = amount * (.72 + peopleCount * .16);
+  if (adjusted <= 1.2) return "10 L";
+  if (adjusted <= 2.4) return "20 L";
+  if (adjusted <= 3.8) return "35 L";
+  return "50 L";
+}
+
+function buildStationPlan(plan, shouldSave = true) {
+  peopleCount = plan.people;
+  Object.entries(plan.amounts).forEach(([key, value]) => { if (stationRanges[key]) stationRanges[key].value = value; });
+  updateStationControls();
+  const active = Object.entries(plan.amounts).filter(([, amount]) => amount > 0);
+  const total = active.reduce((sum, [, amount]) => sum + amount, 0);
+  if (!total) {
+    document.getElementById("result-placeholder").innerHTML = `<div class="mini-station"><span></span><span></span><span></span></div><h3>Aún no hay residuos</h3><p>Selecciona al menos una cantidad para poder diseñar tu estación.</p>`;
+    document.getElementById("result-placeholder").hidden = false;
+    document.getElementById("result-content").hidden = true;
+    return;
+  }
+  const recoverable = Math.round(active.reduce((sum, [key, amount]) => sum + amount * stationMaterials[key].recovery, 0) / total * 100);
+  const priorityKey = active.sort((a, b) => b[1] * (2 - stationMaterials[b[0]].recovery) - a[1] * (2 - stationMaterials[a[0]].recovery))[0][0];
+  const priority = stationMaterials[priorityKey];
+  document.getElementById("plan-title").textContent = peopleCount === 1 ? "Estación individual" : `Estación para ${peopleCount} personas`;
+  document.getElementById("recommended-bins").innerHTML = active.map(([key, amount]) => {
+    const material = stationMaterials[key];
+    return `<div class="recommended-bin"><i style="--bin-color:${material.color}">${material.icon}</i><strong>${material.name}</strong><span>${containerSize(amount)}</span></div>`;
+  }).join("");
+  document.getElementById("impact-number").textContent = `${recoverable}%`;
+  document.getElementById("impact-ring").style.setProperty("--percentage", recoverable);
+  document.getElementById("priority-title").textContent = priority.name;
+  document.getElementById("priority-text").textContent = priority.action;
+  const highVolume = active.filter(([, amount]) => amount === 3).map(([key]) => stationMaterials[key].name.toLowerCase());
+  const collection = highVolume.length ? `vacía ${highVolume.join(" y ")} dos veces por semana` : "revisa los contenedores cada fin de semana";
+  document.getElementById("routine-text").textContent = `Limpia y seca los reciclables al usarlos; ${collection}. Una vez al mes, lleva vidrio y residuos especiales a su punto de recolección.`;
+  document.getElementById("result-placeholder").hidden = true;
+  document.getElementById("result-content").hidden = false;
+  document.getElementById("saved-pill").textContent = shouldSave ? "Guardado localmente" : "Último plan guardado";
+  if (shouldSave) localStorage.setItem("ecoguia-station", JSON.stringify(plan));
+}
+
+document.getElementById("build-station").addEventListener("click", () => {
+  const amounts = Object.fromEntries(Object.entries(stationRanges).map(([key, range]) => [key, Number(range.value)]));
+  buildStationPlan({ people: peopleCount, amounts });
+});
+document.getElementById("reset-station").addEventListener("click", () => {
+  document.getElementById("result-content").hidden = true;
+  document.getElementById("result-placeholder").hidden = false;
+  document.getElementById("result-placeholder").innerHTML = `<div class="mini-station"><span></span><span></span><span></span></div><h3>Haz nuevos ajustes</h3><p>Cambia las cantidades y vuelve a generar tu recomendación.</p>`;
+});
+updateStationControls();
+try {
+  const savedStation = JSON.parse(localStorage.getItem("ecoguia-station"));
+  if (savedStation?.people && savedStation?.amounts) buildStationPlan(savedStation, false);
+} catch { localStorage.removeItem("ecoguia-station"); }
+
 const chatArea = document.getElementById("chat-area");
 const chatForm = document.getElementById("chat-form");
 const wasteInput = document.getElementById("waste-input");
