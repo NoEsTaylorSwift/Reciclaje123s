@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="EcoGuía: aprende a separar residuos y consulta un asistente inteligente de reciclaje.">
+  <meta name="theme-color" content="#18392f">
+  <title>EcoGuía | Aprende a reciclar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <header class="site-header" id="inicio">
+    <nav class="nav container" aria-label="Navegación principal">
+      <a class="brand" href="#inicio" aria-label="EcoGuía, volver al inicio"><span class="brand-mark" aria-hidden="true">↻</span><span>EcoGuía</span></a>
+      <button class="menu-button" type="button" aria-expanded="false" aria-controls="nav-links"><span class="sr-only">Abrir menú</span><span></span><span></span><span></span></button>
+      <div class="nav-links" id="nav-links"><a href="#aprende">Aprende</a><a href="#asistente">EcoIA</a><a href="#reto">Reto</a><a class="nav-cta" href="#asistente">Clasificar un residuo</a></div>
+    </nav>
+  </header>
+  <main id="contenido">
+    <section class="hero">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="container hero-grid">
+        <div class="hero-copy reveal">
+          <p class="eyebrow"><span></span> Pequeñas decisiones, un gran cambio</p>
+          <h1>Tu basura aún tiene <em>mucho que contar.</em></h1>
+          <p class="hero-lead">Aprende a separar los residuos que usamos cada día. Pregúntale a EcoIA dónde va cada objeto y conviértete en parte de la solución.</p>
+          <div class="hero-actions"><a class="button button-primary" href="#asistente">Probar EcoIA <span>→</span></a><a class="button button-ghost" href="#aprende">Ver la guía</a></div>
+          <div class="hero-facts" aria-label="Beneficios del proyecto"><div><strong>5</strong><span>categorías<br>esenciales</span></div><div><strong>0</strong><span>registros<br>necesarios</span></div><div><strong>100%</strong><span>gratis y<br>educativo</span></div></div>
+        </div>
+        <div class="hero-visual reveal" aria-label="Ilustración de separación de residuos">
+          <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+          <div class="planet"><span class="planet-leaf leaf-a"></span><span class="planet-leaf leaf-b"></span><span class="planet-face"><i></i><i></i><b></b></span></div>
+          <div class="float-card card-plastic"><span>♳</span><p><b>Plástico</b><small>Limpio y seco</small></p></div>
+          <div class="float-card card-organic"><span>♧</span><p><b>Orgánico</b><small>Haz composta</small></p></div>
+          <div class="float-card card-paper"><span>▤</span><p><b>Papel</b><small>Sin grasa</small></p></div>
+          <div class="spark spark-a">✦</div><div class="spark spark-b">✦</div>
+        </div>
+      </div>
+      <div class="hero-wave" aria-hidden="true"></div>
+    </section>
+    <section class="section learn" id="aprende">
+      <div class="container">
+        <div class="section-heading reveal"><div><p class="eyebrow dark"><span></span> Separar es sencillo</p><h2>Conoce las familias<br>de los residuos</h2></div><p>No todo lo que desechamos es basura. Toca cada categoría y descubre qué pertenece ahí y qué debes evitar.</p></div>
+        <div class="waste-tabs reveal" role="tablist" aria-label="Categorías de residuos">
+          <button class="waste-tab active" role="tab" aria-selected="true" data-category="organico"><span>♧</span> Orgánico</button><button class="waste-tab" role="tab" aria-selected="false" data-category="plastico"><span>♳</span> Plástico</button><button class="waste-tab" role="tab" aria-selected="false" data-category="papel"><span>▤</span> Papel</button><button class="waste-tab" role="tab" aria-selected="false" data-category="vidrio"><span>◇</span> Vidrio</button><button class="waste-tab" role="tab" aria-selected="false" data-category="especial"><span>⚡</span> Especial</button>
+        </div>
+        <article class="category-panel reveal" id="category-panel" aria-live="polite">
+          <div class="bin-illustration" id="bin-illustration" aria-hidden="true"><div class="bin-lid"></div><div class="bin-body"><span id="bin-icon">♧</span></div><div class="bin-shadow"></div></div>
+          <div class="category-content">
+            <div class="category-title-row"><span class="category-number" id="category-number">01</span><div><p id="category-kicker">Vuelve a la tierra</p><h3 id="category-title">Residuos orgánicos</h3></div></div>
+            <p class="category-description" id="category-description">Son restos de origen vegetal o animal que pueden transformarse naturalmente en abono.</p>
+            <div class="examples-grid"><div><h4><span class="yes-dot">✓</span> Sí va aquí</h4><ul id="category-yes"></ul></div><div><h4><span class="no-dot">×</span> Evita mezclar</h4><ul id="category-no"></ul></div></div>
+            <p class="tip-line"><span>💡</span><span><b>Consejo:</b> <span id="category-tip"></span></span></p>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="section assistant-section" id="asistente">
+      <div class="container assistant-grid">
+        <div class="assistant-copy reveal"><p class="eyebrow light"><span></span> Tu asistente de reciclaje</p><h2>¿No sabes dónde va?<br><em>Pregúntale a EcoIA.</em></h2><p>Escribe el nombre de un residuo común. EcoIA reconocerá su categoría y te dará instrucciones claras para prepararlo antes de desecharlo.</p><div class="privacy-note"><span>◉</span><p><b>Funciona en tu navegador</b><small>No enviamos ni guardamos tus consultas.</small></p></div></div>
+        <div class="assistant-card reveal">
+          <div class="assistant-topbar"><div class="ai-avatar">✦</div><div><strong>EcoIA</strong><span><i></i> Lista para ayudarte</span></div><span class="local-badge">LOCAL</span></div>
+          <div class="chat-area" id="chat-area" aria-live="polite"><div class="message bot-message"><span class="mini-avatar">✦</span><p>¡Hola! Soy EcoIA. Dime qué objeto quieres desechar; por ejemplo: <button class="inline-example" data-query="botella de plástico">“botella de plástico”</button>.</p></div></div>
+          <form class="chat-form" id="chat-form"><label class="sr-only" for="waste-input">Escribe un residuo</label><input id="waste-input" type="text" autocomplete="off" maxlength="80" placeholder="Ej. caja de pizza, lata, pila..." required><button type="submit" aria-label="Enviar consulta">➜</button></form>
+          <div class="quick-questions" aria-label="Ejemplos rápidos"><span>Prueba:</span><button data-query="cáscara de banano">Cáscara</button><button data-query="lata de aluminio">Lata</button><button data-query="pila usada">Pila</button></div>
+        </div>
+      </div>
+    </section>
+    <section class="section challenge" id="reto">
+      <div class="container challenge-grid">
+        <div class="challenge-copy reveal"><p class="eyebrow dark"><span></span> Aprende jugando</p><h2>El reto de los<br>5 residuos</h2><p>Clasifica cada objeto en su contenedor correcto. Equivocarse también enseña: recibirás una explicación en cada intento.</p><div class="score-card"><div><span>Tu mejor resultado</span><strong><b id="best-score">0</b>/5</strong></div><div class="progress-track"><span id="best-progress"></span></div></div></div>
+        <div class="quiz-card reveal" id="quiz-card"><div class="quiz-progress"><span id="quiz-step">Pregunta 1 de 5</span><div><i id="quiz-progress"></i></div></div><div class="quiz-object" id="quiz-icon" aria-hidden="true">🍌</div><p class="quiz-question">¿Dónde depositarías <strong id="quiz-item">una cáscara de banano</strong>?</p><div class="quiz-options" id="quiz-options"></div><p class="quiz-feedback" id="quiz-feedback" aria-live="polite"></p><button class="button button-primary next-button" id="next-question" type="button" hidden>Siguiente <span>→</span></button></div>
+      </div>
+    </section>
+    <section class="section habits"><div class="container"><div class="section-heading compact reveal"><div><p class="eyebrow dark"><span></span> Antes de reciclar</p><h2>La regla de las 3R</h2></div><p>El mejor residuo es el que no se genera. Sigue este orden para reducir tu impacto.</p></div><div class="three-r-grid"><article class="r-card reduce reveal"><span class="r-number">01</span><div class="r-icon">−</div><h3>Reduce</h3><p>Compra solo lo necesario y elige productos con menos empaque.</p><small>Primero, evita generar</small></article><article class="r-card reuse reveal"><span class="r-number">02</span><div class="r-icon">↻</div><h3>Reutiliza</h3><p>Repara, dona o encuentra un nuevo uso antes de desechar.</p><small>Después, alarga su vida</small></article><article class="r-card recycle reveal"><span class="r-number">03</span><div class="r-icon">♻</div><h3>Recicla</h3><p>Separa limpio y seco para que el material pueda recuperarse.</p><small>Finalmente, transforma</small></article></div></div></section>
+    <section class="closing"><div class="container closing-inner reveal"><div><p class="eyebrow light"><span></span> Empieza hoy</p><h2>Cada residuo bien separado<br>es una oportunidad recuperada.</h2></div><a class="button button-light" href="#asistente">Clasificar ahora <span>→</span></a></div></section>
+  </main>
+  <footer><div class="container footer-inner"><a class="brand footer-brand" href="#inicio"><span class="brand-mark">↻</span><span>EcoGuía</span></a><p>Proyecto educativo para aprender a reciclar mejor.</p><p>Hecho con cuidado por nuestro planeta <span>♥</span></p></div></footer>
+  <script src="app.js"></script>
+</body>
+</html>
