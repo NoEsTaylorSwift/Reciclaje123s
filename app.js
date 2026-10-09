@@ -124,6 +124,157 @@ try {
   if (savedStation?.people && savedStation?.amounts) buildStationPlan(savedStation, false);
 } catch { localStorage.removeItem("ecoguia-station"); }
 
+const visualWasteRules = [
+  { terms: ["cellular telephone", "laptop", "notebook computer", "desktop computer", "computer keyboard", "mouse", "remote control", "monitor", "screen", "radio", "cassette player", "digital clock", "electric fan", "hair dryer", "lighter"], category: "Residuo especial", icon: "⚡", instruction: "Es un aparato o componente que requiere un punto de recolección de electrónicos. No lo mezcles con la basura común." },
+  { terms: ["beer bottle", "wine bottle", "pill bottle", "bottlecap", "glass", "vase"], category: "Vidrio", icon: "◇", instruction: "Vacía y enjuaga el envase. Retira la tapa y evita mezclarlo con cerámica, espejos o bombillas." },
+  { terms: ["banana", "orange", "lemon", "pineapple", "strawberry", "fig", "pomegranate", "granny smith", "mushroom", "broccoli", "cauliflower", "cucumber", "artichoke", "bell pepper", "corn", "acorn", "guacamole"], category: "Orgánico", icon: "♧", instruction: "Retira etiquetas o empaques. Puedes aprovechar este residuo en una composta doméstica." },
+  { terms: ["pop bottle", "water bottle", "plastic bag", "shower cap", "rubber eraser", "bucket", "milk can"], category: "Plástico reciclable", icon: "♳", instruction: "Comprueba que sea plástico aceptado en tu localidad; vacíalo, enjuágalo y déjalo secar antes de separarlo." },
+  { terms: ["envelope", "carton", "book jacket", "comic book", "paper towel", "toilet tissue", "menu"], category: "Papel o cartón", icon: "▤", instruction: "Si está limpio y seco, aplánalo y colócalo con papel. Si tiene grasa o residuos sanitarios, va en la basura general." },
+  { terms: ["tin can", "oil filter", "chain", "padlock", "nail", "screw", "washer", "metal"], category: "Metal reciclable", icon: "◉", instruction: "Límpialo y sécalo. Protege cualquier borde afilado antes de llevarlo al punto de reciclaje." }
+];
+
+let visionModel = null;
+let visionModelPromise = null;
+let cameraStream = null;
+const cameraVideo = document.getElementById("camera-video");
+const scanImage = document.getElementById("scan-image");
+const captureCanvas = document.getElementById("capture-canvas");
+const modelStatus = document.getElementById("model-status");
+const scanMessage = document.getElementById("scan-message");
+
+function setScanMessage(message, isError = false) {
+  scanMessage.textContent = message;
+  scanMessage.classList.toggle("error", isError);
+}
+
+async function loadVisionModel() {
+  if (visionModel) return visionModel;
+  if (visionModelPromise) return visionModelPromise;
+  if (typeof tf === "undefined" || typeof mobilenet === "undefined") throw new Error("No se pudo descargar la biblioteca de IA. Revisa tu conexión a internet.");
+  modelStatus.textContent = "Cargando modelo...";
+  setScanMessage("Preparando la red neuronal. La primera carga puede tardar unos segundos.");
+  visionModelPromise = (async () => {
+    await tf.ready();
+    return mobilenet.load({ version: 2, alpha: .5 });
+  })();
+  try {
+    visionModel = await visionModelPromise;
+    modelStatus.textContent = "IA lista";
+    setScanMessage("Modelo listo. La fotografía se procesará en este dispositivo.");
+    return visionModel;
+  } catch (error) {
+    visionModelPromise = null;
+    modelStatus.textContent = "IA no disponible";
+    throw error;
+  }
+}
+
+function stopCamera() {
+  if (cameraStream) cameraStream.getTracks().forEach(track => track.stop());
+  cameraStream = null;
+  cameraVideo.srcObject = null;
+}
+
+function showScanSource(type) {
+  document.getElementById("camera-placeholder").hidden = true;
+  document.getElementById("focus-frame").hidden = type !== "video";
+  cameraVideo.hidden = type !== "video";
+  scanImage.hidden = type !== "image";
+}
+
+async function startCamera() {
+  document.getElementById("scan-result").hidden = true;
+  if (!navigator.mediaDevices?.getUserMedia) {
+    setScanMessage("La cámara requiere abrir el proyecto desde HTTPS o localhost. También puedes elegir una foto.", true);
+    return;
+  }
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
+    cameraVideo.srcObject = cameraStream;
+    await cameraVideo.play();
+    showScanSource("video");
+    document.getElementById("start-camera").hidden = true;
+    document.getElementById("capture-photo").hidden = false;
+    setScanMessage("Centra un solo objeto dentro del marco y procura tener buena iluminación.");
+    loadVisionModel().catch(error => setScanMessage(error.message, true));
+  } catch (error) {
+    const denied = error.name === "NotAllowedError" || error.name === "SecurityError";
+    setScanMessage(denied ? "No se concedió permiso para usar la cámara. Puedes elegir una fotografía." : "No fue posible iniciar la cámara en este dispositivo.", true);
+  }
+}
+
+function classifyVisualPredictions(predictions) {
+  for (const prediction of predictions) {
+    const label = prediction.className.toLowerCase();
+    const rule = visualWasteRules.find(candidate => candidate.terms.some(term => label.includes(term)));
+    if (rule && prediction.probability >= .08) return { ...rule, prediction };
+  }
+  return { category: "Resultado no concluyente", icon: "?", instruction: "La IA no reconoce este objeto con seguridad. Prueba otra foto con un fondo simple o utiliza EcoIA escribiendo el nombre del residuo.", prediction: predictions[0] };
+}
+
+async function analyzeImage(source) {
+  const layer = document.getElementById("analyzing-layer");
+  layer.hidden = false;
+  document.getElementById("scan-result").hidden = true;
+  try {
+    const model = await loadVisionModel();
+    const predictions = await model.classify(source, 5);
+    const result = classifyVisualPredictions(predictions);
+    const confidence = Math.round((result.prediction?.probability || 0) * 100);
+    document.getElementById("scan-result-icon").textContent = result.icon;
+    document.getElementById("scan-confidence").textContent = result.category === "Resultado no concluyente" ? "REVISIÓN NECESARIA" : `CONFIANZA ${confidence}%`;
+    document.getElementById("scan-category").textContent = result.category;
+    document.getElementById("scan-instruction").textContent = result.instruction;
+    document.getElementById("scan-detected").textContent = result.prediction ? `El modelo observó: ${result.prediction.className} (${confidence}%)` : "Sin predicciones disponibles";
+    document.getElementById("scan-result").hidden = false;
+    setScanMessage("Análisis terminado. Confirma siempre el material antes de desecharlo.");
+  } catch (error) {
+    setScanMessage(error.message || "No se pudo analizar la imagen. Inténtalo nuevamente.", true);
+  } finally {
+    layer.hidden = true;
+  }
+}
+
+document.getElementById("start-camera").addEventListener("click", startCamera);
+document.getElementById("capture-photo").addEventListener("click", async () => {
+  if (!cameraVideo.videoWidth) return;
+  captureCanvas.width = cameraVideo.videoWidth;
+  captureCanvas.height = cameraVideo.videoHeight;
+  captureCanvas.getContext("2d").drawImage(cameraVideo, 0, 0);
+  scanImage.src = captureCanvas.toDataURL("image/jpeg", .86);
+  showScanSource("image");
+  stopCamera();
+  document.getElementById("capture-photo").hidden = true;
+  document.getElementById("start-camera").hidden = false;
+  await analyzeImage(captureCanvas);
+});
+
+document.getElementById("image-upload").addEventListener("change", event => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  if (!file.type.startsWith("image/")) { setScanMessage("Selecciona un archivo de imagen válido.", true); return; }
+  stopCamera();
+  const imageUrl = URL.createObjectURL(file);
+  scanImage.onload = async () => { URL.revokeObjectURL(imageUrl); showScanSource("image"); await analyzeImage(scanImage); };
+  scanImage.onerror = () => { URL.revokeObjectURL(imageUrl); setScanMessage("No se pudo abrir esa imagen.", true); };
+  scanImage.src = imageUrl;
+  document.getElementById("capture-photo").hidden = true;
+  document.getElementById("start-camera").hidden = false;
+});
+
+document.getElementById("scan-again").addEventListener("click", () => {
+  stopCamera();
+  document.getElementById("scan-result").hidden = true;
+  document.getElementById("camera-placeholder").hidden = false;
+  document.getElementById("focus-frame").hidden = true;
+  cameraVideo.hidden = true;
+  scanImage.hidden = true;
+  scanImage.removeAttribute("src");
+  document.getElementById("image-upload").value = "";
+  setScanMessage("Listo para analizar otro residuo.");
+});
+window.addEventListener("pagehide", stopCamera);
+
 const chatArea = document.getElementById("chat-area");
 const chatForm = document.getElementById("chat-form");
 const wasteInput = document.getElementById("waste-input");
