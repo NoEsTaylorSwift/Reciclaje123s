@@ -30,11 +30,11 @@ Después visita `http://localhost:8000`.
 
 ## EcoScan IA
 
-EcoScan usa TensorFlow.js y MobileNet para reconocer objetos directamente en el navegador. La fotografía no se envía a un servidor. El primer análisis necesita conexión a internet para descargar el modelo y la cámara requiere abrir la página desde HTTPS o `localhost`.
+EcoScan usa TensorFlow.js con dos modelos: COCO-SSD localiza objetos comunes y MobileNet aporta una clasificación alternativa. La fotografía no se envía a un servidor. El primer análisis necesita conexión a internet para descargar los modelos y la cámara requiere abrir la página desde HTTPS o `localhost`.
 
 Para probar la cámara desde GitHub, activa **Settings → Pages → Deploy from a branch**, elige `main` y la carpeta raíz. GitHub Pages publicará el proyecto con HTTPS, requisito del navegador para solicitar acceso a la cámara.
 
-MobileNet reconoce objetos generales y EcoGuía los relaciona con categorías de reciclaje. El resultado muestra su confianza y debe confirmarse observando el material real y las reglas municipales.
+Los modelos reconocen objetos generales y EcoGuía los relaciona con categorías de reciclaje. Cuando una forma puede pertenecer a varios materiales —por ejemplo, una botella— el sistema solicita una confirmación breve. El resultado muestra su confianza y debe comprobarse con las reglas municipales.
 
 ## Nota sobre EcoIA
 

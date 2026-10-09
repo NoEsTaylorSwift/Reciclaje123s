@@ -133,8 +133,40 @@ const visualWasteRules = [
   { terms: ["tin can", "oil filter", "chain", "padlock", "nail", "screw", "washer", "metal"], category: "Metal reciclable", icon: "◉", instruction: "Límpialo y sécalo. Protege cualquier borde afilado antes de llevarlo al punto de reciclaje." }
 ];
 
+const detectedObjectRules = {
+  banana: { category: "Orgánico", icon: "♧", instruction: "Las cáscaras y restos de esta fruta pueden convertirse en composta. Retira cualquier etiqueta antes." },
+  apple: { category: "Orgánico", icon: "♧", instruction: "Los restos de fruta son orgánicos. Sepáralos para composta cuando sea posible." },
+  orange: { category: "Orgánico", icon: "♧", instruction: "La cáscara es un residuo orgánico aprovechable en composta." },
+  broccoli: { category: "Orgánico", icon: "♧", instruction: "Los restos vegetales pertenecen a los orgánicos y pueden transformarse en abono." },
+  carrot: { category: "Orgánico", icon: "♧", instruction: "Los restos de verduras pueden separarse para composta." },
+  sandwich: { category: "Orgánico", icon: "♧", instruction: "Separa cualquier empaque. Los restos de alimento pueden ir a orgánicos si no contienen demasiado aceite." },
+  pizza: { category: "Orgánico o general", icon: "♧", instruction: "Separa los restos de comida. El cartón limpio se recicla; la parte con grasa debe ir a composta o basura general." },
+  book: { category: "Papel y cartón", icon: "▤", instruction: "Si está seco y sin cubierta plástica, puede separarse con papel. Considera donarlo antes de reciclarlo." },
+  laptop: { category: "Residuo especial", icon: "⚡", instruction: "Los electrónicos deben entregarse en un punto autorizado. No los mezcles con la basura común." },
+  mouse: { category: "Residuo especial", icon: "⚡", instruction: "Este accesorio electrónico requiere recolección especializada." },
+  remote: { category: "Residuo especial", icon: "⚡", instruction: "Retira las pilas y lleva ambas partes a puntos de recolección autorizados." },
+  keyboard: { category: "Residuo especial", icon: "⚡", instruction: "Llévalo a una jornada o centro de reciclaje electrónico." },
+  "cell phone": { category: "Residuo especial", icon: "⚡", instruction: "Borra tus datos y entrégalo en un punto de recolección de electrónicos." },
+  tv: { category: "Residuo especial", icon: "⚡", instruction: "Una pantalla necesita manejo especializado; no la abandones ni la mezcles con basura común." },
+  microwave: { category: "Residuo especial", icon: "⚡", instruction: "Este electrodoméstico debe llevarse a un centro autorizado de residuos electrónicos." },
+  toaster: { category: "Residuo especial", icon: "⚡", instruction: "Este pequeño electrodoméstico pertenece a una recolección de electrónicos." },
+  refrigerator: { category: "Residuo especial", icon: "⚡", instruction: "Requiere retiro especializado porque contiene componentes y gases que deben manejarse correctamente." }
+};
+
+const ambiguousObjects = new Set(["bottle", "cup", "bowl", "vase", "fork", "knife", "spoon"]);
+const materialResults = {
+  plastic: { category: "Plástico reciclable", icon: "♳", instruction: "Vacía, enjuaga y seca el objeto. Verifica el número o tipo de plástico aceptado en tu localidad." },
+  glass: { category: "Vidrio", icon: "◇", instruction: "Vacía y enjuaga. Retira tapas y no lo mezcles con cerámica, espejos o cristal templado." },
+  paper: { category: "Papel y cartón", icon: "▤", instruction: "Debe estar limpio y seco. Aplánalo y retira cualquier parte plástica o metálica." },
+  metal: { category: "Metal reciclable", icon: "◉", instruction: "Límpialo, sécalo y protege cualquier borde afilado antes de entregarlo." },
+  general: { category: "Revisión manual", icon: "?", instruction: "El material no coincide con una categoría segura. Consulta las reglas locales o escribe el nombre en EcoIA." }
+};
+
 let visionModel = null;
 let visionModelPromise = null;
+let detectionModel = null;
+let detectionModelPromise = null;
+let pendingVisualAnalysis = null;
 let cameraStream = null;
 const cameraVideo = document.getElementById("camera-video");
 const scanImage = document.getElementById("scan-image");
@@ -148,23 +180,23 @@ function setScanMessage(message, isError = false) {
 }
 
 async function loadVisionModel() {
-  if (visionModel) return visionModel;
-  if (visionModelPromise) return visionModelPromise;
-  if (typeof tf === "undefined" || typeof mobilenet === "undefined") throw new Error("No se pudo descargar la biblioteca de IA. Revisa tu conexión a internet.");
-  modelStatus.textContent = "Cargando modelo...";
-  setScanMessage("Preparando la red neuronal. La primera carga puede tardar unos segundos.");
-  visionModelPromise = (async () => {
-    await tf.ready();
-    return mobilenet.load({ version: 2, alpha: .5 });
-  })();
+  if (visionModel && detectionModel) return { visionModel, detectionModel };
+  if (visionModelPromise && detectionModelPromise) return Promise.all([visionModelPromise, detectionModelPromise]).then(() => ({ visionModel, detectionModel }));
+  if (typeof tf === "undefined" || typeof mobilenet === "undefined" || typeof cocoSsd === "undefined") throw new Error("No se pudieron descargar los modelos de IA. Revisa tu conexión a internet.");
+  modelStatus.textContent = "Cargando 2 modelos...";
+  setScanMessage("Preparando detección y reconocimiento. La primera carga puede tardar unos segundos.");
   try {
-    visionModel = await visionModelPromise;
-    modelStatus.textContent = "IA lista";
-    setScanMessage("Modelo listo. La fotografía se procesará en este dispositivo.");
-    return visionModel;
+    await tf.ready();
+    if (!visionModelPromise) visionModelPromise = mobilenet.load({ version: 2, alpha: .75 });
+    if (!detectionModelPromise) detectionModelPromise = cocoSsd.load({ base: "mobilenet_v2" });
+    [visionModel, detectionModel] = await Promise.all([visionModelPromise, detectionModelPromise]);
+    modelStatus.textContent = "2 modelos listos";
+    setScanMessage("Sistema híbrido listo. La fotografía se procesará en este dispositivo.");
+    return { visionModel, detectionModel };
   } catch (error) {
     visionModelPromise = null;
-    modelStatus.textContent = "IA no disponible";
+    detectionModelPromise = null;
+    modelStatus.textContent = "Modelos no disponibles";
     throw error;
   }
 }
@@ -184,6 +216,8 @@ function showScanSource(type) {
 
 async function startCamera() {
   document.getElementById("scan-result").hidden = true;
+  document.getElementById("material-question").hidden = true;
+  document.getElementById("scan-guide").hidden = false;
   if (!navigator.mediaDevices?.getUserMedia) {
     setScanMessage("La cámara requiere abrir el proyecto desde HTTPS o localhost. También puedes elegir una foto.", true);
     return;
@@ -212,22 +246,64 @@ function classifyVisualPredictions(predictions) {
   return { category: "Resultado no concluyente", icon: "?", instruction: "La IA no reconoce este objeto con seguridad. Prueba otra foto con un fondo simple o utiliza EcoIA escribiendo el nombre del residuo.", prediction: predictions[0] };
 }
 
+function renderDetectionEvidence(detections, predictions) {
+  const evidence = [
+    ...detections.slice(0, 2).map(item => ({ label: `Detector: ${item.class}`, score: item.score })),
+    ...predictions.slice(0, 2).map(item => ({ label: `Clasificador: ${item.className.split(",")[0]}`, score: item.probability }))
+  ].sort((a, b) => b.score - a.score).slice(0, 3);
+  document.getElementById("detection-list").innerHTML = evidence.length
+    ? evidence.map(item => `<div class="evidence-row"><span>${item.label}</span><span>${Math.round(item.score * 100)}%</span></div>`).join("")
+    : `<div class="evidence-row"><span>Sin coincidencias claras</span><span>—</span></div>`;
+}
+
+function showVisualResult(result, confidence, detectedText, detections = [], predictions = []) {
+  document.getElementById("scan-guide").hidden = true;
+  document.getElementById("material-question").hidden = true;
+  document.getElementById("scan-result-icon").textContent = result.icon;
+  document.getElementById("scan-confidence").textContent = result.category === "Resultado no concluyente" ? "REVISIÓN NECESARIA" : confidence >= 0 ? `CONFIANZA ${Math.round(confidence * 100)}%` : "CONFIRMADO POR MATERIAL";
+  document.getElementById("scan-category").textContent = result.category;
+  document.getElementById("scan-instruction").textContent = result.instruction;
+  document.getElementById("scan-detected").textContent = detectedText;
+  renderDetectionEvidence(detections, predictions);
+  document.getElementById("scan-result").hidden = false;
+}
+
+function askForMaterial(detection, detections, predictions) {
+  pendingVisualAnalysis = { detection, detections, predictions };
+  document.getElementById("scan-guide").hidden = true;
+  document.getElementById("scan-result").hidden = true;
+  document.getElementById("material-question-title").textContent = `Reconocí: ${detection.class}`;
+  document.getElementById("material-question-text").textContent = "La forma del objeto está clara, pero una cámara no siempre distingue su material. Elige una opción para completar la clasificación.";
+  document.getElementById("material-question").hidden = false;
+  setScanMessage("Objeto detectado. Confirma su material para obtener una recomendación precisa.");
+}
+
 async function analyzeImage(source) {
   const layer = document.getElementById("analyzing-layer");
   layer.hidden = false;
   document.getElementById("scan-result").hidden = true;
+  document.getElementById("material-question").hidden = true;
+  document.getElementById("scan-guide").hidden = false;
   try {
-    const model = await loadVisionModel();
-    const predictions = await model.classify(source, 5);
-    const result = classifyVisualPredictions(predictions);
-    const confidence = Math.round((result.prediction?.probability || 0) * 100);
-    document.getElementById("scan-result-icon").textContent = result.icon;
-    document.getElementById("scan-confidence").textContent = result.category === "Resultado no concluyente" ? "REVISIÓN NECESARIA" : `CONFIANZA ${confidence}%`;
-    document.getElementById("scan-category").textContent = result.category;
-    document.getElementById("scan-instruction").textContent = result.instruction;
-    document.getElementById("scan-detected").textContent = result.prediction ? `El modelo observó: ${result.prediction.className} (${confidence}%)` : "Sin predicciones disponibles";
-    document.getElementById("scan-result").hidden = false;
-    setScanMessage("Análisis terminado. Confirma siempre el material antes de desecharlo.");
+    const models = await loadVisionModel();
+    const [detections, predictions] = await Promise.all([
+      models.detectionModel.detect(source, 8, .22),
+      models.visionModel.classify(source, 5)
+    ]);
+    const usefulDetections = detections.filter(item => item.class !== "person").sort((a, b) => b.score - a.score);
+    const primaryDetection = usefulDetections.find(item => (detectedObjectRules[item.class] || ambiguousObjects.has(item.class)) && item.score >= .28);
+    if (primaryDetection && detectedObjectRules[primaryDetection.class]) {
+      showVisualResult(detectedObjectRules[primaryDetection.class], primaryDetection.score, `Objeto detectado: ${primaryDetection.class}`, usefulDetections, predictions);
+      setScanMessage("Objeto localizado y clasificado. Revisa la recomendación antes de desecharlo.");
+    } else if (primaryDetection) {
+      askForMaterial(primaryDetection, usefulDetections, predictions);
+    } else {
+      const result = classifyVisualPredictions(predictions);
+      const confidence = result.prediction?.probability || 0;
+      const detectedText = result.prediction ? `Reconocimiento alternativo: ${result.prediction.className}` : "Sin coincidencias disponibles";
+      showVisualResult(result, result.category === "Resultado no concluyente" ? 0 : confidence, detectedText, usefulDetections, predictions);
+      setScanMessage(result.category === "Resultado no concluyente" ? "No hubo suficiente certeza. Prueba acercando el objeto o consulta EcoIA." : "El detector principal no encontró el objeto; se utilizó el clasificador alternativo.", result.category === "Resultado no concluyente");
+    }
   } catch (error) {
     setScanMessage(error.message || "No se pudo analizar la imagen. Inténtalo nuevamente.", true);
   } finally {
@@ -262,9 +338,22 @@ document.getElementById("image-upload").addEventListener("change", event => {
   document.getElementById("start-camera").hidden = false;
 });
 
+document.getElementById("material-options").addEventListener("click", event => {
+  const button = event.target.closest("[data-material]");
+  if (!button || !pendingVisualAnalysis) return;
+  const result = materialResults[button.dataset.material];
+  const { detection, detections, predictions } = pendingVisualAnalysis;
+  showVisualResult(result, -1, `Objeto detectado: ${detection.class}; material indicado: ${button.textContent.trim()}`, detections, predictions);
+  pendingVisualAnalysis = null;
+  setScanMessage("Clasificación completada combinando visión artificial y confirmación del material.");
+});
+
 document.getElementById("scan-again").addEventListener("click", () => {
   stopCamera();
+  pendingVisualAnalysis = null;
   document.getElementById("scan-result").hidden = true;
+  document.getElementById("material-question").hidden = true;
+  document.getElementById("scan-guide").hidden = false;
   document.getElementById("camera-placeholder").hidden = false;
   document.getElementById("focus-frame").hidden = true;
   cameraVideo.hidden = true;
