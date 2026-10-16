@@ -24,10 +24,10 @@ Después visita `http://localhost:8000`.
 - `index.html`: bienvenida y acceso a cada experiencia
 - `aprender.html`: guía visual y regla de las 3R
 - `estacion.html`: planificador doméstico, historial de reciclaje y calculadora de impacto en un mismo recorrido
-- `ecoscan.html`: herramienta integrada para identificar, consultar y reutilizar
+- `ecoscan.html`: flujo continuo para escribir o fotografiar un objeto, recibir orientación, obtener ideas de reutilización, separarlo y calcular su impacto
 - `ecoia.html` y `upcycling.html`: vistas anteriores conservadas por compatibilidad
 - `upcycling.js`: recetas, selección segura y análisis visual para reutilización
-- `unified.js`: navegación interna y transferencia de resultados entre las tres funciones
+- `unified.js`: navegación interna y transferencia de resultados entre identificación, ideas, estación y cálculo de impacto
 - `impacto.html`: redirección de compatibilidad hacia la sección integrada
 - `impacto.js`: almacenamiento local, equivalencias, comparaciones y análisis del historial
 - `juegos.html`: zona de juegos y perfil de EcoPuntos
@@ -41,7 +41,7 @@ Después visita `http://localhost:8000`.
 
 - Guía visual de cinco familias de residuos
 - Estación e impacto: recomienda contenedores y una rutina, registra los kilos reales y calcula el resultado ambiental en la misma página
-- Herramienta IA unificada para reconocer un objeto, consultar por texto y convertir materiales seguros en proyectos paso a paso
+- Herramienta IA unificada en un solo recorrido: entrada por texto o fotografía, respuesta del asistente, idea automática de reutilización o acción segura, recomendación de estación y registro de impacto
 - EcoImpacto guarda kilos por material y estima CO₂ evitado, energía, agua y árboles equivalentes
 - Reto educativo con explicaciones y puntuación
 - Clasificación rápida de diez residuos
@@ -67,7 +67,7 @@ El asistente funciona completamente en el navegador con una base de conocimiento
 
 ## EcoImpacto
 
-La calculadora guarda el historial únicamente en el navegador y resume cada mes de forma automática. Para papel, plástico, vidrio, metal y mezclas usa como referencia la diferencia entre reciclaje y vertedero para materiales reciclables mixtos del modelo WARM v16 de la EPA: 3.119 kg de CO₂e y 4.81 kWh por kilogramo. Las equivalencias de agua (29.2 L/kg) y árboles (0.0187/kg) se aplican solo a papel y cartón. Los electrónicos se incluyen en el peso, pero no reciben equivalencias por la variación de su composición y tratamiento.
+La calculadora guarda el historial únicamente en el navegador y resume cada mes de forma automática. Para papel, plástico, vidrio, metal y mezclas usa como referencia la diferencia entre reciclaje y vertedero para materiales reciclables mixtos del modelo WARM v16 de la EPA: 3.119 kg de CO₂e y 4.81 kWh por kilogramo. Las equivalencias de agua (29.2 L/kg) y árboles (0.0187/kg) se aplican solo a papel y cartón. Los electrónicos, orgánicos, textiles, madera, muebles y residuos generales se incluyen en el peso, pero no reciben equivalencias por la variación de su composición y tratamiento. El historial es compartido: un registro creado desde la herramienta IA aparece también en la página Estación e impacto.
 
 Estas cifras son promedios educativos de Estados Unidos y no sustituyen una medición de ciclo de vida ni una auditoría ambiental local. La página enlaza directamente a las fuentes y explica los límites del cálculo.
 

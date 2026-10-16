@@ -21,6 +21,9 @@ const categories = {
 const knowledge = [
   { words: ["cascara", "banano", "platano", "manzana", "fruta", "verdura", "cafe", "te", "hojas", "flores", "comida", "huevo"], category: "Orgánico", icon: "♧", instruction: "Retira cualquier empaque. Si no contiene aceite ni químicos, puedes convertirlo en composta." },
   { words: ["botella plastica", "plastico", "pet", "champu", "detergente", "tapa", "envase"], category: "Plástico reciclable", icon: "♳", instruction: "Vacía, enjuaga y seca el envase. Aplástalo y coloca la tapa por separado si tu recolector lo pide." },
+  { words: ["ropa", "camisa", "camiseta", "pantalon", "jean", "vestido", "sueter", "tela", "sabana", "toalla"], category: "Tela o ropa", icon: "♢", instruction: "Si está limpia y seca, repárala, dónala o transfórmala antes de desecharla. Los textiles contaminados requieren manejo local." },
+  { words: ["palet", "pallet", "tarima", "madera", "tabla", "caja de madera", "cajon de madera"], category: "Madera reutilizable", icon: "▦", instruction: "Comprueba que esté seca, sin moho, plagas ni tratamientos peligrosos. Puede repararse o convertirse en un nuevo objeto." },
+  { words: ["mueble", "silla", "mesa", "gaveta", "estante", "repisa", "banco", "armario"], category: "Mueble reutilizable", icon: "▰", instruction: "Si la estructura sigue firme, prioriza repararlo, donarlo o adaptarlo. No reutilices piezas con moho, plagas o daños estructurales." },
   { words: ["papel", "periodico", "revista", "cuaderno", "carton", "caja", "sobre"], category: "Papel y cartón", icon: "▤", instruction: "Debe estar limpio y seco. Aplana las cajas y separa partes plásticas o con grasa." },
   { words: ["vidrio", "frasco", "botella de vino", "botella de cerveza"], category: "Vidrio", icon: "◇", instruction: "Vacía y enjuaga. Retira tapas. No mezcles espejos, cerámica ni bombillas." },
   { words: ["lata", "aluminio", "metal", "conserva", "refresco"], category: "Metal reciclable", icon: "◉", instruction: "Enjuaga, seca y, si es seguro, aplasta la lata. Las tapas afiladas deben quedar dentro del envase." },
@@ -157,6 +160,8 @@ if (document.getElementById("station-result")) {
 const visualWasteRules = [
   { terms: ["cellular telephone", "laptop", "notebook computer", "desktop computer", "computer keyboard", "computer mouse", "remote control", "monitor", "radio", "cassette player", "digital clock", "electric fan", "hair dryer", "flashlight", "battery"], category: "Residuo especial", icon: "⚡", instruction: "Es un aparato, batería o componente que requiere un punto de recolección especial. No lo mezcles con la basura común." },
   { terms: ["paper towel", "toilet tissue", "diaper"], category: "No reciclable", icon: "×", instruction: "El papel sanitario o absorbente usado no debe mezclarse con papel reciclable. Deposítalo en la basura general." },
+  { terms: ["jersey", "sweatshirt", "cardigan", "poncho", "shirt", "t-shirt", "jean", "denim", "sock", "apron", "handbag", "backpack"], category: "Tela o ropa", icon: "♢", instruction: "Si está limpia y seca, puedes repararla, donarla o transformarla en un nuevo objeto." },
+  { terms: ["rocking chair", "folding chair", "studio couch", "dining table", "wardrobe", "desk", "bookcase"], category: "Mueble reutilizable", icon: "▰", instruction: "Revisa que la estructura esté firme y libre de moho o plagas antes de repararla o transformarla." },
   { terms: ["banana", "orange", "lemon", "pineapple", "strawberry", "fig", "pomegranate", "granny smith", "mushroom", "broccoli", "cauliflower", "cucumber", "artichoke", "bell pepper", "corn", "acorn", "guacamole"], category: "Orgánico", icon: "♧", instruction: "Retira etiquetas o empaques. Puedes aprovechar este residuo en una composta doméstica." },
   { terms: ["plastic bag", "shower cap", "rubber eraser", "bucket"], category: "Plástico reciclable", icon: "♳", instruction: "Comprueba que sea un plástico aceptado en tu localidad; vacíalo, enjuágalo y déjalo secar antes de separarlo." },
   { terms: ["envelope", "carton", "book jacket", "comic book", "menu"], category: "Papel y cartón", icon: "▤", instruction: "Si está limpio y seco, aplánalo y colócalo con papel. Retira partes plásticas o metálicas cuando sea posible." },
@@ -176,6 +181,10 @@ const detectedObjectRules = {
   cake: { category: "Orgánico o general", icon: "♧", instruction: "Separa bases, velas y empaques. Los restos de alimento pueden ir a orgánicos según las reglas locales." },
   pizza: { category: "Orgánico o general", icon: "♧", instruction: "Separa los restos de comida. El cartón limpio se recicla; la parte con grasa debe ir a composta o basura general." },
   book: { category: "Papel y cartón", icon: "▤", instruction: "Si está seco y sin cubierta plástica, puede separarse con papel. Considera donarlo antes de reciclarlo." },
+  chair: { category: "Mueble reutilizable", icon: "▰", instruction: "Si la estructura está firme, puedes repararla, donarla o transformarla antes de desecharla." },
+  bench: { category: "Mueble reutilizable", icon: "▰", instruction: "Comprueba sus uniones y el estado del material. Si es estable, considera repararlo o darle otro uso." },
+  "dining table": { category: "Mueble reutilizable", icon: "▰", instruction: "Una mesa estable puede repararse, donarse o adaptarse. Evita reutilizarla si tiene moho, plagas o daños estructurales." },
+  couch: { category: "Mueble reutilizable", icon: "▰", instruction: "Antes de reutilizarlo, revisa que no tenga humedad, plagas o daños internos. Si está sano, considera reparación o donación." },
   laptop: { category: "Residuo especial", icon: "⚡", instruction: "Los electrónicos deben entregarse en un punto autorizado. No los mezcles con la basura común." },
   mouse: { category: "Residuo especial", icon: "⚡", instruction: "Este accesorio electrónico requiere recolección especializada." },
   remote: { category: "Residuo especial", icon: "⚡", instruction: "Retira las pilas y lleva ambas partes a puntos de recolección autorizados." },
@@ -198,7 +207,8 @@ const objectNames = {
   orange: "naranja", broccoli: "brócoli", carrot: "zanahoria", sandwich: "sándwich", pizza: "pizza",
   book: "libro", laptop: "computadora portátil", mouse: "ratón de computadora", remote: "control remoto",
   keyboard: "teclado", "cell phone": "teléfono celular", tv: "televisor", microwave: "microondas",
-  toaster: "tostadora", refrigerator: "refrigerador", toothbrush: "cepillo de dientes"
+  toaster: "tostadora", refrigerator: "refrigerador", toothbrush: "cepillo de dientes",
+  chair: "silla", bench: "banco", "dining table": "mesa", couch: "sofá"
 };
 const materialResults = {
   plastic: { category: "Plástico reciclable", icon: "♳", instruction: "Vacía, enjuaga y seca el objeto. Verifica el número o tipo de plástico aceptado en tu localidad." },
@@ -478,16 +488,23 @@ function showVisualResult(result, confidence, detectedText, detections = [], pre
     "Vidrio": "glass",
     "Papel y cartón": "paper",
     "Metal reciclable": "metal",
-    "Residuo especial": "electronics"
+    "Orgánico": "organic",
+    "Orgánico o general": "organic",
+    "Tela o ropa": "textile",
+    "Madera reutilizable": "wood",
+    "Mueble reutilizable": "furniture",
+    "Residuo especial": "electronics",
+    "No reciclable": "general"
   };
   const impactMaterial = impactMaterials[result.category];
   if (impactLink) {
     impactLink.hidden = !impactMaterial;
-    impactLink.href = impactMaterial ? `estacion.html?material=${impactMaterial}#registro` : "estacion.html#registro";
+    const integratedImpact = document.getElementById("medir");
+    impactLink.href = integratedImpact ? "#medir" : (impactMaterial ? `estacion.html?material=${impactMaterial}#registro` : "estacion.html#registro");
   }
   document.getElementById("scan-result").hidden = false;
   window.dispatchEvent(new CustomEvent("ecoguia:scan-result", {
-    detail: { category: result.category, confidence, instruction: result.instruction }
+    detail: { category: result.category, confidence, instruction: result.instruction, icon: result.icon }
   }));
 }
 

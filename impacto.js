@@ -13,7 +13,12 @@ const MATERIALS = Object.freeze({
   glass: { label: "Vidrio", color: "#67b89a", eligible: true },
   metal: { label: "Metal", color: "#8a94a0", eligible: true },
   mixed: { label: "Mezcla de reciclables", color: "#91aa51", eligible: true },
-  electronics: { label: "Electrónicos", color: "#8c78a8", eligible: false }
+  electronics: { label: "Electrónicos", color: "#8c78a8", eligible: false },
+  organic: { label: "Orgánicos", color: "#66a85f", eligible: false },
+  textile: { label: "Textiles", color: "#b17991", eligible: false },
+  wood: { label: "Madera", color: "#9d7b52", eligible: false },
+  furniture: { label: "Muebles", color: "#77644f", eligible: false },
+  general: { label: "No reciclables", color: "#8c8c86", eligible: false }
 });
 
 const impactForm = document.getElementById("impact-form");
@@ -133,7 +138,10 @@ function renderInsight(records, metrics, monthValue) {
   const paperNote = metrics.paper > 0
     ? ` El papel y el cartón aportaron una equivalencia de ${formatNumber(metrics.water, 0)} litros de agua y ${formatNumber(metrics.trees, 2)} árboles.`
     : " Registra papel o cartón para estimar también agua y árboles.";
-  paragraph.textContent = `${MATERIALS[topKey].label} fue tu material principal con ${formatNumber(totals[topKey], 2)} kg. ${comparison}${paperNote}`;
+  const eligibilityNote = metrics.eligible > 0
+    ? ""
+    : " Los materiales registrados suman peso, pero todavía no tienen un factor confiable de equivalencia ambiental en esta versión.";
+  paragraph.textContent = `${MATERIALS[topKey].label} fue tu material principal con ${formatNumber(totals[topKey], 2)} kg. ${comparison}${eligibilityNote}${paperNote}`;
 }
 
 function renderBreakdown(records) {
@@ -280,4 +288,16 @@ if (impactMonth) {
 }
 const suggestedMaterial = new URLSearchParams(window.location.search).get("material");
 if (impactMaterial && MATERIALS[suggestedMaterial]) impactMaterial.value = suggestedMaterial;
-renderDashboard();
+
+window.ecoImpact = Object.freeze({
+  storageKey: IMPACT_STORAGE_KEY,
+  factors: IMPACT_FACTORS,
+  materials: MATERIALS,
+  localDateString,
+  readHistory,
+  saveHistory,
+  calculateMetrics,
+  formatNumber
+});
+
+if (impactForm && impactMonth && impactHistoryBody && impactBreakdown && impactInsight) renderDashboard();

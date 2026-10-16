@@ -433,3 +433,6 @@ window.addEventListener("pagehide", () => {
   upcycleAnalysisId += 1;
   if (previewUrl) URL.revokeObjectURL(previewUrl);
 });
+
+window.ecoGenerateProject = generateUpcycleProject;
+window.ecoRenderProject = renderProject;
