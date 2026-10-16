@@ -1,6 +1,6 @@
 # EcoGuía
 
-Sitio web educativo de varias páginas para aprender a separar residuos de uso común. Incluye una bienvenida, una guía interactiva, un planificador inteligente, reconocimiento visual con cámara, un asistente local llamado EcoIA, recetas de supra-reciclaje, cálculo de impacto ambiental y una zona de juegos.
+Sitio web educativo de varias páginas para aprender a separar residuos de uso común. Incluye una bienvenida, una guía interactiva, una experiencia que une la estación doméstica con el cálculo de impacto, una herramienta que reúne escáner, consultas y recetas de supra-reciclaje, y una zona de juegos.
 
 ## Uso local
 
@@ -23,12 +23,12 @@ Después visita `http://localhost:8000`.
 
 - `index.html`: bienvenida y acceso a cada experiencia
 - `aprender.html`: guía visual y regla de las 3R
-- `estacion.html`: planificador de la estación doméstica
-- `ecoscan.html`: clasificación de fotografías con IA
-- `ecoia.html`: asistente local para consultar residuos
-- `upcycling.html`: generador de proyectos de supra-reciclaje por texto o fotografía
-- `upcycling.js`: recetas, selección segura y análisis visual de objetos para EcoCrea
-- `impacto.html`: historial mensual y calculadora de impacto ambiental
+- `estacion.html`: planificador doméstico, historial de reciclaje y calculadora de impacto en un mismo recorrido
+- `ecoscan.html`: herramienta integrada para identificar, consultar y reutilizar
+- `ecoia.html` y `upcycling.html`: vistas anteriores conservadas por compatibilidad
+- `upcycling.js`: recetas, selección segura y análisis visual para reutilización
+- `unified.js`: navegación interna y transferencia de resultados entre las tres funciones
+- `impacto.html`: redirección de compatibilidad hacia la sección integrada
 - `impacto.js`: almacenamiento local, equivalencias, comparaciones y análisis del historial
 - `juegos.html`: zona de juegos y perfil de EcoPuntos
 - `etica.html`: compromiso ético, privacidad, límites de la IA y control de datos
@@ -40,11 +40,8 @@ Después visita `http://localhost:8000`.
 ## Funciones principales
 
 - Guía visual de cinco familias de residuos
-- Planificador que recomienda contenedores y una rutina según el hogar
-- Cálculo del porcentaje de residuos potencialmente recuperables
-- EcoScan IA para reconocer residuos mediante cámara o fotografía
-- Asistente local para consultar objetos comunes
-- EcoCrea genera proyectos paso a paso para reutilizar ropa, madera, vidrio, plástico y otros objetos
+- Estación e impacto: recomienda contenedores y una rutina, registra los kilos reales y calcula el resultado ambiental en la misma página
+- Herramienta IA unificada para reconocer un objeto, consultar por texto y convertir materiales seguros en proyectos paso a paso
 - EcoImpacto guarda kilos por material y estima CO₂ evitado, energía, agua y árboles equivalentes
 - Reto educativo con explicaciones y puntuación
 - Clasificación rápida de diez residuos
@@ -52,19 +49,21 @@ Después visita `http://localhost:8000`.
 - Juego de mito o realidad con explicaciones
 - Perfil por niveles con EcoPuntos guardados localmente
 
-## EcoScan IA
+## Herramienta IA integrada
 
-EcoScan usa TensorFlow.js con dos modelos: COCO-SSD localiza objetos comunes y MobileNet V2 (alpha 1.0) aporta una segunda clasificación. El analizador valida iluminación, detalle y resolución; compara la imagen completa con un recorte del objeto; y solo presenta una categoría cuando existe suficiente confianza o acuerdo entre señales. Las imágenes grandes se redimensionan antes del análisis para reducir memoria y tiempo de inferencia.
+El escáner usa TensorFlow.js con dos modelos: COCO-SSD localiza objetos comunes y MobileNet V2 (alpha 1.0) aporta una segunda clasificación. El analizador valida iluminación, detalle y resolución; compara la imagen completa con un recorte del objeto; y solo presenta una categoría cuando existe suficiente confianza o acuerdo entre señales. Las imágenes grandes se redimensionan antes del análisis para reducir memoria y tiempo de inferencia. Los mismos modelos se reutilizan en la función de fotografía del generador para evitar una segunda carga.
 
 La fotografía no se envía a un servidor. Los modelos se descargan cuando la persona abre la cámara o elige una foto, por lo que el primer análisis necesita conexión a internet. La cámara requiere abrir la página desde HTTPS o `localhost`.
 
 Para probar la cámara desde GitHub, activa **Settings → Pages → Deploy from a branch**, elige `main` y la carpeta raíz. GitHub Pages publicará el proyecto con HTTPS, requisito del navegador para solicitar acceso a la cámara.
 
-Los modelos reconocen objetos generales y EcoGuía los relaciona con categorías de reciclaje. Cuando una forma puede pertenecer a varios materiales —por ejemplo, una botella— el sistema solicita una confirmación breve. Si la foto es demasiado pequeña, oscura o sobreexpuesta, pide repetirla; si los modelos discrepan, devuelve un resultado no concluyente en lugar de adivinar. El resultado muestra su confianza y debe comprobarse con las reglas municipales.
+Los modelos reconocen objetos generales y EcoGuía los relaciona con categorías de reciclaje. Cuando una forma puede pertenecer a varios materiales —por ejemplo, una botella— el sistema solicita una confirmación breve. Si la foto es demasiado pequeña, oscura o sobreexpuesta, pide repetirla; si los modelos discrepan, devuelve un resultado no concluyente en lugar de adivinar. El resultado muestra su confianza, omite las etiquetas internas de los modelos y debe comprobarse con las reglas municipales.
 
-## Nota sobre EcoIA
+La página explica de forma explícita que los modelos actuales son generales y no fueron entrenados con un conjunto propio de residuos locales. También documenta el proceso recomendado para crear un clasificador especializado: recolectar y etiquetar imágenes autorizadas, entrenar, validar con fotografías nunca vistas, medir errores por clase y reentrenar con ejemplos difíciles. La retroalimentación del usuario no se guarda ni se usa para entrenar sin consentimiento.
 
-EcoIA funciona completamente en el navegador con una base de conocimiento local de residuos comunes. Sus recomendaciones son educativas; las reglas exactas de recolección pueden variar según cada municipio.
+## Nota sobre el asistente y las recetas
+
+El asistente funciona completamente en el navegador con una base de conocimiento local de residuos comunes. El generador selecciona y adapta proyectos de una biblioteca local revisada. Estas dos partes no son modelos generativos entrenados, y sus recomendaciones son educativas; las reglas exactas de recolección pueden variar según cada municipio.
 
 ## EcoImpacto
 

@@ -4,7 +4,7 @@ const upcycleLibrary = {
     keywords: ["ropa", "camisa", "camiseta", "playera", "pantalon", "pantalón", "jean", "mezclilla", "vestido", "sueter", "suéter", "sudadera", "calcetin", "calcetín", "tela", "sabana", "sábana", "toalla"],
     safety: "Usa únicamente textiles limpios y completamente secos. Si tienen moho, aceite o sustancias desconocidas, no los reutilices.",
     projects: [
-      { title: "Bolsa reutilizable sin desperdicio", purpose: "home", levels: ["beginner"], time: "35–50 min", icon: "▱", summary: "Convierte la tela resistente en una bolsa ligera para compras, libros o uso diario.", tools: ["Tijeras para tela", "Hilo y aguja o pegamento textil", "Regla y marcador lavable"], steps: ["Extiende la prenda y recorta dos rectángulos del mismo tamaño, conservando las costuras útiles.", "Coloca las caras exteriores una frente a otra y une los costados y la base.", "Corta dos tiras para las asas y fíjalas con varias puntadas o uniones reforzadas.", "Da vuelta la bolsa, revisa las uniones y prueba primero con poco peso."], safety: "No cargues objetos pesados hasta comprobar que todas las costuras resisten." },
+      { title: "Bolsa reutilizable sin desperdicio", purpose: "home", levels: ["beginner"], time: "35–50 min", icon: "▱", image: "assets/upcycling/bolsa-camisa.webp", imageAlt: "Bolsa reutilizable confeccionada con una camisa de cuadros verde y crema", summary: "Convierte la tela resistente en una bolsa ligera para compras, libros o uso diario.", tools: ["Tijeras para tela", "Hilo y aguja o pegamento textil", "Regla y marcador lavable"], steps: ["Extiende la prenda y recorta dos rectángulos del mismo tamaño, conservando las costuras útiles.", "Coloca las caras exteriores una frente a otra y une los costados y la base.", "Corta dos tiras para las asas y fíjalas con varias puntadas o uniones reforzadas.", "Da vuelta la bolsa, revisa las uniones y prueba primero con poco peso."], safety: "No cargues objetos pesados hasta comprobar que todas las costuras resisten." },
       { title: "Organizador colgante de bolsillos", purpose: "storage", levels: ["beginner", "intermediate"], time: "45–70 min", icon: "▥", summary: "Aprovecha bolsillos y retazos para organizar cables, útiles o accesorios en la pared.", tools: ["Tijeras", "Aguja e hilo", "Una percha o varilla reutilizada"], steps: ["Recorta una pieza grande de tela que funcionará como base.", "Retira bolsillos de otras prendas o forma pequeños rectángulos con los retazos.", "Distribuye los bolsillos sobre la base y sujétalos antes de coser.", "Forma un canal en la parte superior, introduce la varilla y cuelga el organizador."], safety: "Cuélgalo con una fijación adecuada y evita colocar objetos cortantes o demasiado pesados." },
       { title: "Funda de cojín con historia", purpose: "decor", levels: ["beginner"], time: "30–45 min", icon: "◇", summary: "Conserva estampados o detalles especiales creando una funda decorativa removible.", tools: ["Tijeras", "Alfileres", "Hilo y aguja o máquina de coser"], steps: ["Mide el cojín y corta una pieza frontal y dos piezas traseras con 2 cm extra por lado.", "Haz un dobladillo en los bordes que se superpondrán en la parte trasera.", "Coloca las piezas con las caras exteriores hacia dentro y cose todo el contorno.", "Voltea la funda, introduce el cojín y acomoda las esquinas."], safety: "Retira botones o adornos sueltos si la funda estará al alcance de niños pequeños." },
       { title: "Cesta tejida con tiras de tela", purpose: "storage", levels: ["intermediate"], time: "90–120 min", icon: "◎", summary: "Transforma varias prendas desgastadas en una cesta flexible para objetos livianos.", tools: ["Tijeras", "Hilo fuerte", "Aguja gruesa"], steps: ["Corta la tela en tiras largas de ancho similar y únelas hasta formar tres cordones.", "Trenza los cordones con tensión uniforme.", "Enrolla la trenza en espiral y cose cada vuelta con la anterior.", "Continúa levantando las vueltas para formar las paredes y remata el extremo."], safety: "Usa dedal si trabajas con tela gruesa y reserva la cesta para objetos secos y livianos." }
@@ -15,7 +15,7 @@ const upcycleLibrary = {
     keywords: ["palet", "pallet", "tarima", "madera", "tabla", "cajon de madera", "cajón de madera", "caja de madera"],
     safety: "Reutiliza solo madera seca, firme y sin moho. En palets, evita los marcados MB y prefiere los sellados HT.",
     projects: [
-      { title: "Jardín vertical con palet", purpose: "garden", levels: ["intermediate"], time: "3–4 h", icon: "♧", summary: "Convierte la madera recuperada en un soporte vertical para plantas aromáticas o decorativas.", tools: ["Lija y cepillo", "Tornillos para madera", "Tela geotextil", "Destornillador o taladro"], steps: ["Comprueba que la madera esté firme, seca y libre de clavos salientes.", "Lija toda la superficie y redondea las esquinas ásperas.", "Refuerza las tablas flojas con tornillos y forma bolsillos con tela geotextil.", "Añade sustrato y plantas de raíces pequeñas.", "Fija el jardín a una pared o base estable antes de regar."], safety: "Usa guantes, gafas y mascarilla al lijar. No plantes alimentos si desconoces el tratamiento químico de la madera." },
+      { title: "Jardín vertical con palet", purpose: "garden", levels: ["intermediate"], time: "3–4 h", icon: "♧", image: "assets/upcycling/jardin-palet.webp", imageAlt: "Jardín vertical de hierbas construido con un palet de madera recuperada", summary: "Convierte la madera recuperada en un soporte vertical para plantas aromáticas o decorativas.", tools: ["Lija y cepillo", "Tornillos para madera", "Tela geotextil", "Destornillador o taladro"], steps: ["Comprueba que la madera esté firme, seca y libre de clavos salientes.", "Lija toda la superficie y redondea las esquinas ásperas.", "Refuerza las tablas flojas con tornillos y forma bolsillos con tela geotextil.", "Añade sustrato y plantas de raíces pequeñas.", "Fija el jardín a una pared o base estable antes de regar."], safety: "Usa guantes, gafas y mascarilla al lijar. No plantes alimentos si desconoces el tratamiento químico de la madera." },
       { title: "Estante rústico de pared", purpose: "storage", levels: ["intermediate"], time: "2–3 h", icon: "▤", summary: "Recupera las tablas más rectas para crear un estante pequeño y funcional.", tools: ["Sierra", "Lija", "Tornillos", "Escuadras y nivel"], steps: ["Selecciona una tabla firme y marca la longitud del estante.", "Corta con apoyo estable, lija caras y cantos, y limpia todo el polvo.", "Aplica un acabado al agua y deja secar según sus instrucciones.", "Instala las escuadras niveladas y atornilla la tabla.", "Prueba la resistencia con poco peso antes de utilizarlo."], safety: "La fijación debe corresponder al tipo de pared. Pide ayuda adulta si no tienes experiencia con sierra o taladro." },
       { title: "Mesa auxiliar de madera recuperada", purpose: "home", levels: ["intermediate"], time: "4–6 h", icon: "▰", summary: "Ensambla tablas sanas para formar una mesa compacta junto al sofá o la cama.", tools: ["Sierra y lija", "Tornillos para madera", "Escuadra", "Acabado al agua"], steps: ["Diseña una cubierta pequeña y cuatro patas de la misma altura.", "Corta y lija cada pieza hasta eliminar astillas y bordes filosos.", "Une las patas con travesaños y verifica que la estructura quede a escuadra.", "Atornilla la cubierta, nivela la mesa y aplica el acabado.", "Deja curar completamente antes de colocar objetos."], safety: "No utilices tablas rajadas o debilitadas. Sujeta cada pieza antes de cortarla o perforarla." },
       { title: "Panel decorativo para fotografías", purpose: "decor", levels: ["beginner"], time: "60–90 min", icon: "▧", summary: "Una tabla recuperada puede convertirse en un panel para notas y fotografías.", tools: ["Lija", "Pintura al agua", "Cordel", "Pinzas pequeñas"], steps: ["Lija la tabla y elimina polvo y cualquier grapa o clavo antiguo.", "Pinta solo algunas zonas para conservar parte de la textura natural.", "Rodea la tabla con varias líneas de cordel bien tensas.", "Sujeta fotos o notas con pinzas pequeñas y coloca un soporte trasero."], safety: "Cuelga el panel con un anclaje apropiado para su peso y mantén las astillas cubiertas." }
@@ -28,7 +28,7 @@ const upcycleLibrary = {
     projects: [
       { title: "Organizador transparente de despensa", purpose: "storage", levels: ["beginner"], time: "25–40 min", icon: "▥", summary: "Convierte frascos completos en recipientes visibles para alimentos secos u objetos pequeños.", tools: ["Agua caliente y jabón", "Etiquetas", "Pintura al agua para las tapas"], steps: ["Retira etiquetas y adhesivo, y lava el frasco y la tapa por separado.", "Deja secar completamente para evitar humedad en el interior.", "Decora la tapa y prepara una etiqueta clara para el contenido.", "Llena el frasco solo con productos secos y colócalo en una superficie estable."], safety: "No reutilices envases que contuvieron químicos. Para alimentos, usa tapas limpias y sin óxido." },
       { title: "Estación de propagación", purpose: "garden", levels: ["beginner"], time: "20–30 min", icon: "♧", summary: "Usa recipientes de vidrio como pequeños propagadores para esquejes de plantas.", tools: ["Agua", "Esquejes saludables", "Cordel o etiquetas"], steps: ["Lava y enjuaga muy bien el recipiente.", "Llena dos tercios con agua limpia.", "Retira las hojas que quedarían bajo el agua e introduce el esqueje.", "Colócalo con luz indirecta y cambia el agua cada pocos días.", "Trasplanta cuando las raíces tengan el tamaño adecuado."], safety: "Coloca el recipiente lejos de bordes y revisa que no tenga grietas antes de cada cambio de agua." },
-      { title: "Lámpara ambiental con luces LED", purpose: "decor", levels: ["beginner"], time: "25–45 min", icon: "✦", summary: "Transforma un frasco en una luz decorativa sin calor para una mesa o repisa.", tools: ["Guirnalda LED a pilas", "Papel translúcido o cordel", "Pegamento al agua"], steps: ["Lava, seca y comprueba que el vidrio esté intacto.", "Decora el exterior sin cubrir totalmente la transparencia.", "Introduce una guirnalda LED y deja accesible el interruptor.", "Coloca la tapa sin presionar el cable y prueba la iluminación."], safety: "Usa únicamente luces LED de bajo voltaje. Nunca coloques una vela o llama dentro del frasco." },
+      { title: "Lámpara ambiental con luces LED", purpose: "decor", levels: ["beginner"], time: "25–45 min", icon: "✦", image: "assets/upcycling/lampara-frasco.webp", imageAlt: "Frasco de vidrio reutilizado como lámpara ambiental con luces LED", summary: "Transforma un frasco en una luz decorativa sin calor para una mesa o repisa.", tools: ["Guirnalda LED a pilas", "Papel translúcido o cordel", "Pegamento al agua"], steps: ["Lava, seca y comprueba que el vidrio esté intacto.", "Decora el exterior sin cubrir totalmente la transparencia.", "Introduce una guirnalda LED y deja accesible el interruptor.", "Coloca la tapa sin presionar el cable y prueba la iluminación."], safety: "Usa únicamente luces LED de bajo voltaje. Nunca coloques una vela o llama dentro del frasco." },
       { title: "Dispensador de materiales creativos", purpose: "home", levels: ["beginner"], time: "20–35 min", icon: "◎", summary: "Agrupa lápices, pinceles o retazos en recipientes transparentes y fáciles de identificar.", tools: ["Jabón", "Pintura o cinta decorativa", "Protectores adhesivos para la base"], steps: ["Lava el frasco y elimina por completo los restos del contenido anterior.", "Protege la base con puntos adhesivos para evitar golpes contra la mesa.", "Decora una franja exterior sin ocultar el contenido.", "Clasifica objetos livianos y coloca los más largos en recipientes altos."], safety: "No lo sobrecargues ni lo uses para herramientas puntiagudas al alcance de niños." }
     ]
   },
@@ -37,7 +37,7 @@ const upcycleLibrary = {
     keywords: ["plastico", "plástico", "botella plastica", "botella plástica", "envase plastico", "envase plástico", "cubeta", "bidon", "bidón", "tapa"],
     safety: "Lava el envase y confirma que no haya contenido químicos, pesticidas o combustibles. No lo expongas al fuego ni a altas temperaturas.",
     projects: [
-      { title: "Maceta autorregable", purpose: "garden", levels: ["intermediate"], time: "40–60 min", icon: "♧", summary: "Separa una botella resistente en dos piezas para crear una reserva sencilla de agua.", tools: ["Tijeras fuertes o cúter", "Cordón de algodón", "Sustrato y planta pequeña"], steps: ["Lava la botella y marca una línea alrededor de la mitad.", "Pide ayuda adulta para realizar un corte uniforme y suaviza el borde con cinta resistente.", "Perfora la tapa, pasa el cordón y vuelve a enroscarla.", "Invierte la parte superior, añade sustrato y colócala dentro de la base con agua.", "Comprueba que el cordón toque el agua y evita que las raíces permanezcan inundadas."], safety: "Los cortes de plástico pueden quedar filosos. Usa guantes y pide ayuda adulta para emplear cúter." },
+      { title: "Maceta autorregable", purpose: "garden", levels: ["intermediate"], time: "40–60 min", icon: "♧", image: "assets/upcycling/maceta-botella.webp", imageAlt: "Maceta autorregable hecha con una botella plástica transparente reutilizada", summary: "Separa una botella resistente en dos piezas para crear una reserva sencilla de agua.", tools: ["Tijeras fuertes o cúter", "Cordón de algodón", "Sustrato y planta pequeña"], steps: ["Lava la botella y marca una línea alrededor de la mitad.", "Pide ayuda adulta para realizar un corte uniforme y suaviza el borde con cinta resistente.", "Perfora la tapa, pasa el cordón y vuelve a enroscarla.", "Invierte la parte superior, añade sustrato y colócala dentro de la base con agua.", "Comprueba que el cordón toque el agua y evita que las raíces permanezcan inundadas."], safety: "Los cortes de plástico pueden quedar filosos. Usa guantes y pide ayuda adulta para emplear cúter." },
       { title: "Organizadores modulares", purpose: "storage", levels: ["beginner"], time: "30–50 min", icon: "▦", summary: "Convierte envases limpios en módulos para lápices, tornillos u objetos pequeños.", tools: ["Tijeras", "Cinta resistente", "Etiquetas"], steps: ["Elige varios envases del mismo tamaño y retira tapas y etiquetas.", "Marca una altura común y corta con cuidado.", "Cubre todos los bordes con cinta resistente.", "Une los módulos por los costados y añade etiquetas.", "Coloca una base de cartón rígido si necesitas mover el conjunto."], safety: "Reserva los módulos para objetos secos y livianos. Cubre por completo cualquier borde áspero." },
       { title: "Jardín vertical de botellas", purpose: "garden", levels: ["intermediate"], time: "75–100 min", icon: "♧", summary: "Crea una serie de macetas livianas para hierbas u ornamentales pequeñas.", tools: ["Tijeras o cúter", "Cordel resistente", "Sustrato", "Punzón"], steps: ["Lava las botellas y marca una abertura lateral en cada una.", "Realiza las aberturas y pequeños orificios de drenaje con ayuda adulta.", "Pasa dos líneas de cordel y haz nudos debajo de cada botella.", "Añade poco sustrato y plantas pequeñas.", "Cuelga el conjunto en un soporte firme y riega con moderación."], safety: "No lo instales sobre zonas de paso. Verifica periódicamente que el cordel y el soporte estén firmes." },
       { title: "Pantalla decorativa de tapas", purpose: "decor", levels: ["beginner"], time: "45–70 min", icon: "◉", summary: "Organiza tapas por color para formar un mosaico reutilizable sobre una base recuperada.", tools: ["Tapas limpias", "Cartón grueso o madera fina", "Pegamento adecuado"], steps: ["Lava, seca y separa las tapas por color y tamaño.", "Dibuja un patrón sencillo sobre la base.", "Prueba la composición sin pegamento y ajusta los espacios.", "Fija cada tapa, deja secar y añade un soporte en la parte trasera."], safety: "No uses tapas que hayan contenido químicos y mantén las piezas pequeñas lejos de niños pequeños." }
@@ -172,7 +172,7 @@ function composeProject(item, material, condition, purpose, level) {
   const project = chooseProject(item, material, purpose, level);
   lastRecipeTitle = project.title;
   return {
-    blocked: false, icon: project.icon, label: "PROYECTO RECOMENDADO", title: project.title,
+    blocked: false, icon: project.icon, image: project.image || "", imageAlt: project.imageAlt || "", label: "PROYECTO RECOMENDADO", title: project.title,
     summary: `${project.summary} Esta receta está adaptada para ${item}.`,
     time: project.time, level: levelLabels[level], material: definition.label,
     materials: [`Tu objeto: ${item}`, ...project.tools],
@@ -191,6 +191,19 @@ function renderList(elementId, items) {
 }
 
 function renderProject(project) {
+  const recipeVisual = document.getElementById("recipe-visual");
+  const recipeImage = document.getElementById("recipe-image");
+  if (recipeVisual && recipeImage) {
+    if (project.image) {
+      recipeImage.src = project.image;
+      recipeImage.alt = project.imageAlt;
+      recipeVisual.hidden = false;
+    } else {
+      recipeVisual.hidden = true;
+      recipeImage.removeAttribute("src");
+      recipeImage.alt = "";
+    }
+  }
   document.getElementById("recipe-icon").textContent = project.icon;
   document.getElementById("recipe-label").textContent = project.label;
   document.getElementById("recipe-title").textContent = project.title;
@@ -240,6 +253,18 @@ document.querySelectorAll("[data-upcycle-example]").forEach(button => button.add
   upcyclePhotoStatus.textContent = "Ejemplo seleccionado. Ajusta las opciones y genera el proyecto.";
 }));
 
+document.querySelectorAll("[data-inspiration-item]").forEach(button => button.addEventListener("click", () => {
+  document.getElementById("tab-reutilizar")?.click();
+  upcycleItem.value = button.dataset.inspirationItem;
+  upcycleMaterial.value = button.dataset.material;
+  upcycleCondition.value = "good";
+  upcyclePurpose.value = button.dataset.purpose;
+  upcycleLevel.value = button.dataset.level;
+  upcyclePhotoStatus.textContent = "Idea seleccionada. Preparando la receta paso a paso.";
+  generateUpcycleProject();
+  document.querySelector(".upcycle-workspace")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}));
+
 document.getElementById("recipe-alternative")?.addEventListener("click", () => {
   recipeOffset += 1;
   generateUpcycleProject({ alternative: true });
@@ -264,6 +289,7 @@ function resetUpcycle() {
 document.getElementById("recipe-reset")?.addEventListener("click", resetUpcycle);
 
 async function loadUpcycleModels() {
+  if (window.ecoVisionModels) return window.ecoVisionModels;
   if (upcycleModelsPromise) return upcycleModelsPromise;
   if (typeof tf === "undefined" || typeof cocoSsd === "undefined" || typeof mobilenet === "undefined") throw new Error("No se pudieron cargar los modelos de reconocimiento. Revisa tu conexión a internet.");
   upcycleModelsPromise = (async () => {
@@ -272,6 +298,7 @@ async function loadUpcycleModels() {
       cocoSsd.load({ base: "mobilenet_v2" }),
       mobilenet.load({ version: 2, alpha: 1.0 })
     ]);
+    window.ecoVisionModels = { detector, classifier };
     return { detector, classifier };
   })();
   try {

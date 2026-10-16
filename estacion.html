@@ -1,4 +1,120 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Diseña una estación doméstica de reciclaje con EcoGuía."><meta name="theme-color" content="#18392f"><title>Mi estación | EcoGuía</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"></head>
-<body class="inner-page"><a class="skip-link" href="#contenido">Saltar al contenido</a><header class="site-header"><nav class="nav container" aria-label="Navegación principal"><a class="brand" href="index.html"><span class="brand-mark">↻</span><span>EcoGuía</span></a><button class="menu-button" type="button" aria-expanded="false" aria-controls="nav-links"><span class="sr-only">Abrir menú</span><span></span><span></span><span></span></button><div class="nav-links" id="nav-links"><a href="index.html">Inicio</a><a href="aprender.html">Aprende</a><a class="active" href="estacion.html">Mi estación</a><a href="ecoscan.html">EcoScan IA</a><a href="ecoia.html">EcoIA</a><a href="upcycling.html">EcoCrea</a><a href="impacto.html">Impacto</a><a href="juegos.html">Juegos</a><a class="nav-cta" href="ecoscan.html">Usar cámara</a></div></nav></header>
-<main id="contenido"><section class="section station-section" id="estacion"><div class="container"><div class="station-heading reveal"><div><p class="eyebrow dark"><span></span> Organizador inteligente</p><h1 class="page-title">Diseña tu propia<br>estación de reciclaje</h1></div><p>Cuéntanos cómo es tu hogar y qué residuos genera. El simulador calculará una estación práctica, una prioridad de acción y una rutina semanal hecha para ti.</p></div><div class="station-app reveal"><div class="station-controls"><div class="people-control"><div><span class="control-label">Personas en casa</span><strong><b id="people-value">3</b> personas</strong></div><div class="stepper"><button type="button" id="people-minus" aria-label="Restar una persona">−</button><button type="button" id="people-plus" aria-label="Agregar una persona">+</button></div></div><p class="control-intro">¿Cuánto generan por semana?</p><div class="waste-sliders"><label><span><i class="material-dot organic"></i> Orgánico <b id="organic-output">Medio</b></span><input type="range" id="organic-range" min="0" max="3" value="2" aria-label="Cantidad de residuos orgánicos"></label><label><span><i class="material-dot plastic"></i> Plástico <b id="plastic-output">Medio</b></span><input type="range" id="plastic-range" min="0" max="3" value="2" aria-label="Cantidad de plástico"></label><label><span><i class="material-dot paper"></i> Papel <b id="paper-output">Poco</b></span><input type="range" id="paper-range" min="0" max="3" value="1" aria-label="Cantidad de papel y cartón"></label><label><span><i class="material-dot glass"></i> Vidrio <b id="glass-output">Poco</b></span><input type="range" id="glass-range" min="0" max="3" value="1" aria-label="Cantidad de vidrio"></label></div><button class="button station-button" id="build-station" type="button">Generar mi plan <span>✦</span></button></div><div class="station-result" id="station-result" aria-live="polite"><div class="result-placeholder" id="result-placeholder"><div class="mini-station" aria-hidden="true"><span></span><span></span><span></span></div><h3>Tu estación aparecerá aquí</h3><p>Ajusta los controles y genera una recomendación personalizada.</p></div><div class="result-content" id="result-content" hidden><div class="result-top"><div><span class="result-kicker">PLAN PERSONALIZADO</span><h3 id="plan-title">Estación familiar</h3></div><span class="saved-pill" id="saved-pill">Guardado localmente</span></div><div class="recommended-bins" id="recommended-bins"></div><div class="impact-row"><div class="impact-ring" id="impact-ring"><strong id="impact-number">0%</strong><span>recuperable</span></div><div><span class="result-kicker">TU MAYOR OPORTUNIDAD</span><h4 id="priority-title">Orgánicos</h4><p id="priority-text"></p></div></div><div class="weekly-plan"><span>Tu rutina sugerida</span><p id="routine-text"></p></div><button type="button" class="text-button" id="reset-station">Volver a calcular ↻</button></div></div></div></div></section><section class="tool-next"><div class="container tool-next-inner"><div><span>SIGUIENTE HERRAMIENTA</span><h2>Clasifica un objeto con la cámara.</h2></div><a class="button button-light" href="ecoscan.html">Abrir EcoScan <span>→</span></a></div></section></main>
-<footer><div class="container footer-inner"><a class="brand footer-brand" href="index.html"><span class="brand-mark">↻</span><span>EcoGuía</span></a><p class="footer-links"><a href="etica.html">Ética y privacidad</a><span aria-hidden="true">·</span><a href="https://www.acm.org/binaries/content/assets/about/codigo-de-etica-y-conducta-profesional-de-acm.pdf" target="_blank" rel="noopener noreferrer">Código ACM</a></p><p>Hecho con cuidado por nuestro planeta <span>♥</span></p></div></footer><script src="app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Diseña tu estación doméstica, registra lo que reciclas y descubre su impacto ambiental.">
+  <meta name="theme-color" content="#18392f">
+  <title>Estación e impacto | EcoGuía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="inner-page station-impact-page">
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <header class="site-header">
+    <nav class="nav container" aria-label="Navegación principal">
+      <a class="brand" href="index.html"><span class="brand-mark">↻</span><span>EcoGuía</span></a>
+      <button class="menu-button" type="button" aria-expanded="false" aria-controls="nav-links"><span class="sr-only">Abrir menú</span><span></span><span></span><span></span></button>
+      <div class="nav-links" id="nav-links"><a href="index.html">Inicio</a><a href="aprender.html">Aprende</a><a class="active" aria-current="page" href="estacion.html">Estación e impacto</a><a href="ecoscan.html">Herramienta IA</a><a href="juegos.html">Juegos</a><a class="nav-cta active" href="#estacion">Comenzar</a></div>
+    </nav>
+  </header>
+
+  <main id="contenido">
+    <section class="station-impact-hero">
+      <div class="container station-impact-hero-grid">
+        <div class="reveal">
+          <p class="eyebrow light"><span></span> Del hogar al resultado</p>
+          <h1>Organiza tus residuos y<br><em>mide lo que logras.</em></h1>
+          <p>Diseña una estación adecuada para tu hogar, registra los kilos que realmente reciclas y traduce ese esfuerzo en métricas ambientales comprensibles.</p>
+          <div class="hero-actions"><a class="button button-primary" href="#estacion">Diseñar estación <span>↓</span></a><a class="button button-ghost" href="#impacto">Ver mi impacto</a></div>
+        </div>
+        <div class="station-impact-flow reveal" aria-label="Proceso de la estación y la calculadora">
+          <article><span>01</span><div><i>▦</i><b>Organiza</b><small>elige tus contenedores</small></div></article>
+          <strong>→</strong>
+          <article><span>02</span><div><i>⚖</i><b>Registra</b><small>anota los kilos reales</small></div></article>
+          <strong>→</strong>
+          <article><span>03</span><div><i>↗</i><b>Comprende</b><small>visualiza tu impacto</small></div></article>
+        </div>
+      </div>
+    </section>
+
+    <div class="station-impact-nav-wrap">
+      <nav class="container station-impact-nav" aria-label="Secciones de estación e impacto"><a href="#estacion"><span>01</span> Organizar mi estación</a><a href="#impacto"><span>02</span> Registrar y medir impacto</a><a href="#metodologia"><span>03</span> Entender el cálculo</a></nav>
+    </div>
+
+    <section class="section station-section" id="estacion">
+      <div class="container">
+        <div class="station-heading reveal"><div><p class="eyebrow dark"><span></span> Paso 1 · Organiza</p><h2>Diseña tu propia<br>estación de reciclaje</h2></div><p>Cuéntanos cómo es tu hogar y qué residuos genera. El simulador calculará una estación práctica, una prioridad de acción y una rutina semanal hecha para ti.</p></div>
+        <div class="station-app reveal">
+          <div class="station-controls">
+            <div class="people-control"><div><span class="control-label">Personas en casa</span><strong><b id="people-value">3</b> personas</strong></div><div class="stepper"><button type="button" id="people-minus" aria-label="Restar una persona">−</button><button type="button" id="people-plus" aria-label="Agregar una persona">+</button></div></div>
+            <p class="control-intro">¿Cuánto generan por semana?</p>
+            <div class="waste-sliders">
+              <label><span><i class="material-dot organic"></i> Orgánico <b id="organic-output">Medio</b></span><input type="range" id="organic-range" min="0" max="3" value="2" aria-label="Cantidad de residuos orgánicos"></label>
+              <label><span><i class="material-dot plastic"></i> Plástico <b id="plastic-output">Medio</b></span><input type="range" id="plastic-range" min="0" max="3" value="2" aria-label="Cantidad de plástico"></label>
+              <label><span><i class="material-dot paper"></i> Papel <b id="paper-output">Poco</b></span><input type="range" id="paper-range" min="0" max="3" value="1" aria-label="Cantidad de papel y cartón"></label>
+              <label><span><i class="material-dot glass"></i> Vidrio <b id="glass-output">Poco</b></span><input type="range" id="glass-range" min="0" max="3" value="1" aria-label="Cantidad de vidrio"></label>
+            </div>
+            <button class="button station-button" id="build-station" type="button">Generar mi plan <span>✦</span></button>
+          </div>
+          <div class="station-result" id="station-result" aria-live="polite">
+            <div class="result-placeholder" id="result-placeholder"><div class="mini-station" aria-hidden="true"><span></span><span></span><span></span></div><h3>Tu estación aparecerá aquí</h3><p>Ajusta los controles y genera una recomendación personalizada.</p></div>
+            <div class="result-content" id="result-content" hidden>
+              <div class="result-top"><div><span class="result-kicker">PLAN PERSONALIZADO</span><h3 id="plan-title">Estación familiar</h3></div><span class="saved-pill" id="saved-pill">Guardado localmente</span></div>
+              <div class="recommended-bins" id="recommended-bins"></div>
+              <div class="impact-row"><div class="impact-ring" id="impact-ring"><strong id="impact-number">0%</strong><span>recuperable</span></div><div><span class="result-kicker">TU MAYOR OPORTUNIDAD</span><h4 id="priority-title">Orgánicos</h4><p id="priority-text"></p></div></div>
+              <div class="weekly-plan"><span>Tu rutina sugerida</span><p id="routine-text"></p></div>
+              <a class="station-impact-link" href="#registro">Registrar los kilos que reciclé <span>→</span></a>
+              <button type="button" class="text-button" id="reset-station">Volver a calcular ↻</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="station-impact-bridge">
+      <div class="container station-impact-bridge-inner reveal"><span>01</span><p><b>Tu plan organiza el hábito.</b><small>Ahora registra el peso real para medir resultados sin inventar estimaciones.</small></p><i>→</i><span>02</span><p><b>Tu historial muestra el avance.</b><small>Cada registro actualiza automáticamente el resumen mensual.</small></p></div>
+    </section>
+
+    <section class="section impact-work" id="impacto">
+      <div class="container">
+        <div class="section-heading impact-heading reveal"><div><p class="eyebrow dark"><span></span> Paso 2 · Registra y mide</p><h2>Convierte kilos en<br>impacto comprensible</h2></div><p>El historial permanece solamente en este navegador. Puedes cambiar de mes, revisar cada registro y eliminarlo cuando quieras.</p></div>
+        <div class="impact-layout">
+          <aside class="impact-entry reveal" id="registro">
+            <span class="side-kicker">NUEVO REGISTRO</span><h3>¿Qué reciclaste?</h3>
+            <form id="impact-form">
+              <label>Material<select id="impact-material" required><option value="paper">Papel y cartón</option><option value="plastic">Plástico</option><option value="glass">Vidrio</option><option value="metal">Metal</option><option value="mixed">Mezcla de reciclables</option><option value="electronics">Electrónicos</option></select></label>
+              <div class="impact-entry-row"><label>Peso en kilogramos<input id="impact-kilos" type="number" min="0.01" max="10000" step="0.01" inputmode="decimal" placeholder="Ej. 2.5" required></label><label>Fecha<input id="impact-date" type="date" required></label></div>
+              <button class="button impact-add" type="submit">Agregar al historial <span>+</span></button><p class="impact-form-status" id="impact-form-status" role="status" aria-live="polite"></p>
+            </form>
+            <div class="impact-local-note"><span aria-hidden="true">⌂</span><p><b>Privado y local</b><small>No se envía el historial a ningún servidor.</small></p></div>
+          </aside>
+          <div class="impact-dashboard reveal">
+            <div class="impact-dashboard-head"><div><span>ANÁLISIS DEL HISTORIAL</span><h3>Tu impacto del mes</h3></div><label class="impact-month-label">Mes <input id="impact-month" type="month" aria-label="Mes que deseas consultar"></label></div>
+            <div class="impact-summary-grid" aria-live="polite"><article><span class="impact-metric-icon">⚖</span><strong id="impact-total">0</strong><p>kg registrados</p></article><article><span class="impact-metric-icon">○</span><strong id="impact-co2">0</strong><p>kg CO₂e evitados</p></article><article><span class="impact-metric-icon">ϟ</span><strong id="impact-energy">0</strong><p>kWh de energía</p></article><article><span class="impact-metric-icon">≈</span><strong id="impact-water">0</strong><p>litros de agua*</p></article><article><span class="impact-metric-icon">♧</span><strong id="impact-trees">0</strong><p>árboles equivalentes*</p></article></div>
+            <div class="impact-insight" id="impact-insight"><span aria-hidden="true">✦</span><div><b>Análisis mensual</b><p>Agrega tu primer registro para descubrir tu impacto.</p></div></div>
+            <div class="impact-breakdown-wrap"><div class="impact-subhead"><h4>Materiales del mes</h4><span id="impact-record-count">0 registros</span></div><div class="impact-breakdown" id="impact-breakdown"><p class="impact-empty">Todavía no hay materiales para comparar.</p></div></div>
+          </div>
+        </div>
+        <section class="impact-history reveal" aria-labelledby="impact-history-title"><div class="impact-subhead"><div><span>HISTORIAL LOCAL</span><h3 id="impact-history-title">Tus registros</h3></div><button id="impact-clear-month" class="impact-clear" type="button">Borrar este mes</button></div><div class="impact-table-wrap"><table><thead><tr><th>Fecha</th><th>Material</th><th>Peso</th><th><span class="sr-only">Acciones</span></th></tr></thead><tbody id="impact-history-body"><tr><td colspan="4" class="impact-empty-row">Aún no has registrado materiales en este mes.</td></tr></tbody></table></div></section>
+      </div>
+    </section>
+
+    <section class="section impact-method" id="metodologia">
+      <div class="container">
+        <div class="section-heading reveal"><div><p class="eyebrow dark"><span></span> Paso 3 · Comprende</p><h2>De dónde salen<br>las equivalencias</h2></div><p>Son estimaciones educativas basadas en promedios nacionales de Estados Unidos. Sirven para visualizar tendencias, no para una auditoría ambiental local.</p></div>
+        <div class="impact-method-grid"><article class="reveal"><span>01</span><h3>CO₂ y energía</h3><p>Para papel, plástico, vidrio, metal y mezclas se usa el beneficio promedio de reciclar materiales mixtos en vez de enviarlos al vertedero: <b>3.12 kg CO₂e</b> y <b>4.81 kWh</b> por kilogramo.</p></article><article class="reveal"><span>02</span><h3>Agua y árboles</h3><p>Solo se calculan para papel y cartón: <b>29.2 litros</b> y <b>0.0187 árboles</b> equivalentes por kilogramo. No se asigna este beneficio a los demás materiales.</p></article><article class="reveal"><span>03</span><h3>Límites claros</h3><p>Los electrónicos se suman al peso registrado, pero no reciben equivalencias: su composición y tratamiento varían demasiado. Los resultados reales dependen del sistema local.</p></article></div>
+        <p class="impact-sources reveal">Fuentes: <a href="https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator-calculations-and-references" target="_blank" rel="noopener noreferrer">Calculadora de equivalencias de EPA</a>, <a href="https://www.epa.gov/system/files/documents/2024-01/warm_management_practices_v16_dec.pdf" target="_blank" rel="noopener noreferrer">modelo WARM v16</a> y <a href="https://archive.epa.gov/wastes/conserve/tools/localgov/web/html/index-2.html" target="_blank" rel="noopener noreferrer">equivalencias de papel y agua</a>.</p><p class="impact-paper-note">* Las métricas de agua y árboles corresponden únicamente al papel y cartón registrados.</p>
+      </div>
+    </section>
+
+    <section class="tool-next"><div class="container tool-next-inner"><div><span>ANTES DE REGISTRAR</span><h2>Identifica correctamente cada material.</h2></div><a class="button button-light" href="ecoscan.html">Abrir herramienta IA <span>→</span></a></div></section>
+  </main>
+
+  <footer><div class="container footer-inner"><a class="brand footer-brand" href="index.html"><span class="brand-mark">↻</span><span>EcoGuía</span></a><p class="footer-links"><a href="etica.html">Ética y privacidad</a><span aria-hidden="true">·</span><a href="#metodologia">Metodología</a></p><p>Hecho con cuidado por nuestro planeta <span>♥</span></p></div></footer>
+  <script src="app.js"></script>
+  <script src="impacto.js"></script>
+</body>
+</html>

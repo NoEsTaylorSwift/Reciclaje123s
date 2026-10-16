@@ -234,6 +234,13 @@ function setScanMessage(message, isError = false) {
 
 async function loadVisionModel() {
   if (visionModel && detectionModel) return { visionModel, detectionModel };
+  if (window.ecoVisionModels) {
+    visionModel = window.ecoVisionModels.classifier;
+    detectionModel = window.ecoVisionModels.detector;
+    modelStatus.textContent = "2 modelos listos";
+    setScanMessage("Sistema híbrido listo. La fotografía se procesará en este dispositivo.");
+    return { visionModel, detectionModel };
+  }
   if (visionModelsPromise) return visionModelsPromise;
   if (typeof tf === "undefined" || typeof mobilenet === "undefined" || typeof cocoSsd === "undefined") throw new Error("No se pudieron descargar los modelos de IA. Revisa tu conexión a internet.");
   modelStatus.textContent = "Cargando análisis preciso...";
@@ -243,6 +250,7 @@ async function loadVisionModel() {
     if (!visionModelPromise) visionModelPromise = mobilenet.load({ version: 2, alpha: 1.0 });
     if (!detectionModelPromise) detectionModelPromise = cocoSsd.load({ base: "mobilenet_v2" });
     [visionModel, detectionModel] = await Promise.all([visionModelPromise, detectionModelPromise]);
+    window.ecoVisionModels = { classifier: visionModel, detector: detectionModel };
     modelStatus.textContent = "2 modelos listos";
     setScanMessage("Sistema híbrido listo. La fotografía se procesará en este dispositivo.");
     return { visionModel, detectionModel };
@@ -261,7 +269,7 @@ async function loadVisionModel() {
 function stopCamera() {
   if (cameraStream) cameraStream.getTracks().forEach(track => track.stop());
   cameraStream = null;
-  cameraVideo.srcObject = null;
+  if (cameraVideo) cameraVideo.srcObject = null;
 }
 
 function showScanSource(type) {
@@ -475,16 +483,19 @@ function showVisualResult(result, confidence, detectedText, detections = [], pre
   const impactMaterial = impactMaterials[result.category];
   if (impactLink) {
     impactLink.hidden = !impactMaterial;
-    impactLink.href = impactMaterial ? `impacto.html?material=${impactMaterial}#registro` : "impacto.html#registro";
+    impactLink.href = impactMaterial ? `estacion.html?material=${impactMaterial}#registro` : "estacion.html#registro";
   }
   document.getElementById("scan-result").hidden = false;
+  window.dispatchEvent(new CustomEvent("ecoguia:scan-result", {
+    detail: { category: result.category, confidence, instruction: result.instruction }
+  }));
 }
 
 function askForMaterial(observation, detections, predictionSets, quality) {
   pendingVisualAnalysis = { observation, detections, predictionSets, quality };
   document.getElementById("scan-guide").hidden = true;
   document.getElementById("scan-result").hidden = true;
-  document.getElementById("material-question-title").textContent = `Reconocí: ${observation.label}`;
+  document.getElementById("material-question-title").textContent = "Confirma el material del objeto";
   document.getElementById("material-question-text").textContent = "La forma del objeto está clara, pero una cámara no siempre distingue su material. Elige una opción para completar la clasificación.";
   document.getElementById("material-question").hidden = false;
   setScanMessage("Objeto detectado. Confirma su material para obtener una recomendación precisa.");
@@ -637,6 +648,7 @@ function classifyWaste(query) {
   window.setTimeout(() => {
     if (match) addMessage(`${match.icon} Lo clasificaría como <strong>${match.category}</strong>.<small>${match.instruction} Consulta siempre las reglas de recolección de tu municipio.</small>`, "bot-message result-message");
     else addMessage(`No reconozco ese residuo con suficiente seguridad.<small>Busca el material principal del objeto o consulta con el servicio de recolección de tu localidad. También puedes probar palabras como “papel”, “lata” o “pila”.</small>`, "bot-message result-message");
+    window.dispatchEvent(new CustomEvent("ecoguia:text-result", { detail: { query, match: match || null } }));
   }, 320);
 }
 
