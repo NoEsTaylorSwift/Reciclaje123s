@@ -1,5 +1,24 @@
-const gameState = { points: Number(localStorage.getItem("eco-points") || 0), rewarded: JSON.parse(localStorage.getItem("eco-rewards") || "{}") };
-const addReward = (key, value) => { if (gameState.rewarded[key]) return; gameState.rewarded[key] = true; gameState.points += value; localStorage.setItem("eco-points", gameState.points); localStorage.setItem("eco-rewards", JSON.stringify(gameState.rewarded)); updateProfile(); };
+const gameStorage = {
+  get(key) {
+    try { return localStorage.getItem(key); } catch { return null; }
+  },
+  set(key, value) {
+    try { localStorage.setItem(key, value); } catch { /* Los juegos funcionan aunque no se pueda guardar. */ }
+  }
+};
+
+function savedRewards() {
+  try {
+    const value = JSON.parse(gameStorage.get("eco-rewards") || "{}");
+    return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+  } catch {
+    return {};
+  }
+}
+
+const storedPoints = Number(gameStorage.get("eco-points") || 0);
+const gameState = { points: Number.isFinite(storedPoints) && storedPoints >= 0 ? storedPoints : 0, rewarded: savedRewards() };
+const addReward = (key, value) => { if (gameState.rewarded[key]) return; gameState.rewarded[key] = true; gameState.points += value; gameStorage.set("eco-points", gameState.points); gameStorage.set("eco-rewards", JSON.stringify(gameState.rewarded)); updateProfile(); };
 function updateProfile() {
   const levels = gameState.points >= 220 ? ["🌳", "Guardián del planeta", 100] : gameState.points >= 100 ? ["🌿", "Explorador ecológico", gameState.points - 100] : ["🌱", "Semilla verde", gameState.points];
   document.getElementById("total-points").textContent = gameState.points; document.getElementById("level-icon").textContent = levels[0]; document.getElementById("level-name").textContent = levels[1]; document.getElementById("level-message").textContent = gameState.points >= 220 ? "¡Dominaste todos los desafíos!" : `${gameState.points < 100 ? 100 - gameState.points : 220 - gameState.points} puntos para el siguiente nivel`; document.getElementById("level-progress").style.width = `${Math.min(100, levels[2])}%`;
@@ -13,7 +32,7 @@ const sortItems = [
 let sortOrder = [...sortItems].sort(() => Math.random() - .5), sortIndex = 0, sortScore = 0, sortAnswered = false;
 function renderSort() { const item = sortOrder[sortIndex]; sortAnswered = false; document.getElementById("sort-icon").textContent = item[0]; document.getElementById("sort-name").textContent = item[1]; document.getElementById("sort-round").textContent = `Objeto ${sortIndex + 1} de ${sortOrder.length}`; document.getElementById("sort-progress").style.width = `${((sortIndex + 1) / sortOrder.length) * 100}%`; document.getElementById("sort-feedback").textContent = ""; document.getElementById("sort-next").hidden = true; document.querySelectorAll("#bin-options button").forEach(button => { button.disabled = false; button.classList.remove("correct", "wrong"); }); }
 document.getElementById("bin-options").addEventListener("click", event => { const button = event.target.closest("button"); if (!button || sortAnswered) return; sortAnswered = true; const item = sortOrder[sortIndex], correct = button.dataset.bin === item[2]; if (correct) sortScore += 10; document.getElementById("sort-score").textContent = sortScore; document.querySelectorAll("#bin-options button").forEach(option => { option.disabled = true; if (option.dataset.bin === item[2]) option.classList.add("correct"); }); if (!correct) button.classList.add("wrong"); document.getElementById("sort-feedback").textContent = `${correct ? "¡Muy bien!" : "Casi."} ${item[3]}`; document.getElementById("sort-next").hidden = false; });
-document.getElementById("sort-next").addEventListener("click", () => { if (sortIndex < sortOrder.length - 1) { sortIndex++; renderSort(); return; } addReward("sort", sortScore); document.querySelector("#sort-game .play-card").innerHTML = `<div class="game-complete"><span>🏆</span><h3>¡Clasificación completada!</h3><p>Lograste <b>${sortScore} de 100 puntos</b>. Tus EcoPuntos ya están guardados.</p><button class="button button-primary" onclick="location.reload()">Jugar otra vez ↻</button></div>`; });
+document.getElementById("sort-next").addEventListener("click", () => { if (sortIndex < sortOrder.length - 1) { sortIndex++; renderSort(); return; } addReward("sort", sortScore); document.querySelector("#sort-game .play-card").innerHTML = `<div class="game-complete"><span>🏆</span><h3>¡Clasificación completada!</h3><p>Lograste <b>${sortScore} de 100 puntos</b>. Tus EcoPuntos se aplicaron a tu perfil.</p><button class="button button-primary" onclick="location.reload()">Jugar otra vez ↻</button></div>`; });
 
 const memoryPairs = [["🍌", "Orgánico"], ["🧴", "Plástico"], ["📦", "Papel"], ["🫙", "Vidrio"], ["🔋", "Especial"], ["🥫", "Metal"]]; let memoryFirst = null, memoryLock = false, memoryMoves = 0, memoryMatches = 0;
 function buildMemory() { const cards = memoryPairs.flatMap((pair, id) => [{ id, text: pair[0] }, { id, text: pair[1] }]).sort(() => Math.random() - .5); const board = document.getElementById("memory-board"); board.innerHTML = cards.map((card, index) => `<button class="memory-card" data-pair="${card.id}" data-index="${index}" aria-label="Tarjeta oculta"><span class="card-back">?</span><span class="card-front">${card.text}</span></button>`).join(""); memoryFirst = null; memoryLock = false; memoryMoves = 0; memoryMatches = 0; document.getElementById("memory-moves").textContent = "0"; document.getElementById("memory-message").textContent = "Selecciona dos tarjetas para comenzar."; }

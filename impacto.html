@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Registra los kilos que reciclas y consulta estimaciones de CO₂ evitado, energía, agua y árboles conservados.">
+  <meta name="theme-color" content="#18392f">
+  <title>Calculadora de impacto | EcoGuía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="inner-page impact-page">
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <header class="site-header">
+    <nav class="nav container" aria-label="Navegación principal">
+      <a class="brand" href="index.html" aria-label="EcoGuía, inicio"><span class="brand-mark" aria-hidden="true">↻</span><span>EcoGuía</span></a>
+      <button class="menu-button" type="button" aria-expanded="false" aria-controls="nav-links"><span class="sr-only">Abrir menú</span><span></span><span></span><span></span></button>
+      <div class="nav-links" id="nav-links"><a href="index.html">Inicio</a><a href="aprender.html">Aprende</a><a href="estacion.html">Mi estación</a><a href="ecoscan.html">EcoScan IA</a><a href="ecoia.html">EcoIA</a><a href="upcycling.html">EcoCrea</a><a class="active" aria-current="page" href="impacto.html">Impacto</a><a href="juegos.html">Juegos</a><a class="nav-cta active" href="#registro">Registrar kilos</a></div>
+    </nav>
+  </header>
+
+  <main id="contenido">
+    <section class="impact-hero">
+      <div class="container impact-hero-grid">
+        <div class="reveal">
+          <p class="eyebrow light"><span></span> Tu esfuerzo en cifras</p>
+          <h1>Convierte kilos en <em>impacto real.</em></h1>
+          <p>Registra lo que reciclas y EcoImpacto analizará tu historial para mostrar equivalencias comprensibles de emisiones, energía, agua y árboles.</p>
+          <a class="button button-primary" href="#registro">Calcular mi impacto <span>↓</span></a>
+        </div>
+        <aside class="impact-hero-card reveal" aria-label="Ejemplo de resultados mensuales">
+          <span>RESUMEN MENSUAL</span>
+          <strong>12.4 <small>kg reciclados</small></strong>
+          <div><p><b>38.7</b> kg CO₂e evitados</p><p><b>59.6</b> kWh de energía</p></div>
+          <small>Ejemplo ilustrativo · Tus resultados se calcularán con tu historial.</small>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section impact-work" id="registro">
+      <div class="container">
+        <div class="section-heading impact-heading reveal"><div><p class="eyebrow dark"><span></span> Calculadora automática</p><h2>Registra una vez.<br>Comprende cada mes.</h2></div><p>El historial permanece solamente en este navegador. Puedes cambiar de mes, revisar cada registro y eliminarlo cuando quieras.</p></div>
+
+        <div class="impact-layout">
+          <aside class="impact-entry reveal">
+            <span class="side-kicker">NUEVO REGISTRO</span>
+            <h3>¿Qué reciclaste?</h3>
+            <form id="impact-form">
+              <label>Material
+                <select id="impact-material" required>
+                  <option value="paper">Papel y cartón</option>
+                  <option value="plastic">Plástico</option>
+                  <option value="glass">Vidrio</option>
+                  <option value="metal">Metal</option>
+                  <option value="mixed">Mezcla de reciclables</option>
+                  <option value="electronics">Electrónicos</option>
+                </select>
+              </label>
+              <div class="impact-entry-row">
+                <label>Peso en kilogramos
+                  <input id="impact-kilos" type="number" min="0.01" max="10000" step="0.01" inputmode="decimal" placeholder="Ej. 2.5" required>
+                </label>
+                <label>Fecha
+                  <input id="impact-date" type="date" required>
+                </label>
+              </div>
+              <button class="button impact-add" type="submit">Agregar al historial <span>+</span></button>
+              <p class="impact-form-status" id="impact-form-status" role="status" aria-live="polite"></p>
+            </form>
+            <div class="impact-local-note"><span aria-hidden="true">⌂</span><p><b>Privado y local</b><small>No se envía el historial a ningún servidor.</small></p></div>
+          </aside>
+
+          <div class="impact-dashboard reveal">
+            <div class="impact-dashboard-head">
+              <div><span>ANÁLISIS DEL HISTORIAL</span><h3>Tu impacto del mes</h3></div>
+              <label class="impact-month-label">Mes <input id="impact-month" type="month" aria-label="Mes que deseas consultar"></label>
+            </div>
+
+            <div class="impact-summary-grid" aria-live="polite">
+              <article><span class="impact-metric-icon">⚖</span><strong id="impact-total">0</strong><p>kg registrados</p></article>
+              <article><span class="impact-metric-icon">○</span><strong id="impact-co2">0</strong><p>kg CO₂e evitados</p></article>
+              <article><span class="impact-metric-icon">ϟ</span><strong id="impact-energy">0</strong><p>kWh de energía</p></article>
+              <article><span class="impact-metric-icon">≈</span><strong id="impact-water">0</strong><p>litros de agua*</p></article>
+              <article><span class="impact-metric-icon">♧</span><strong id="impact-trees">0</strong><p>árboles equivalentes*</p></article>
+            </div>
+
+            <div class="impact-insight" id="impact-insight">
+              <span aria-hidden="true">✦</span>
+              <div><b>Análisis mensual</b><p>Agrega tu primer registro para descubrir tu impacto.</p></div>
+            </div>
+
+            <div class="impact-breakdown-wrap">
+              <div class="impact-subhead"><h4>Materiales del mes</h4><span id="impact-record-count">0 registros</span></div>
+              <div class="impact-breakdown" id="impact-breakdown"><p class="impact-empty">Todavía no hay materiales para comparar.</p></div>
+            </div>
+          </div>
+        </div>
+
+        <section class="impact-history reveal" aria-labelledby="impact-history-title">
+          <div class="impact-subhead"><div><span>HISTORIAL LOCAL</span><h3 id="impact-history-title">Tus registros</h3></div><button id="impact-clear-month" class="impact-clear" type="button">Borrar este mes</button></div>
+          <div class="impact-table-wrap">
+            <table>
+              <thead><tr><th>Fecha</th><th>Material</th><th>Peso</th><th><span class="sr-only">Acciones</span></th></tr></thead>
+              <tbody id="impact-history-body"><tr><td colspan="4" class="impact-empty-row">Aún no has registrado materiales en este mes.</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="section impact-method" id="metodologia">
+      <div class="container">
+        <div class="section-heading reveal"><div><p class="eyebrow dark"><span></span> Cálculo transparente</p><h2>De dónde salen<br>las equivalencias</h2></div><p>Son estimaciones educativas basadas en promedios nacionales de Estados Unidos. Sirven para visualizar tendencias, no para una auditoría ambiental local.</p></div>
+        <div class="impact-method-grid">
+          <article class="reveal"><span>01</span><h3>CO₂ y energía</h3><p>Para papel, plástico, vidrio, metal y mezclas se usa el beneficio promedio de reciclar materiales mixtos en vez de enviarlos al vertedero: <b>3.12 kg CO₂e</b> y <b>4.81 kWh</b> por kilogramo.</p></article>
+          <article class="reveal"><span>02</span><h3>Agua y árboles</h3><p>Solo se calculan para papel y cartón: <b>29.2 litros</b> y <b>0.0187 árboles</b> equivalentes por kilogramo. No se asigna este beneficio a los demás materiales.</p></article>
+          <article class="reveal"><span>03</span><h3>Límites claros</h3><p>Los electrónicos se suman al peso registrado, pero no reciben equivalencias: su composición y tratamiento varían demasiado. Los resultados reales dependen del sistema local.</p></article>
+        </div>
+        <p class="impact-sources reveal">Fuentes: <a href="https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator-calculations-and-references" target="_blank" rel="noopener noreferrer">Calculadora de equivalencias de EPA</a>, <a href="https://www.epa.gov/system/files/documents/2024-01/warm_management_practices_v16_dec.pdf" target="_blank" rel="noopener noreferrer">modelo WARM v16</a> y <a href="https://archive.epa.gov/wastes/conserve/tools/localgov/web/html/index-2.html" target="_blank" rel="noopener noreferrer">equivalencias de papel y agua</a>.</p>
+        <p class="impact-paper-note">* Las métricas de agua y árboles corresponden únicamente al papel y cartón registrados.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="container footer-inner"><a class="brand footer-brand" href="index.html"><span class="brand-mark">↻</span><span>EcoGuía</span></a><p class="footer-links"><a href="etica.html">Ética y privacidad</a><span aria-hidden="true">·</span><a href="#metodologia">Metodología</a></p><p>Hecho con cuidado por nuestro planeta <span>♥</span></p></div></footer>
+  <script src="site.js"></script>
+  <script src="impacto.js"></script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Convierte objetos que pensabas desechar en proyectos útiles con el generador de supra-reciclaje de EcoGuía.">
+  <meta name="theme-color" content="#18392f">
+  <title>EcoCrea IA | EcoGuía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="inner-page upcycle-page">
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <header class="site-header">
+    <nav class="nav container" aria-label="Navegación principal">
+      <a class="brand" href="index.html" aria-label="EcoGuía, inicio"><span class="brand-mark" aria-hidden="true">↻</span><span>EcoGuía</span></a>
+      <button class="menu-button" type="button" aria-expanded="false" aria-controls="nav-links"><span class="sr-only">Abrir menú</span><span></span><span></span><span></span></button>
+      <div class="nav-links" id="nav-links"><a href="index.html">Inicio</a><a href="aprender.html">Aprende</a><a href="estacion.html">Mi estación</a><a href="ecoscan.html">EcoScan IA</a><a href="ecoia.html">EcoIA</a><a class="active" aria-current="page" href="upcycling.html">EcoCrea</a><a href="impacto.html">Impacto</a><a href="juegos.html">Juegos</a><a class="nav-cta active" href="#generador">Crear proyecto</a></div>
+    </nav>
+  </header>
+
+  <main id="contenido">
+    <section class="upcycle-hero">
+      <div class="container upcycle-hero-grid">
+        <div class="reveal">
+          <p class="eyebrow light"><span></span> Supra-reciclaje con IA</p>
+          <h1 class="light-title">Antes de tirarlo,<br><em>imagina otra vida.</em></h1>
+          <p>Describe o fotografía un objeto y EcoCrea preparará una idea práctica para transformarlo, con materiales, tiempo, pasos y advertencias de seguridad.</p>
+          <a class="button button-primary" href="#generador">Generar una receta <span>↓</span></a>
+        </div>
+        <div class="upcycle-hero-art reveal" aria-label="Objetos recuperados que se transforman en nuevos proyectos">
+          <div class="upcycle-loop" aria-hidden="true">↻</div>
+          <span class="upcycle-object object-shirt">👕<b>Ropa</b></span>
+          <span class="upcycle-object object-pallet">▦<b>Madera</b></span>
+          <span class="upcycle-object object-jar">◇<b>Frascos</b></span>
+          <div class="upcycle-finish"><span>✦</span><strong>Nueva utilidad</strong><small>menos residuos, más creatividad</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section upcycle-tool" id="generador">
+      <div class="container">
+        <div class="section-heading upcycle-heading reveal">
+          <div><p class="eyebrow dark"><span></span> Generador de proyectos</p><h2>¿Qué quieres<br>transformar?</h2></div>
+          <p>Cuéntanos qué objeto tienes o añade una fotografía. Puedes ajustar el propósito y la dificultad antes de generar la receta.</p>
+        </div>
+
+        <div class="upcycle-workspace">
+          <form class="upcycle-form reveal" id="upcycle-form">
+            <div class="upcycle-field">
+              <label for="upcycle-item"><span>01</span> Describe el objeto</label>
+              <textarea id="upcycle-item" rows="3" maxlength="160" placeholder="Ejemplo: una camisa vieja de algodón" required></textarea>
+              <div class="upcycle-examples" aria-label="Ejemplos rápidos">
+                <button type="button" data-upcycle-example="camisa vieja" data-material="textile">Camisa vieja</button>
+                <button type="button" data-upcycle-example="palet de madera" data-material="wood">Palet</button>
+                <button type="button" data-upcycle-example="frasco de vidrio" data-material="glass">Frasco</button>
+                <button type="button" data-upcycle-example="botella plástica" data-material="plastic">Botella</button>
+              </div>
+            </div>
+
+            <div class="upcycle-photo-block">
+              <div>
+                <span class="upcycle-field-label"><b>02</b> O usa una fotografía</span>
+                <p>La IA intentará reconocer el tipo de objeto y completar la descripción.</p>
+              </div>
+              <label class="upcycle-photo-button" for="upcycle-photo"><span>⌾</span> Tomar o elegir foto</label>
+              <input class="sr-only" id="upcycle-photo" type="file" accept="image/*" capture="environment">
+              <img id="upcycle-preview" alt="Objeto seleccionado para generar una receta de supra-reciclaje" hidden>
+              <p class="upcycle-photo-status" id="upcycle-photo-status" aria-live="polite">La foto se procesa en este dispositivo y no se guarda.</p>
+            </div>
+
+            <div class="upcycle-options">
+              <label>Material
+                <select id="upcycle-material">
+                  <option value="auto">Detectar automáticamente</option>
+                  <option value="textile">Tela o ropa</option>
+                  <option value="wood">Madera</option>
+                  <option value="glass">Vidrio</option>
+                  <option value="plastic">Plástico</option>
+                  <option value="metal">Metal</option>
+                  <option value="paper">Papel o cartón</option>
+                  <option value="furniture">Mueble</option>
+                  <option value="electronics">Electrónico</option>
+                </select>
+              </label>
+              <label>Estado
+                <select id="upcycle-condition">
+                  <option value="good">En buen estado</option>
+                  <option value="worn">Desgastado pero estable</option>
+                  <option value="damaged">Roto, astillado o contaminado</option>
+                </select>
+              </label>
+              <label>Quiero crear algo para
+                <select id="upcycle-purpose">
+                  <option value="storage">Organizar</option>
+                  <option value="garden">El jardín</option>
+                  <option value="decor">Decorar</option>
+                  <option value="home">Usar en casa</option>
+                </select>
+              </label>
+              <label>Dificultad
+                <select id="upcycle-level">
+                  <option value="beginner">Fácil</option>
+                  <option value="intermediate">Intermedia</option>
+                </select>
+              </label>
+            </div>
+
+            <button class="button button-primary upcycle-submit" type="submit">Generar proyecto <span>✦</span></button>
+            <p class="upcycle-form-note">No uses objetos con químicos, moho, vidrio roto o componentes eléctricos expuestos. EcoCrea detendrá la receta cuando detecte un riesgo.</p>
+          </form>
+
+          <section class="recipe-stage reveal" aria-live="polite" aria-labelledby="recipe-title">
+            <div class="recipe-placeholder" id="recipe-placeholder">
+              <div class="recipe-placeholder-icon" aria-hidden="true">✦</div>
+              <span>TU PROYECTO APARECERÁ AQUÍ</span>
+              <h3>De residuo a recurso</h3>
+              <p>Describe un objeto o añade una foto para recibir una receta adaptada.</p>
+            </div>
+            <div class="recipe-loading" id="recipe-loading" hidden>
+              <span aria-hidden="true"></span><p>Combinando material, estado y propósito...</p>
+            </div>
+            <article class="recipe-result" id="recipe-result" hidden>
+              <header class="recipe-header">
+                <div class="recipe-icon" id="recipe-icon" aria-hidden="true">✦</div>
+                <div><span id="recipe-label">PROYECTO RECOMENDADO</span><h3 id="recipe-title">Proyecto de supra-reciclaje</h3></div>
+              </header>
+              <p class="recipe-summary" id="recipe-summary"></p>
+              <div class="recipe-meta"><span id="recipe-time">◷ 30 min</span><span id="recipe-level">◎ Fácil</span><span id="recipe-material">♻ Reutilización</span></div>
+              <div class="recipe-columns">
+                <section><h4>Necesitarás</h4><ul id="recipe-materials"></ul></section>
+                <section><h4>Paso a paso</h4><ol id="recipe-steps"></ol></section>
+              </div>
+              <aside class="recipe-safety"><span aria-hidden="true">!</span><p><b>Trabaja con seguridad</b><small id="recipe-safety"></small></p></aside>
+              <div class="recipe-actions">
+                <button class="button recipe-alt" id="recipe-alternative" type="button">Generar otra idea ↻</button>
+                <button class="text-button recipe-reset" id="recipe-reset" type="button">Empezar de nuevo</button>
+              </div>
+            </article>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="section upcycle-how">
+      <div class="container">
+        <div class="section-heading reveal"><div><p class="eyebrow dark"><span></span> Cómo decide EcoCrea</p><h2>Creatividad con<br>límites seguros</h2></div><p>La herramienta prioriza proyectos alcanzables y evita recomendar transformaciones peligrosas.</p></div>
+        <div class="upcycle-how-grid">
+          <article class="reveal"><span>01</span><h3>Reconoce</h3><p>Interpreta tu descripción o analiza la fotografía para identificar el objeto y su material probable.</p></article>
+          <article class="reveal"><span>02</span><h3>Adapta</h3><p>Combina el estado, el propósito y tu nivel para elegir una transformación adecuada.</p></article>
+          <article class="reveal"><span>03</span><h3>Protege</h3><p>Bloquea vidrio roto, contaminación química y aparatos eléctricos que no deben desmontarse.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="tool-next"><div class="container tool-next-inner"><div><span>¿NO SE PUEDE REUTILIZAR?</span><h2>Descubre cómo separarlo correctamente.</h2></div><a class="button button-light" href="ecoscan.html">Abrir EcoScan <span>→</span></a></div></section>
+  </main>
+
+  <footer><div class="container footer-inner"><a class="brand footer-brand" href="index.html"><span class="brand-mark">↻</span><span>EcoGuía</span></a><p class="footer-links"><a href="etica.html">Ética y privacidad</a><span aria-hidden="true">·</span><a href="https://www.acm.org/binaries/content/assets/about/codigo-de-etica-y-conducta-profesional-de-acm.pdf" target="_blank" rel="noopener noreferrer">Código ACM</a></p><p>Hecho con cuidado por nuestro planeta <span>♥</span></p></div></footer>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js"></script>
+  <script src="site.js"></script>
+  <script src="upcycling.js"></script>
+</body>
+</html>
