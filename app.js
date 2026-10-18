@@ -20,15 +20,15 @@ const categories = {
 
 const knowledge = [
   { words: ["cascara", "banano", "platano", "manzana", "fruta", "verdura", "cafe", "te", "hojas", "flores", "comida", "huevo"], category: "Orgánico", icon: "♧", instruction: "Retira cualquier empaque. Si no contiene aceite ni químicos, puedes convertirlo en composta." },
-  { words: ["botella plastica", "plastico", "pet", "champu", "detergente", "tapa", "envase"], category: "Plástico reciclable", icon: "♳", instruction: "Vacía, enjuaga y seca el envase. Aplástalo y coloca la tapa por separado si tu recolector lo pide." },
+  { words: ["botella plastica", "botella de plastico", "envase plastico", "plastico", "pet", "champu", "detergente", "tapa plastica"], category: "Plástico reciclable", icon: "♳", instruction: "Vacía, enjuaga y seca el envase. Aplástalo y coloca la tapa por separado si tu recolector lo pide." },
   { words: ["ropa", "camisa", "camiseta", "pantalon", "jean", "vestido", "sueter", "tela", "sabana", "toalla"], category: "Tela o ropa", icon: "♢", instruction: "Si está limpia y seca, repárala, dónala o transfórmala antes de desecharla. Los textiles contaminados requieren manejo local." },
   { words: ["palet", "pallet", "tarima", "madera", "tabla", "caja de madera", "cajon de madera"], category: "Madera reutilizable", icon: "▦", instruction: "Comprueba que esté seca, sin moho, plagas ni tratamientos peligrosos. Puede repararse o convertirse en un nuevo objeto." },
   { words: ["mueble", "silla", "mesa", "gaveta", "estante", "repisa", "banco", "armario"], category: "Mueble reutilizable", icon: "▰", instruction: "Si la estructura sigue firme, prioriza repararlo, donarlo o adaptarlo. No reutilices piezas con moho, plagas o daños estructurales." },
-  { words: ["papel", "periodico", "revista", "cuaderno", "carton", "caja", "sobre"], category: "Papel y cartón", icon: "▤", instruction: "Debe estar limpio y seco. Aplana las cajas y separa partes plásticas o con grasa." },
+  { words: ["papel", "periodico", "revista", "cuaderno", "carton", "caja de carton", "sobre"], category: "Papel y cartón", icon: "▤", instruction: "Debe estar limpio y seco. Aplana las cajas y separa partes plásticas o con grasa." },
   { words: ["vidrio", "frasco", "botella de vino", "botella de cerveza"], category: "Vidrio", icon: "◇", instruction: "Vacía y enjuaga. Retira tapas. No mezcles espejos, cerámica ni bombillas." },
   { words: ["lata", "aluminio", "metal", "conserva", "refresco"], category: "Metal reciclable", icon: "◉", instruction: "Enjuaga, seca y, si es seguro, aplasta la lata. Las tapas afiladas deben quedar dentro del envase." },
   { words: ["pila", "bateria", "celular", "telefono", "computadora", "cargador", "electronico", "medicamento", "aceite", "bombilla", "foco"], category: "Residuo especial", icon: "⚡", instruction: "No lo pongas con la basura común. Guárdalo separado y llévalo a un punto de recolección autorizado." },
-  { words: ["pañal", "servilleta", "papel higienico", "mascarilla", "ceramica", "esponja", "chicle", "colilla"], category: "No reciclable", icon: "×", instruction: "Deposítalo en la basura general. Reduce su uso cuando exista una alternativa reutilizable." }
+  { words: ["pañal", "servilleta", "papel higienico", "papel de baño", "papel sanitario", "toalla de papel", "papel de cocina", "papel mojado", "caja de pizza con grasa", "mascarilla", "ceramica", "esponja", "chicle", "colilla"], category: "No reciclable", icon: "×", instruction: "Deposítalo en la basura general. Reduce su uso cuando exista una alternativa reutilizable." }
 ];
 
 const quiz = [
@@ -72,21 +72,22 @@ const stationRanges = Object.keys(stationMaterials).reduce((ranges, key) => {
   return ranges;
 }, {});
 
+let stationPlanVisible = false;
 function updateStationControls() {
   const peopleValue = document.getElementById("people-value");
   if (!peopleValue) return;
   peopleValue.textContent = peopleCount;
   Object.entries(stationRanges).forEach(([key, range]) => {
-    document.getElementById(`${key}-output`).textContent = amountLabels[Number(range.value)];
+    document.getElementById(`${key}-output`).textContent = `${Number(range.value || 0).toLocaleString("es-GT")} kg`;
   });
 }
 
-document.getElementById("people-minus")?.addEventListener("click", () => { peopleCount = Math.max(1, peopleCount - 1); updateStationControls(); });
-document.getElementById("people-plus")?.addEventListener("click", () => { peopleCount = Math.min(8, peopleCount + 1); updateStationControls(); });
-Object.values(stationRanges).filter(Boolean).forEach(range => range.addEventListener("input", updateStationControls));
+document.getElementById("people-minus")?.addEventListener("click", () => { peopleCount = Math.max(1, peopleCount - 1); updateStationControls(); if (stationPlanVisible) generateStationFromInputs(); });
+document.getElementById("people-plus")?.addEventListener("click", () => { peopleCount = Math.min(8, peopleCount + 1); updateStationControls(); if (stationPlanVisible) generateStationFromInputs(); });
+Object.values(stationRanges).filter(Boolean).forEach(range => range.addEventListener("input", () => { updateStationControls(); if (stationPlanVisible) generateStationFromInputs(); }));
 
 function containerSize(amount) {
-  const adjusted = amount * (.72 + peopleCount * .16);
+  const adjusted = amount;
   if (adjusted <= 1.2) return "10 L";
   if (adjusted <= 2.4) return "20 L";
   if (adjusted <= 3.8) return "35 L";
@@ -94,6 +95,7 @@ function containerSize(amount) {
 }
 
 function buildStationPlan(plan, shouldSave = true) {
+  stationPlanVisible = true;
   peopleCount = plan.people;
   Object.entries(plan.amounts).forEach(([key, value]) => { if (stationRanges[key]) stationRanges[key].value = value; });
   updateStationControls();
@@ -105,6 +107,11 @@ function buildStationPlan(plan, shouldSave = true) {
     document.getElementById("result-content").hidden = true;
     return;
   }
+  const metrics = window.ecoImpact.calculateMetrics(active.map(([material, kilos]) => ({ material, kilos })));
+  for (const key of ['total', 'co2', 'energy', 'water', 'trees']) {
+    document.getElementById('station-' + key).textContent = window.ecoImpact.formatNumber(metrics[key], key === 'trees' ? 3 : 2);
+  }
+  document.getElementById('station-projection-note').textContent = 'Beneficio potencial si reciclas todos los kilos de plástico, papel y vidrio indicados. No representa reciclaje realizado ni se suma al historial. Orgánicos: ' + window.ecoImpact.formatNumber(plan.amounts.organic, 2) + ' kg/semana, sin equivalencias asignadas. * Agua y árboles solo para papel y cartón. Contenedores orientativos; ajusta según el volumen real.';
   const recoverable = Math.round(active.reduce((sum, [key, amount]) => sum + amount * stationMaterials[key].recovery, 0) / total * 100);
   const priorityKey = active.sort((a, b) => b[1] * (2 - stationMaterials[b[0]].recovery) - a[1] * (2 - stationMaterials[a[0]].recovery))[0][0];
   const priority = stationMaterials[priorityKey];
@@ -117,7 +124,7 @@ function buildStationPlan(plan, shouldSave = true) {
   document.getElementById("impact-ring").style.setProperty("--percentage", recoverable);
   document.getElementById("priority-title").textContent = priority.name;
   document.getElementById("priority-text").textContent = priority.action;
-  const highVolume = active.filter(([, amount]) => amount === 3).map(([key]) => stationMaterials[key].name.toLowerCase());
+  const highVolume = active.filter(([, amount]) => amount >= 3).map(([key]) => stationMaterials[key].name.toLowerCase());
   const collection = highVolume.length ? `vacía ${highVolume.join(" y ")} dos veces por semana` : "revisa los contenedores cada fin de semana";
   document.getElementById("routine-text").textContent = `Limpia y seca los reciclables al usarlos; ${collection}. Una vez al mes, lleva vidrio y residuos especiales a su punto de recolección.`;
   document.getElementById("result-placeholder").hidden = true;
@@ -126,11 +133,18 @@ function buildStationPlan(plan, shouldSave = true) {
   document.getElementById("saved-pill").textContent = shouldSave ? (saved ? "Guardado localmente" : "No se pudo guardar") : "Último plan guardado";
 }
 
-document.getElementById("build-station")?.addEventListener("click", () => {
+function generateStationFromInputs() {
+  if (Object.values(stationRanges).some(field => !field.checkValidity())) {
+    Object.values(stationRanges).find(field => !field.checkValidity()).reportValidity();
+    document.getElementById("result-content").hidden = true;
+    return;
+  }
   const amounts = Object.fromEntries(Object.entries(stationRanges).map(([key, range]) => [key, Number(range.value)]));
-  buildStationPlan({ people: peopleCount, amounts });
-});
+  buildStationPlan({ version: 2, people: peopleCount, amounts });
+}
+document.getElementById("build-station")?.addEventListener("click", generateStationFromInputs);
 document.getElementById("reset-station")?.addEventListener("click", () => {
+  stationPlanVisible = false;
   document.getElementById("result-content").hidden = true;
   document.getElementById("result-placeholder").hidden = false;
   document.getElementById("result-placeholder").innerHTML = `<div class="mini-station"><span></span><span></span><span></span></div><h3>Haz nuevos ajustes</h3><p>Cambia las cantidades y vuelve a generar tu recomendación.</p>`;
@@ -139,12 +153,12 @@ document.getElementById("reset-station")?.addEventListener("click", () => {
 function isValidStationPlan(plan) {
   const materialKeys = Object.keys(stationMaterials);
   return Boolean(
-    plan &&
+    plan && plan.version === 2 &&
     Number.isInteger(plan.people) &&
     plan.people >= 1 &&
     plan.people <= 8 &&
     plan.amounts &&
-    materialKeys.every(key => Number.isInteger(plan.amounts[key]) && plan.amounts[key] >= 0 && plan.amounts[key] <= 3)
+    materialKeys.every(key => Number.isFinite(plan.amounts[key]) && plan.amounts[key] >= 0 && plan.amounts[key] <= 10000)
   );
 }
 
@@ -215,6 +229,9 @@ const materialResults = {
   glass: { category: "Vidrio", icon: "◇", instruction: "Vacía y enjuaga. Retira tapas y no lo mezcles con cerámica, espejos o cristal templado." },
   paper: { category: "Papel y cartón", icon: "▤", instruction: "Debe estar limpio y seco. Aplánalo y retira cualquier parte plástica o metálica." },
   metal: { category: "Metal reciclable", icon: "◉", instruction: "Límpialo, sécalo y protege cualquier borde afilado antes de entregarlo." },
+  organic: { category: "Orgánico", icon: "♧", instruction: "Retira cualquier empaque y sepáralo para composta solo si tu sistema acepta ese tipo de residuo." },
+  textile: { category: "Tela o ropa", icon: "♢", instruction: "Si está limpio y seco, repáralo, dónalo o entrégalo en una recolección textil." },
+  electronics: { category: "Residuo especial", icon: "⚡", instruction: "Guárdalo seco, no lo abras y llévalo completo a un punto de recolección autorizado." },
   general: { category: "Revisión manual", icon: "?", instruction: "El material no coincide con una categoría segura. Consulta las reglas locales o escribe el nombre en EcoIA." }
 };
 
@@ -224,6 +241,7 @@ let detectionModel = null;
 let detectionModelPromise = null;
 let visionModelsPromise = null;
 let pendingVisualAnalysis = null;
+let lastVisualContext = null;
 let cameraStream = null;
 let analysisRunId = 0;
 const cameraVideo = document.getElementById("camera-video");
@@ -480,6 +498,8 @@ function showVisualResult(result, confidence, detectedText, detections = [], pre
   document.getElementById("material-question").hidden = true;
   document.getElementById("scan-result-icon").textContent = result.icon;
   document.getElementById("scan-confidence").textContent = result.category === "Resultado no concluyente" ? "REVISIÓN NECESARIA" : confidence >= 0 ? `CONFIANZA ${Math.round(confidence * 100)}%` : "CONFIRMADO POR MATERIAL";
+  const confidenceBar = document.getElementById("scan-confidence-bar");
+  if (confidenceBar) confidenceBar.style.width = `${confidence >= 0 ? Math.max(8, Math.round(confidence * 100)) : 100}%`;
   document.getElementById("scan-category").textContent = result.category;
   document.getElementById("scan-instruction").textContent = result.instruction;
   const impactLink = document.getElementById("scan-log-impact");
@@ -503,6 +523,7 @@ function showVisualResult(result, confidence, detectedText, detections = [], pre
     impactLink.href = integratedImpact ? "#medir" : (impactMaterial ? `estacion.html?material=${impactMaterial}#registro` : "estacion.html#registro");
   }
   document.getElementById("scan-result").hidden = false;
+  lastVisualContext = { observation: { label: "objeto fotografiado" }, detections, predictionSets, quality };
   window.dispatchEvent(new CustomEvent("ecoguia:scan-result", {
     detail: { category: result.category, confidence, instruction: result.instruction, icon: result.icon }
   }));
@@ -629,10 +650,22 @@ document.getElementById("material-options")?.addEventListener("click", event => 
   setScanMessage("Clasificación completada combinando visión artificial y confirmación del material.");
 });
 
+document.getElementById("scan-correct-material")?.addEventListener("click", () => {
+  if (!lastVisualContext) return;
+  pendingVisualAnalysis = lastVisualContext;
+  document.getElementById("scan-result").hidden = true;
+  document.getElementById("scan-guide").hidden = true;
+  document.getElementById("material-question-title").textContent = "Corrige el material";
+  document.getElementById("material-question-text").textContent = "Tu confirmación tiene prioridad sobre la predicción visual.";
+  document.getElementById("material-question").hidden = false;
+  setScanMessage("Selecciona el material principal para corregir la clasificación.");
+});
+
 document.getElementById("scan-again")?.addEventListener("click", () => {
   analysisRunId += 1;
   stopCamera();
   pendingVisualAnalysis = null;
+  lastVisualContext = null;
   document.getElementById("scan-result").hidden = true;
   document.getElementById("material-question").hidden = true;
   document.getElementById("scan-guide").hidden = false;
@@ -660,10 +693,36 @@ function addMessage(content, type) {
   chatArea.appendChild(message); chatArea.scrollTop = chatArea.scrollHeight;
 }
 
+function termMatches(cleaned, term) {
+  const haystack = ` ${cleaned.replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ")} `;
+  const needle = normalize(term).replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+  if (!needle) return false;
+  if (haystack.includes(` ${needle} `)) return true;
+  return !needle.includes(" ") && (haystack.includes(` ${needle}s `) || haystack.includes(` ${needle}es `));
+}
+
+function findWasteMatch(query) {
+  const cleaned = normalize(query);
+  const priority = { "Residuo especial": 3, "No reciclable": 2 };
+  const candidates = knowledge.flatMap(entry => entry.words
+    .filter(word => termMatches(cleaned, word))
+    .map(word => ({ entry, specificity: normalize(word).split(" ").length * 100 + normalize(word).length })));
+  candidates.sort((a, b) => b.specificity - a.specificity || (priority[b.entry.category] || 0) - (priority[a.entry.category] || 0));
+  if (candidates[0]) return candidates[0].entry;
+  const ambiguousTerms = ["botella", "vaso", "taza", "recipiente", "envase", "caja", "bolsa", "bandeja"];
+  if (ambiguousTerms.some(term => termMatches(cleaned, term))) {
+    return { category: "Material por confirmar", icon: "?", requiresMaterial: true, instruction: "Ese objeto puede fabricarse con distintos materiales. Confirma si es plástico, vidrio, papel, metal u otro material." };
+  }
+  return null;
+}
+
 function classifyWaste(query) {
-  const cleaned = normalize(query); const match = knowledge.find(entry => entry.words.some(word => cleaned.includes(normalize(word)))); addMessage(query, "user-message");
+  const match = findWasteMatch(query);
+  chatArea.querySelectorAll(".message:not(:first-child)").forEach(message => message.remove());
+  addMessage(query, "user-message");
   window.setTimeout(() => {
-    if (match) addMessage(`${match.icon} Lo clasificaría como <strong>${match.category}</strong>.<small>${match.instruction} Consulta siempre las reglas de recolección de tu municipio.</small>`, "bot-message result-message");
+    if (match?.requiresMaterial) addMessage(`${match.icon} <strong>Necesito confirmar el material.</strong><small>${match.instruction}</small>`, "bot-message result-message");
+    else if (match) addMessage(`${match.icon} Lo clasificaría como <strong>${match.category}</strong>.<small>${match.instruction} Consulta siempre las reglas de recolección de tu municipio.</small>`, "bot-message result-message");
     else addMessage(`No reconozco ese residuo con suficiente seguridad.<small>Busca el material principal del objeto o consulta con el servicio de recolección de tu localidad. También puedes probar palabras como “papel”, “lata” o “pila”.</small>`, "bot-message result-message");
     window.dispatchEvent(new CustomEvent("ecoguia:text-result", { detail: { query, match: match || null } }));
   }, 320);

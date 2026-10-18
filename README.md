@@ -41,7 +41,7 @@ Después visita `http://localhost:8000`.
 
 - Guía visual de cinco familias de residuos
 - Estación e impacto: recomienda contenedores y una rutina, registra los kilos reales y calcula el resultado ambiental en la misma página
-- Herramienta IA unificada en un solo recorrido: entrada por texto o fotografía, respuesta del asistente, idea automática de reutilización o acción segura, recomendación de estación y registro de impacto
+- Herramienta IA reunida en una sola tarjeta progresiva: entrada por texto o fotografía, confirmación de materiales ambiguos, respuesta del asistente, idea bajo demanda, recomendación de estación y registro de impacto
 - EcoImpacto guarda kilos por material y estima CO₂ evitado, energía, agua y árboles equivalentes
 - Reto educativo con explicaciones y puntuación
 - Clasificación rápida de diez residuos
@@ -58,6 +58,8 @@ La fotografía no se envía a un servidor. Los modelos se descargan cuando la pe
 Para probar la cámara desde GitHub, activa **Settings → Pages → Deploy from a branch**, elige `main` y la carpeta raíz. GitHub Pages publicará el proyecto con HTTPS, requisito del navegador para solicitar acceso a la cámara.
 
 Los modelos reconocen objetos generales y EcoGuía los relaciona con categorías de reciclaje. Cuando una forma puede pertenecer a varios materiales —por ejemplo, una botella— el sistema solicita una confirmación breve. Si la foto es demasiado pequeña, oscura o sobreexpuesta, pide repetirla; si los modelos discrepan, devuelve un resultado no concluyente en lugar de adivinar. El resultado muestra su confianza, omite las etiquetas internas de los modelos y debe comprobarse con las reglas municipales.
+
+El clasificador de texto compara palabras completas y prioriza las expresiones más específicas. De este modo, “papel de baño” se clasifica como no reciclable antes que como papel, y términos ambiguos como “botella” solicitan confirmar el material. Después de clasificar, la receta de reutilización permanece oculta hasta que la persona pulsa **Ver una idea para este residuo**.
 
 La página explica de forma explícita que los modelos actuales son generales y no fueron entrenados con un conjunto propio de residuos locales. También documenta el proceso recomendado para crear un clasificador especializado: recolectar y etiquetar imágenes autorizadas, entrenar, validar con fotografías nunca vistas, medir errores por clase y reentrenar con ejemplos difíciles. La retroalimentación del usuario no se guarda ni se usa para entrenar sin consentimiento.
 
@@ -91,3 +93,5 @@ El sitio no incluye cuentas, anuncios, analítica ni rastreadores propios. Googl
 - [COCO-SSD para TensorFlow.js](https://github.com/tensorflow/tfjs-models/tree/master/coco-ssd), licencia Apache-2.0
 - [MobileNet para TensorFlow.js](https://github.com/tensorflow/tfjs-models/tree/master/mobilenet), licencia Apache-2.0
 - Tipografías DM Sans y Manrope servidas por [Google Fonts](https://fonts.google.com/)
+
+La estación recibe kilos semanales por material y calcula automáticamente el beneficio potencial con los mismos factores de EcoImpacto. Los cambios actualizan el plan y su proyección; estas cantidades no se añaden al historial de reciclaje realizado. Los planes anteriores por niveles se reemplazan al generar un plan en kilos.

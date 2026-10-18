@@ -5,6 +5,8 @@ const ideasSection = document.getElementById("reutilizar");
 const impactSection = document.getElementById("medir");
 const flowImpactForm = document.getElementById("flow-impact-form");
 let activeImpactMaterial = null;
+let pendingIdea = null;
+let activeOutcome = null;
 
 const materialByCategory = {
   "Plástico reciclable": "plastic",
@@ -35,6 +37,17 @@ const stationGuidance = {
   furniture: { icon: "▰", title: "Zona de recuperación de muebles", instruction: "No lo mezcles con residuos pequeños. Conserva las piezas secas para reparar, donar o entregar." },
   electronics: { icon: "⚡", title: "Caja para residuos especiales", instruction: "Guárdalo seco, sin abrir ni aplastar, y entrégalo completo en un punto autorizado." },
   general: { icon: "×", title: "Contenedor de basura general", instruction: "Aísla objetos sanitarios o con filo y sigue las reglas locales. No lo mezcles con reciclables limpios." }
+};
+
+const manualOutcomeMaterials = {
+  plastic: { category: "Plástico reciclable", icon: "♳", instruction: "Vacía, enjuaga y seca el objeto. Confirma que ese tipo de plástico sea aceptado en tu localidad." },
+  glass: { category: "Vidrio", icon: "◇", instruction: "Vacía y enjuaga. Retira tapas y no lo mezcles con cerámica, espejos o cristal templado." },
+  paper: { category: "Papel y cartón", icon: "▤", instruction: "Debe estar limpio y seco. Aplánalo y retira partes plásticas, metálicas o con grasa." },
+  metal: { category: "Metal reciclable", icon: "◉", instruction: "Límpialo, sécalo y protege cualquier borde afilado antes de entregarlo." },
+  organic: { category: "Orgánico", icon: "♧", instruction: "Retira empaques. Si tu sistema lo acepta, sepáralo para composta." },
+  textile: { category: "Tela o ropa", icon: "♢", instruction: "Si está limpio y seco, repáralo, dónalo o llévalo a una recolección textil." },
+  electronics: { category: "Residuo especial", icon: "⚡", instruction: "Guárdalo seco y sin abrir. Llévalo completo a un punto autorizado." },
+  general: { category: "Revisión manual", icon: "?", instruction: "El material no coincide con una categoría segura. Consulta las reglas locales antes de desecharlo." }
 };
 
 function selectIntakeMode(mode, { focus = false, updateHash = true } = {}) {
@@ -69,11 +82,15 @@ function setFlowProgress(step) {
   });
 }
 
-function showDirectIdea(project, context) {
-  ideasSection.hidden = false;
-  document.getElementById("ideas-context").textContent = context;
-  window.ecoRenderProject?.(project);
-  setFlowProgress(3);
+function resetResultDrawers() {
+  ideasSection.hidden = true;
+  impactSection.hidden = true;
+  document.querySelector(".idea-customize")?.removeAttribute("open");
+}
+
+function stageDirectIdea(project, context) {
+  pendingIdea = { type: "direct", project, context };
+  return true;
 }
 
 function prepareIdeas(item, category) {
@@ -83,48 +100,41 @@ function prepareIdeas(item, category) {
   if (material) {
     itemField.value = item || `objeto de ${category.toLowerCase()}`;
     materialField.value = material;
-    ideasSection.hidden = false;
-    document.getElementById("ideas-context").textContent = `Usamos el material “${category}” para preparar una primera idea. Puedes cambiar el estado, el propósito o la dificultad.`;
-    window.ecoGenerateProject?.();
-    setFlowProgress(3);
+    pendingIdea = { type: "library", context: `Usaremos el material “${category}” para preparar una idea. Puedes personalizarla después de abrirla.` };
     return true;
   }
 
   if (category.startsWith("Orgánico")) {
-    showDirectIdea({
+    return stageDirectIdea({
       icon: "♧", label: "IDEA RECOMENDADA", title: "Composta doméstica", material: "Residuo orgánico", level: "Fácil", time: "5 min + proceso", blocked: true,
       summary: "Convierte restos vegetales en abono y evita que terminen mezclados con la basura general.",
       materials: ["Recipiente ventilado", "Material seco como hojas o cartón sin tinta", "Restos vegetales en trozos pequeños"],
       steps: ["Retira etiquetas, bolsas y cualquier parte no orgánica.", "Alterna una capa de restos húmedos con otra de material seco.", "Mantén la mezcla ligeramente húmeda y muévela cada semana.", "Cuando tenga color oscuro y olor a tierra, úsala como mejorador de suelo."],
       safety: "No agregues químicos, aceite, vidrio, plástico, heces de mascotas ni alimentos que tu sistema de composta no acepte."
     }, "Este residuo no necesita convertirse en un objeto: su mejor segunda vida puede ser volver a la tierra.");
-    return true;
   }
 
   if (category === "Residuo especial") {
-    showDirectIdea({
+    return stageDirectIdea({
       icon: "⚡", label: "ACCIÓN SEGURA", title: "Reparar, donar o entregar", material: "Residuo especial", level: "Sin desmontar", time: "Según el punto local", blocked: true,
       summary: "Los aparatos y baterías pueden contener componentes peligrosos. La mejor opción es prolongar su uso o entregarlos completos a un gestor autorizado.",
       materials: ["Caja o recipiente seco", "Etiqueta para identificar el aparato", "Dirección de un punto autorizado"],
       steps: ["Si funciona, considera repararlo, venderlo o donarlo.", "Borra tus datos personales cuando corresponda.", "Retira las pilas solo si el fabricante permite hacerlo con seguridad.", "Entrégalo completo en una jornada o centro de residuos electrónicos."],
       safety: "No abras baterías, pantallas ni aparatos conectados. Evita piezas expuestas y consulta un servicio profesional."
     }, "Por seguridad no generamos una manualidad con electrónicos, pilas o residuos especiales.");
-    return true;
   }
 
   if (category === "No reciclable") {
-    showDirectIdea({
+    return stageDirectIdea({
       icon: "×", label: "ALTERNATIVA RESPONSABLE", title: "Reducir y reemplazar", material: "No reciclable", level: "Preventiva", time: "Próxima compra", blocked: true,
       summary: "Cuando un residuo no puede reciclarse ni reutilizarse de forma higiénica, la acción con mayor impacto es evitar que vuelva a generarse.",
       materials: ["Una alternativa durable o recargable", "Lista de compras", "Contenedor de basura general"],
       steps: ["Deposita este residuo siguiendo las reglas locales.", "Identifica por qué se generó y si existe una versión reutilizable.", "En tu próxima compra, elige una opción con menos empaque o de mayor duración.", "Registra el cambio para convertirlo en un hábito."],
       safety: "No conviertas residuos sanitarios, contaminados o con filos en objetos para el hogar."
     }, "No encontramos una reutilización segura; por eso la recomendación se enfoca en reducir su uso.");
-    return true;
   }
 
-  ideasSection.hidden = true;
-  setFlowProgress(2);
+  pendingIdea = null;
   return false;
 }
 
@@ -133,12 +143,10 @@ function prepareImpact(category) {
   const guidance = stationGuidance[material];
   if (!material || !guidance || !window.ecoImpact?.materials[material]) {
     activeImpactMaterial = null;
-    impactSection.hidden = true;
     return false;
   }
 
   activeImpactMaterial = material;
-  impactSection.hidden = false;
   document.getElementById("flow-station-icon").textContent = guidance.icon;
   document.getElementById("flow-station-title").textContent = guidance.title;
   document.getElementById("flow-station-instruction").textContent = guidance.instruction;
@@ -158,6 +166,8 @@ function prepareImpact(category) {
 }
 
 function showOutcome({ item, category, instruction, icon = "✦", confidence = null, source }) {
+  activeOutcome = { item, category, source };
+  resetResultDrawers();
   document.getElementById("outcome-icon").textContent = icon;
   document.getElementById("outcome-source").textContent = source === "photo" ? "RESULTADO DE LA FOTOGRAFÍA" : "RESPUESTA DEL ASISTENTE";
   document.getElementById("outcome-category").textContent = category || "Resultado no concluyente";
@@ -166,16 +176,19 @@ function showOutcome({ item, category, instruction, icon = "✦", confidence = n
   confidenceElement.hidden = !(Number.isFinite(confidence) && confidence >= 0);
   if (!confidenceElement.hidden) confidenceElement.textContent = `Confianza visual: ${Math.round(confidence * 100)} %`;
 
-  const impactLink = document.getElementById("outcome-impact-link");
-  const hasImpact = prepareImpact(category || "");
-  impactLink.hidden = !hasImpact;
-  impactLink.href = "#medir";
+  const materialCheck = document.getElementById("outcome-material-check");
+  const needsMaterial = category === "Material por confirmar" || category === "Resultado no concluyente";
+  materialCheck.hidden = !needsMaterial;
 
-  const hasIdea = prepareIdeas(item, category || "");
+  const impactLink = document.getElementById("outcome-impact-link");
+  const hasImpact = !needsMaterial && prepareImpact(category || "");
+  impactLink.hidden = !hasImpact;
+
+  const hasIdea = !needsMaterial && prepareIdeas(item, category || "");
   const ideaLink = document.getElementById("outcome-ideas-link");
   ideaLink.hidden = !hasIdea;
   outcome.hidden = false;
-  setFlowProgress(hasIdea ? 3 : 2);
+  setFlowProgress(2);
   window.setTimeout(() => outcome.scrollIntoView({ behavior: "smooth", block: "start" }), 80);
 }
 
@@ -204,17 +217,44 @@ window.addEventListener("ecoguia:text-result", event => {
 
 document.getElementById("outcome-ideas-link")?.addEventListener("click", event => {
   event.preventDefault();
-  ideasSection.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (!pendingIdea) return;
+  impactSection.hidden = true;
+  ideasSection.hidden = false;
+  document.getElementById("ideas-context").textContent = pendingIdea.context;
+  if (pendingIdea.type === "direct") window.ecoRenderProject?.(pendingIdea.project);
+  else window.ecoGenerateProject?.();
+  setFlowProgress(3);
+  window.setTimeout(() => ideasSection.scrollIntoView({ behavior: "smooth", block: "start" }), 40);
 });
 
 document.getElementById("outcome-impact-link")?.addEventListener("click", event => {
   event.preventDefault();
+  ideasSection.hidden = true;
+  impactSection.hidden = false;
+  setFlowProgress(4);
   impactSection.scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
-document.querySelector(".ideas-next-action a")?.addEventListener("click", event => {
+document.querySelector(".ideas-next-action button")?.addEventListener("click", event => {
   event.preventDefault();
+  ideasSection.hidden = true;
+  impactSection.hidden = false;
+  setFlowProgress(4);
   impactSection.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+document.getElementById("outcome-material-check")?.addEventListener("click", event => {
+  const button = event.target.closest("[data-outcome-material]");
+  const result = manualOutcomeMaterials[button?.dataset.outcomeMaterial];
+  if (!result || !activeOutcome) return;
+  showOutcome({ item: activeOutcome.item, category: result.category, instruction: result.instruction, icon: result.icon, source: activeOutcome.source });
+});
+
+document.getElementById("recipe-reset")?.addEventListener("click", () => {
+  ideasSection.hidden = true;
+  if (activeOutcome) prepareIdeas(activeOutcome.item, activeOutcome.category || "");
+  setFlowProgress(2);
+  outcome.scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
 flowImpactForm?.addEventListener("submit", event => {
@@ -265,7 +305,5 @@ if (impactToday && flowImpactDate) {
   flowImpactDate.max = impactToday;
 }
 if (hash === "reutilizar") {
-  ideasSection.hidden = false;
-  document.getElementById("ideas-context").textContent = "Describe directamente el objeto y ajusta sus opciones para crear un proyecto.";
-  window.setTimeout(() => ideasSection.scrollIntoView({ block: "start" }), 0);
+  window.setTimeout(() => document.getElementById("waste-input")?.focus(), 0);
 }
