@@ -26,48 +26,49 @@
       <div class="container station-impact-hero-grid">
         <div class="reveal">
           <p class="eyebrow light"><span></span> Del hogar al resultado</p>
-          <h1>Organiza tus residuos y<br><em>mide lo que logras.</em></h1>
-          <p>Indica cuántos kilos de residuos genera tu hogar por semana y descubre tu estación recomendada y el impacto potencial de reciclarlos.</p>
-          <div class="hero-actions"><a class="button button-primary" href="#estacion">Diseñar estación <span>↓</span></a><a class="button button-ghost" href="#impacto">Ver mi impacto</a></div>
+          <h1>Menos residuos,<br><em>más cambios en casa.</em></h1>
+          <p>Cuéntanos cuánto desechas en una semana. Verás al instante qué significa esa cantidad, qué podrías ahorrar al reciclarla y por dónde empezar a reducirla.</p>
+          <div class="hero-actions"><a class="button button-primary" href="#estacion">Conocer mi impacto <span>↓</span></a><a class="button button-ghost" href="#registro">Llevar mi historial</a></div>
         </div>
         <div class="station-impact-flow reveal" aria-label="Proceso de la estación y la calculadora">
-          <article><span>01</span><div><i>▦</i><b>Organiza</b><small>elige tus contenedores</small></div></article>
+          <article><span>01</span><div><i>▦</i><b>Cuéntanos</b><small>cuánto residuo generas</small></div></article>
           <strong>→</strong>
-          <article><span>02</span><div><i>⚖</i><b>Registra</b><small>indica tus kilos semanales</small></div></article>
+          <article><span>02</span><div><i>⚖</i><b>Descubre</b><small>tu impacto al instante</small></div></article>
           <strong>→</strong>
-          <article><span>03</span><div><i>↗</i><b>Comprende</b><small>visualiza tu impacto</small></div></article>
+          <article><span>03</span><div><i>↗</i><b>Reduce</b><small>consejos para tu hogar</small></div></article>
         </div>
       </div>
     </section>
 
     <div class="station-impact-nav-wrap">
-      <nav class="container station-impact-nav" aria-label="Secciones de estación e impacto"><a href="#estacion"><span>01</span> Organizar mi estación</a><a href="#impacto"><span>02</span> Registrar y medir impacto</a><a href="#metodologia"><span>03</span> Entender el cálculo</a></nav>
+      <nav class="container station-impact-nav" aria-label="Secciones de estación e impacto"><a href="#estacion"><span>01</span> Mis residuos y su impacto</a><a href="#impacto"><span>02</span> Mi reciclaje realizado</a><a href="#metodologia"><span>03</span> Entender el cálculo</a></nav>
     </div>
 
     <section class="section station-section" id="estacion">
       <div class="container">
-        <div class="station-heading reveal"><div><p class="eyebrow dark"><span></span> Paso 1 · Organiza</p><h2>Diseña tu propia<br>estación de reciclaje</h2></div><p>Cuéntanos cómo es tu hogar y qué residuos genera. El simulador calculará una estación práctica, una prioridad de acción y una rutina semanal hecha para ti.</p></div>
+        <div class="station-heading reveal"><div><p class="eyebrow dark"><span></span> Tu semana, en perspectiva</p><h2>¿Cuánto desechas<br>en una semana?</h2></div><p>Escribe los kilos de cada material que genera todo tu hogar. El resumen y los consejos cambian mientras ajustas las cantidades. Puedes dejar en cero lo que no generas.</p></div>
         <div class="station-app reveal">
           <div class="station-controls">
             <div class="people-control"><div><span class="control-label">Personas en casa</span><strong><b id="people-value">3</b> personas</strong></div><div class="stepper"><button type="button" id="people-minus" aria-label="Restar una persona">−</button><button type="button" id="people-plus" aria-label="Agregar una persona">+</button></div></div>
             <p class="control-intro">¿Cuántos kilos generan por semana?</p>
-            <div class="waste-sliders">
-              <label><span><i class="material-dot organic"></i> Orgánico <b id="organic-output">kg/semana</b></span><input type="number" id="organic-range" min="0" max="10000" step="0.01" value="2" inputmode="decimal" required aria-label="Cantidad de residuos orgánicos"></label>
-              <label><span><i class="material-dot plastic"></i> Plástico <b id="plastic-output">kg/semana</b></span><input type="number" id="plastic-range" min="0" max="10000" step="0.01" value="2" inputmode="decimal" required aria-label="Cantidad de plástico"></label>
-              <label><span><i class="material-dot paper"></i> Papel <b id="paper-output">kg/semana</b></span><input type="number" id="paper-range" min="0" max="10000" step="0.01" value="1" inputmode="decimal" required aria-label="Cantidad de papel y cartón"></label>
-              <label><span><i class="material-dot glass"></i> Vidrio <b id="glass-output">kg/semana</b></span><input type="number" id="glass-range" min="0" max="10000" step="0.01" value="1" inputmode="decimal" required aria-label="Cantidad de vidrio"></label>
+            <p class="station-input-help" id="station-input-help">Kilos de todo el hogar, no por persona. Si no lo sabes, pesa tus residuos durante una semana.</p><div class="waste-sliders">
+              <label><span><i class="material-dot organic"></i> Orgánico <b id="organic-output">kg/semana</b></span><input type="number" id="organic-range" min="0" max="10000" step="0.01" value="0" inputmode="decimal" aria-label="Cantidad de residuos orgánicos" aria-describedby="organic-example station-input-help"><small id="organic-example">Cáscaras y restos de alimentos</small></label>
+              <label><span><i class="material-dot plastic"></i> Plástico <b id="plastic-output">kg/semana</b></span><input type="number" id="plastic-range" min="0" max="10000" step="0.01" value="0" inputmode="decimal" aria-label="Cantidad de plástico" aria-describedby="plastic-example station-input-help"><small id="plastic-example">Botellas y envases plásticos</small></label>
+              <label><span><i class="material-dot paper"></i> Papel <b id="paper-output">kg/semana</b></span><input type="number" id="paper-range" min="0" max="10000" step="0.01" value="0" inputmode="decimal" aria-label="Cantidad de papel y cartón" aria-describedby="paper-example station-input-help"><small id="paper-example">Hojas, cajas y empaques de cartón</small></label>
+              <label><span><i class="material-dot glass"></i> Vidrio <b id="glass-output">kg/semana</b></span><input type="number" id="glass-range" min="0" max="10000" step="0.01" value="0" inputmode="decimal" aria-label="Cantidad de vidrio" aria-describedby="glass-example station-input-help"><small id="glass-example">Frascos y botellas de vidrio</small></label>
             </div>
-            <button class="button station-button" id="build-station" type="button">Ver mi estación e impacto <span>✦</span></button>
+            <p class="station-live-hint"><span aria-hidden="true">●</span> Tu impacto y tus consejos se actualizan al instante.</p><p class="station-input-error" id="station-input-error" role="status"></p>
           </div>
           <div class="station-result" id="station-result" aria-live="polite">
             <div class="result-placeholder" id="result-placeholder"><div class="mini-station" aria-hidden="true"><span></span><span></span><span></span></div><h3>Tu estación aparecerá aquí</h3><p>Ajusta los controles y genera una recomendación personalizada.</p></div>
             <div class="result-content" id="result-content" hidden>
-              <div class="result-top"><div><span class="result-kicker">PLAN PERSONALIZADO</span><h3 id="plan-title">Estación familiar</h3></div><span class="saved-pill" id="saved-pill">Guardado localmente</span></div>
-              <div class="recommended-bins" id="recommended-bins"></div>
-              <section class="station-projection" aria-labelledby="projection-title"><span class="result-kicker">SEGÚN TUS RESIDUOS SEMANALES</span><h4 id="projection-title">Tu impacto potencial al reciclar</h4><div class="station-projection-grid"><article><strong id="station-total">0</strong><span>kg generados / semana</span></article><article><strong id="station-co2">0</strong><span>kg CO₂e evitados / semana</span></article><article><strong id="station-energy">0</strong><span>kWh ahorrados / semana</span></article><article><strong id="station-water">0</strong><span>litros de agua / semana*</span></article><article><strong id="station-trees">0</strong><span>árboles equivalentes / semana*</span></article></div><p id="station-projection-note"></p><a href="#metodologia">Ver factores y límites del cálculo</a></section><div class="impact-row"><div class="impact-ring" id="impact-ring"><strong id="impact-number">0%</strong><span>recuperable</span></div><div><span class="result-kicker">TU MAYOR OPORTUNIDAD</span><h4 id="priority-title">Orgánicos</h4><p id="priority-text"></p></div></div>
-              <div class="weekly-plan"><span>Tu rutina sugerida</span><p id="routine-text"></p></div>
+              <div class="result-top"><div><span class="result-kicker">TU HOGAR, EN CIFRAS</span><h3 id="plan-title">Tu semana de residuos</h3></div><span class="saved-pill" id="saved-pill">Guardado localmente</span></div>
+              
+              <section class="station-projection" aria-labelledby="projection-title"><span class="result-kicker">SEGÚN TUS RESIDUOS SEMANALES</span><h4 id="projection-title">Lo que puedes evitar al reciclar</h4><div class="station-projection-grid"><article><strong id="station-total">0</strong><span>kg generados / semana</span></article><article><strong id="station-co2">0</strong><span>kg CO₂e evitados / semana</span></article><article><strong id="station-energy">0</strong><span>kWh ahorrados / semana</span></article><article><strong id="station-water">0</strong><span>litros de agua / semana*</span></article><article><strong id="station-trees">0</strong><span>árboles equivalentes / semana*</span></article></div><p id="station-projection-note"></p><a href="#metodologia">Ver factores y límites del cálculo</a></section><div class="station-footprint"><strong id="station-footprint-total">0 kg</strong><p id="station-footprint-detail">Indica tus cantidades para conocer tu semana.</p><div id="station-material-shares" class="station-material-shares" aria-label="Distribución de tus residuos"></div></div>
+              <section class="station-advice" aria-labelledby="station-advice-title"><span class="result-kicker">PEQUEÑOS CAMBIOS QUE SUMAN</span><h4 id="station-advice-title">Por dónde empezar a reducir</h4><p id="station-reduction-goal"></p><div id="station-advice-list"></div></section>
+              <details class="station-plan-details"><summary>Cómo organizar estos residuos en casa</summary><p>Contenedores orientativos: ajusta su tamaño al volumen real de tus residuos.</p><div class="recommended-bins" id="recommended-bins"></div><div class="weekly-plan"><span>Tu rutina sugerida</span><p id="routine-text"></p></div></details>
               <a class="station-impact-link" href="#registro">Registrar los kilos que reciclé <span>→</span></a>
-              <button type="button" class="text-button" id="reset-station">Volver a calcular ↻</button>
+              <button type="button" class="text-button" id="reset-station">Empezar de cero ↻</button>
             </div>
           </div>
         </div>
@@ -75,12 +76,12 @@
     </section>
 
     <section class="station-impact-bridge">
-      <div class="container station-impact-bridge-inner reveal"><span>01</span><p><b>Tu plan organiza el hábito.</b><small>Tu plan ya muestra el beneficio semanal potencial. Registra después lo que realmente reciclaste.</small></p><i>→</i><span>02</span><p><b>Tu historial muestra el avance.</b><small>Cada registro actualiza automáticamente el resumen mensual.</small></p></div>
+      <div class="container station-impact-bridge-inner reveal"><span>01</span><p><b>De la intención al hábito.</b><small>Tu plan ya muestra el beneficio semanal potencial. Registra después lo que realmente reciclaste.</small></p><i>→</i><span>02</span><p><b>Tu historial muestra el avance.</b><small>Cada registro actualiza automáticamente el resumen mensual.</small></p></div>
     </section>
 
     <section class="section impact-work" id="impacto">
       <div class="container">
-        <div class="section-heading impact-heading reveal"><div><p class="eyebrow dark"><span></span> Paso 2 · Registra y mide</p><h2>Convierte kilos en<br>impacto comprensible</h2></div><p>El historial permanece solamente en este navegador. Puedes cambiar de mes, revisar cada registro y eliminarlo cuando quieras.</p></div>
+        <div class="section-heading impact-heading reveal"><div><p class="eyebrow dark"><span></span> Opcional · Sigue tus avances</p><h2>¿Ya lo reciclaste?<br>Guarda tu avance.</h2></div><p>El historial permanece solamente en este navegador. Puedes cambiar de mes, revisar cada registro y eliminarlo cuando quieras.</p></div>
         <div class="impact-layout">
           <aside class="impact-entry reveal" id="registro">
             <span class="side-kicker">NUEVO REGISTRO</span><h3>¿Qué reciclaste?</h3>

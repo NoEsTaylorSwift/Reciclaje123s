@@ -95,3 +95,5 @@ El sitio no incluye cuentas, anuncios, analítica ni rastreadores propios. Googl
 - Tipografías DM Sans y Manrope servidas por [Google Fonts](https://fonts.google.com/)
 
 La estación recibe kilos semanales por material y calcula automáticamente el beneficio potencial con los mismos factores de EcoImpacto. Los cambios actualizan el plan y su proyección; estas cantidades no se añaden al historial de reciclaje realizado. Los planes anteriores por niveles se reemplazan al generar un plan en kilos.
+
+La experiencia muestra el impacto al escribir, sin botón de cálculo. Resume residuos semanales, peso por persona, proyección a 52 semanas y proporciones por material. Los consejos se ordenan por el material más abundante e incluyen un reto opcional de reducción del 20%. La proyección ambiental expresa ahorro potencial por reciclaje, no una huella total de producir residuos.

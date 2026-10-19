@@ -53,28 +53,64 @@ const tabs=[...document.querySelectorAll('.game-tab')];
 tabs.forEach((tab,i)=>{
  tab.id='tab-'+tab.dataset.game; tab.setAttribute('aria-controls',tab.dataset.game+'-game'); tab.tabIndex=i? -1:0;
  const panel=$(tab.dataset.game+'-game'); panel.setAttribute('role','tabpanel'); panel.setAttribute('aria-labelledby',tab.id);
- tab.addEventListener('click',()=>{current=tab.dataset.game; tabs.forEach(t=>{const active=t===tab;t.classList.toggle('active',active);t.setAttribute('aria-selected',active);t.tabIndex=active?0:-1;}); document.querySelectorAll('.game-panel').forEach(p=>p.hidden=p.dataset.panel!==current);});
+ tab.addEventListener('click',()=>{if(typeof tickSort==='function')tickSort();clearSortDrag();current=tab.dataset.game;sortLastTick=performance.now(); tabs.forEach(t=>{const active=t===tab;t.classList.toggle('active',active);t.setAttribute('aria-selected',active);t.tabIndex=active?0:-1;}); document.querySelectorAll('.game-panel').forEach(p=>p.hidden=p.dataset.panel!==current);});
  tab.addEventListener('keydown',e=>{let next;if(e.key==='ArrowRight')next=(i+1)%3;if(e.key==='ArrowLeft')next=(i+2)%3;if(e.key==='Home')next=0;if(e.key==='End')next=2;if(next!==undefined){e.preventDefault();tabs[next].click();tabs[next].focus();}});
 });
-let sortOrder,sortIndex,sortScore,sortAnswered,sortStreak,sortHint;
-function startSort(){ $('sort-game').querySelector('.play-card').innerHTML=templates.sort; sortOrder=shuffle(sortItems);sortIndex=sortScore=sortStreak=0;renderSort(); }
+// Clasificación contrarreloj con Pointer Events para mouse, lápiz y pantalla táctil.
+const sortBins={organico:'Orgánico',plastico:'Plástico / metal',papel:'Papel / cartón',vidrio:'Vidrio',especial:'Peligrosos'};
+sortItems.push(['🥫','Lata de refresco vacía','plastico','El metal se recupera para fabricar nuevos productos. Vacía la lata antes de entregarla.']);
+let sortOrder=[],sortIndex=0,sortScore=0,sortStreak=0,sortAnswered=false;
+let sortRunning=false,sortPaused=false,sortRemaining=60000,sortLastTick=0,sortTimer=null,sortCorrect=0,sortWrong=0,sortDrag=null;
+function clearSortDrag(){
+ if(sortDrag){sortDrag.ghost.remove();sortDrag=null;}
+ document.querySelectorAll('.sort-bins button').forEach(b=>b.classList.remove('drop-hover'));
+ const object=$('sort-draggable');if(object)object.classList.remove('dragging');
+}
+function sortCanPlay(){return sortRunning&&!sortPaused&&current==='sort'&&!document.hidden;}
+function startSort(){
+ clearInterval(sortTimer);clearSortDrag();$('sort-game').querySelector('.play-card').innerHTML=templates.sort;
+ sortOrder=shuffle(sortItems);sortIndex=sortScore=sortStreak=sortCorrect=sortWrong=0;sortRunning=false;sortPaused=false;sortRemaining=60000;sortAnswered=false;$('sort-score').textContent=0;
+}
+function beginSort(){sortRunning=true;sortLastTick=performance.now();$('sort-start').hidden=true;$('sort-pause').hidden=false;renderSort();sortTimer=setInterval(tickSort,100);}
+function tickSort(){
+ const now=performance.now();if(sortCanPlay())sortRemaining=Math.max(0,sortRemaining-(now-sortLastTick));sortLastTick=now;
+ if(!$('sort-clock'))return;$('sort-clock').textContent=Math.ceil(sortRemaining/1000)+' s';$('sort-clock').classList.toggle('urgent',sortRemaining<=10000);$('sort-progress').style.width=sortRemaining/60000*100+'%';
+ if(sortRunning&&sortRemaining<=0)finishSort();
+}
 function renderSort(){
- sortAnswered=false;sortHint=false;const item=sortOrder[sortIndex];
- $('sort-icon').textContent=item[0];$('sort-name').textContent=item[1];$('sort-score').textContent=sortScore;
- $('sort-round').textContent='Objeto '+(sortIndex+1)+' de '+sortOrder.length;
- $('sort-progress').style.width=sortIndex/sortOrder.length*100+'%';$('sort-feedback').textContent='';$('sort-next').hidden=true;
+ if(sortIndex>=sortOrder.length){sortOrder=shuffle(sortItems);sortIndex=0;}
+ const item=sortOrder[sortIndex];sortAnswered=false;$('sort-icon').textContent=item[0];$('sort-name').textContent=item[1];$('sort-draggable').disabled=false;$('sort-draggable').setAttribute('aria-label',item[1]+'. Arrastra al contenedor o pulsa Tab para elegir uno.');
+ $('sort-round').textContent=(sortCorrect+sortWrong)+' objetos clasificados';$('sort-streak').textContent='🔥 Racha: '+sortStreak;$('sort-next').hidden=true;
  document.querySelectorAll('#bin-options button').forEach(b=>{b.disabled=false;b.classList.remove('correct','wrong');});
- let tools=$('sort-tools');if(!tools){tools=document.createElement('div');tools.id='sort-tools';tools.className='game-tools';$('bin-options').before(tools);}
- tools.innerHTML='<span>🔥 Racha: '+sortStreak+'</span><button type="button" id="sort-hint">💡 Pedir pista</button>';
 }
 function answerSort(button){
- if(sortAnswered)return;sortAnswered=true;const item=sortOrder[sortIndex],correct=button.dataset.bin===item[2];
- sortStreak=correct?sortStreak+1:0;const bonus=correct&&!sortHint?Math.min(15,(sortStreak-1)*5):0;
- if(correct)sortScore+=(sortHint?5:10)+bonus;
- $('sort-score').textContent=sortScore;document.querySelectorAll('#bin-options button').forEach(b=>{b.disabled=true;b.classList.toggle('correct',b.dataset.bin===item[2]);});if(!correct)button.classList.add('wrong');
- $('sort-feedback').textContent=(correct?'¡Bien! +'+((sortHint?5:10)+bonus)+' puntos. ':'La próxima sale mejor. ')+item[3];
- $('sort-tools').firstElementChild.textContent='🔥 Racha: '+sortStreak;$('sort-hint').disabled=true;$('sort-next').hidden=false;$('sort-next').textContent=sortIndex===sortOrder.length-1?'Ver resultados 🏆':'Siguiente objeto →';
+ tickSort();if(!sortCanPlay()||sortAnswered)return;clearSortDrag();sortAnswered=true;
+ const item=sortOrder[sortIndex],correct=button.dataset.bin===item[2];sortStreak=correct?sortStreak+1:0;
+ const delta=correct?10+Math.min(15,(sortStreak-1)*5):-5;sortScore=Math.max(0,sortScore+delta);if(correct)sortCorrect++;else sortWrong++;
+ $('sort-score').textContent=sortScore;$('sort-streak').textContent='🔥 Racha: '+sortStreak;$('sort-round').textContent=(sortCorrect+sortWrong)+' objetos clasificados';$('sort-draggable').disabled=true;
+ document.querySelectorAll('#bin-options button').forEach(b=>{b.disabled=true;b.classList.toggle('correct',b.dataset.bin===item[2]);});if(!correct)button.classList.add('wrong');
+ $('sort-feedback').textContent=(correct?'✓ ¡Correcto! +'+delta+' puntos. ':'× −5 puntos (mínimo 0). Va en '+sortBins[item[2]]+'. ')+item[3];$('sort-next').hidden=false;
 }
+function finishSort(){
+ sortRunning=false;clearInterval(sortTimer);clearSortDrag();const total=sortCorrect+sortWrong,accuracy=total?Math.round(sortCorrect/total*100):0;
+ complete('sort',sortScore,Math.max(100,total*20),'Tiempo terminado · '+sortCorrect+' aciertos · '+sortWrong+' errores · '+accuracy+'% de precisión.');
+}
+// Captura del puntero: el objeto sigue al dedo incluso fuera de su tarjeta.
+document.addEventListener('pointerdown',e=>{
+ const object=e.target.closest('#sort-draggable');if(!object||!sortCanPlay()||sortAnswered||!e.isPrimary||e.button!==0)return;
+ const ghost=document.createElement('div');ghost.className='sort-drag-ghost';ghost.textContent=sortOrder[sortIndex][0];ghost.setAttribute('aria-hidden','true');document.body.append(ghost);
+ sortDrag={id:e.pointerId,ghost};ghost.style.left=e.clientX+'px';ghost.style.top=e.clientY+'px';object.classList.add('dragging');object.setPointerCapture(e.pointerId);e.preventDefault();
+});
+document.addEventListener('pointermove',e=>{
+ if(!sortDrag||sortDrag.id!==e.pointerId)return;sortDrag.ghost.style.left=e.clientX+'px';sortDrag.ghost.style.top=e.clientY+'px';
+ const target=document.elementFromPoint(e.clientX,e.clientY)?.closest('#bin-options button');document.querySelectorAll('.sort-bins button').forEach(b=>b.classList.toggle('drop-hover',b===target));
+});
+document.addEventListener('pointerup',e=>{
+ if(!sortDrag||sortDrag.id!==e.pointerId)return;const target=document.elementFromPoint(e.clientX,e.clientY)?.closest('#bin-options button');clearSortDrag();if(target)answerSort(target);
+});
+document.addEventListener('pointercancel',clearSortDrag);
+document.addEventListener('visibilitychange',()=>{sortLastTick=performance.now();clearSortDrag();});
+window.addEventListener('blur',()=>{if(sortRunning&&!sortPaused){sortPaused=true;clearSortDrag();if($('sort-pause'))$('sort-pause').textContent='Continuar';}});
 let memoryFirst=null,memoryLock=false,memoryMoves=0,memoryMatches=0,memoryTimer,memoryCount=6,memoryPeek=false;
 function buildMemory(){
  clearTimeout(memoryTimer);memoryFirst=null;memoryLock=false;memoryMoves=memoryMatches=0;memoryPeek=false;
@@ -98,8 +134,9 @@ document.addEventListener('click',e=>{
  const b=e.target.closest('button');if(!b)return;
  if(b.dataset.replay){if(b.dataset.replay==='sort')startSort();else startTruth();return;}
  if(b.closest('#bin-options')){answerSort(b);return;}
- if(b.id==='sort-hint'&&!sortAnswered){sortHint=true; b.disabled=true;$('sort-feedback').textContent='💡 '+sortOrder[sortIndex][3]+' Un acierto con pista vale 5 puntos y no añade bonificación.';return;}
- if(b.id==='sort-next'&&sortAnswered){if(++sortIndex<sortOrder.length)renderSort();else complete('sort',sortScore,220,'¡Rescataste '+sortOrder.length+' objetos!');return;}
+ if(b.id==='sort-start'&&!sortRunning){beginSort();return;}
+ if(b.id==='sort-pause'&&sortRunning){tickSort();if(!sortRunning)return;sortPaused=!sortPaused;clearSortDrag();$('sort-pause').textContent=sortPaused?'Continuar':'Pausar';$('sort-draggable').disabled=sortPaused||sortAnswered;document.querySelectorAll('#bin-options button').forEach(o=>o.disabled=sortPaused||sortAnswered);return;}
+ if(b.id==='sort-next'&&sortAnswered&&sortCanPlay()){tickSort();if(sortRunning){sortIndex++;renderSort();$('sort-draggable').focus();}return;}
  if(b.classList.contains('memory-card')){selectCard(b);return;}
  if(b.closest('.truth-options')&&!truthAnswered){truthAnswered=true;const item=truthOrder[truthIndex],correct=(b.dataset.value==='true')===item[1];truthStreak=correct?truthStreak+1:0;const earned=correct?10+Math.min(10,(truthStreak-1)*5):0;truthScore+=earned;if(correct)truthCorrect++;$('truth-score').textContent=truthCorrect;document.querySelectorAll('.truth-options button').forEach(o=>{o.disabled=true;o.classList.toggle('correct',(o.dataset.value==='true')===item[1]);});if(!correct)b.classList.add('wrong');$('truth-feedback').textContent=(correct?'¡Acertaste! +'+earned+' puntos. ':'Misterio resuelto: ')+item[2];$('truth-next').hidden=false;$('truth-next').textContent=truthIndex===truthOrder.length-1?'Ver resultados 🏆':'Siguiente decisión →';return;}
  if(b.id==='truth-next'&&truthAnswered){if(++truthIndex<truthOrder.length)renderTruth();else complete('truth',truthScore,145,truthCorrect+' respuestas correctas de '+truthOrder.length+'.');}

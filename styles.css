@@ -126,3 +126,42 @@
 
 @media(max-width:900px){.eco-onebox .intake-help{grid-template-columns:1fr 1fr}.eco-onebox .intake-help ul{grid-column:1/-1}.eco-onebox .integrated-ideas-head{grid-template-columns:1fr}.eco-onebox .integrated-outcome-card{grid-template-columns:auto 1fr}.eco-onebox .outcome-actions{grid-column:1/-1;grid-template-columns:1fr 1fr}}
 @media(max-width:640px){.eco-onebox{border-radius:20px}.eco-onebox .integrated-flow-steps{grid-template-columns:repeat(4,1fr)!important;gap:5px;padding:12px 9px}.eco-onebox .integrated-flow-steps>i{display:none}.eco-onebox .integrated-flow-steps>div{display:grid;justify-items:center;gap:5px;text-align:center}.eco-onebox .integrated-flow-steps>div>span{width:29px;height:29px}.eco-onebox .integrated-flow-steps small{display:none}.eco-onebox .integrated-flow-steps b{font-size:8px}.eco-onebox .integrated-intake-head{padding:24px 18px 17px}.eco-onebox .intake-mode-switch{grid-template-columns:1fr 1fr;margin:0 12px}.eco-onebox .intake-mode-switch button{padding:10px 8px;column-gap:8px}.eco-onebox .intake-mode-switch button>span{width:35px;height:35px;font-size:17px}.eco-onebox .intake-mode-switch button small{display:none}.eco-onebox .intake-mode-switch button b{font-size:9px}.eco-onebox .intake-panel{padding:16px 12px 22px}.eco-onebox .intake-help{grid-template-columns:1fr;gap:8px;padding:17px}.eco-onebox .intake-help ul{grid-template-columns:1fr}.eco-onebox .integrated-outcome{padding:20px 12px}.eco-onebox .integrated-outcome-card{grid-template-columns:1fr;padding:20px 16px}.eco-onebox .outcome-actions{grid-column:auto;grid-template-columns:1fr}.eco-onebox .integrated-ideas,.eco-onebox .integrated-impact{padding:25px 12px}.eco-onebox .recipe-result{padding:23px 17px}.scan-verify-actions{grid-template-columns:1fr}.integrated-scan-workspace .material-options{grid-template-columns:1fr 1fr}.flow-impact-metrics{grid-template-columns:1fr 1fr}}
+
+/* Resumen de residuos y consejos en vivo */
+.station-impact-page .waste-sliders input[type="number"] { height:48px; cursor:text; padding:10px 12px; appearance:auto; }
+.station-input-help,.station-live-hint,.waste-sliders label>small { display:block; color:#53675a; font-size:12px; line-height:1.6; }
+.station-live-hint { margin-top:24px; }
+.station-live-hint span { color:#358852; margin-right:6px; }
+.station-input-error { color:#a03527; font-size:13px; }
+.station-input-error:empty { display:none; }
+.station-impact-page .station-result { display:block; }
+.station-projection { color:#18392f; }
+.station-projection .result-kicker { color:#356948; }
+.station-projection a { color:#285c3f; text-underline-offset:3px; }
+.station-projection-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.station-projection-grid article:first-child { grid-column:1/-1; padding-bottom:12px; border-bottom:1px solid #cbdac8; }
+.station-projection-grid article:first-child strong { font-size:2.2rem; }
+.station-footprint { padding:12px 0 24px; }
+.station-footprint>strong { font-size:22px; }
+.station-footprint>p { color:#d0dfd5; font-size:13px; line-height:1.7; }
+.station-material-shares { display:grid; gap:12px; }
+.station-material-shares>div { display:grid; grid-template-columns:1fr auto; gap:6px; font-size:12px; }
+.station-share-track { grid-column:1/-1; height:6px; background:#ffffff1a; border-radius:10px; overflow:hidden; }
+.station-share-track>span { display:block; height:100%; border-radius:inherit; }
+.station-advice { border-top:1px solid #ffffff26; padding-top:22px; }
+.station-advice h4 { margin:7px 0 12px; font-size:22px; }
+.station-advice>p { color:#d0dfd5; font-size:13px; line-height:1.7; }
+.station-advice article { display:flex; align-items:flex-start; gap:12px; background:#ffffff0b; padding:16px; margin-top:12px; border:1px solid #ffffff17; border-radius:15px; }
+.station-advice-icon { flex:none; display:grid; place-items:center; width:34px; height:34px; color:var(--lime); background:#ffffff10; border-radius:11px; font-size:21px; }
+.station-advice-material { color:var(--lime); font-size:10px; letter-spacing:.04em; }
+.station-advice h5 { margin:6px 0; font-size:15px; }
+.station-advice article p { margin:0; color:#d0dfd5; font-size:13px; line-height:1.7; }
+.station-plan-details { margin-top:24px; border-top:1px solid #ffffff26; padding-top:16px; }
+.station-plan-details summary { cursor:pointer; font-size:13px; font-weight:700; }
+.station-plan-details>p { font-size:12px; color:#d0dfd5; }
+.station-impact-page .result-top { flex-wrap:wrap; }
+@media(max-width:600px) { .station-impact-page .station-controls,.station-impact-page .station-result { padding:24px 20px; } .station-projection { padding:16px; } .station-advice article { padding:12px; } }
+
+/* Clasificación rápida: contenedores y controles táctiles */
+#sort-game{grid-template-columns:.6fr 1.4fr}#sort-game .game-intro{padding-bottom:130px}#sort-game .game-intro small{display:block;color:#e1eddf;font-size:11px}.sort-arena{padding:30px}.sort-hud{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;font-size:12px}.sort-hud strong{padding:9px 14px;border-radius:99px;background:var(--ink);color:var(--lime);white-space:nowrap;font-size:22px;font-variant-numeric:tabular-nums}.sort-hud strong.urgent{background:#a52232;color:white}.sort-hud button{min-height:40px;border:1px solid var(--line);border-radius:8px;background:white;padding:8px 12px;cursor:pointer}.sort-stage{min-height:235px;display:grid;justify-items:center;align-content:center;margin:14px 0;border:2px dashed #cad5bf;border-radius:18px;background:linear-gradient(135deg,#f0f4df,#faf8ee)}.sort-stage .sort-object{margin:10px 0 0;border:0;background:transparent;color:var(--ink);cursor:grab;touch-action:none;user-select:none;max-width:100%;padding:8px 16px}.sort-stage .sort-object:active{cursor:grabbing}.sort-stage .sort-object:disabled{cursor:default}.sort-stage .sort-object.dragging{opacity:.35}.sort-stage .sort-object h3{margin:0;font-size:20px}.sort-stage .sort-object>span{width:90px;height:90px;font-size:58px;background:white;margin-bottom:8px}.sort-stage>p{font-size:11px;color:var(--muted);padding:0 12px}.sort-bins{grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}.sort-bins button{--bin:#8a5939;border:2px solid var(--bin);background:white;min-height:125px;padding:12px 4px;font-size:10px;position:relative}.sort-bins button[data-bin=plastico]{--bin:#e0b324}.sort-bins button[data-bin=papel]{--bin:#2879bd}.sort-bins button[data-bin=vidrio]{--bin:#34844c}.sort-bins button[data-bin=especial]{--bin:#c83746}.sort-bins button i{display:grid;place-items:center;width:43px;height:48px;margin:6px auto 10px;background:var(--bin);color:white;border-radius:4px 4px 9px 9px;font-size:27px;box-shadow:inset -7px 0 #0002;border-top:5px solid #0003}.sort-bins b,.sort-bins small{display:block}.sort-bins small{font-size:9px;margin-top:4px;color:var(--muted)}.sort-bins .drop-hover{transform:translateY(-6px) scale(1.04);outline:3px solid var(--bin);outline-offset:3px;background:#f0f4df}.sort-bins button.correct{box-shadow:0 0 0 3px #34844c44}.sort-drag-ghost{position:fixed;z-index:9999;pointer-events:none;transform:translate(-50%,-60%);display:grid;place-items:center;width:85px;height:85px;font-size:60px;background:#fffef2ed;border-radius:20px;box-shadow:0 12px 30px #0003}.sort-arena .game-feedback{min-height:66px;font-size:13px}.sort-arena .round-line i{width:100%}
+@media(max-width:900px){#sort-game{grid-template-columns:1fr}#sort-game .game-intro{min-height:340px}.sort-stage{min-height:190px}}@media(max-width:640px){.sort-arena{padding:22px 14px}.sort-bins{grid-template-columns:repeat(3,minmax(0,1fr))}.sort-bins button:last-child{grid-column:auto}.sort-bins button{min-height:112px}.sort-hud{flex-wrap:wrap}.sort-hud>span{font-size:11px}.sort-stage{min-height:180px}.sort-stage .sort-object>span{width:70px;height:70px;font-size:48px}}

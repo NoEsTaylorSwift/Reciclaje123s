@@ -65,110 +65,90 @@ const stationMaterials = {
   paper: { name: "Papel", color: "#c69258", icon: "▤", recovery: .8, action: "Mantén papel y cartón secos. Dobla las cajas para que tu estación ocupe menos espacio." },
   glass: { name: "Vidrio", color: "#7769a9", icon: "◇", recovery: .95, action: "Reserva un contenedor firme. Retira tapas y lleva los envases juntos para reducir viajes." }
 };
-const amountLabels = ["Nada", "Poco", "Medio", "Mucho"];
+const stationReductionTips = {
+  organic: { title: "Aprovecha lo que ya tienes", text: "Planea las comidas con lo que hay en casa, sirve porciones pequeñas y congela los sobrantes. Separa las cáscaras para composta si tienes un sistema adecuado." },
+  plastic: { title: "Cambia un desechable por algo que dure", text: "Lleva una botella y una bolsa reutilizables. Elige recargas o productos con menos empaque y separa los envases que acepte tu recolector." },
+  paper: { title: "Dale más usos al papel", text: "Usa las hojas por ambos lados, evita impresiones innecesarias y reutiliza cajas. Guarda seco y sin grasa el papel que vas a reciclar." },
+  glass: { title: "Haz que el envase vuelva a usarse", text: "Prefiere botellas retornables y reutiliza frascos en buen estado. Separa los envases de vidrio; espejos y cerámica requieren otro manejo." }
+};
 let peopleCount = 3;
-const stationRanges = Object.keys(stationMaterials).reduce((ranges, key) => {
-  ranges[key] = document.getElementById(`${key}-range`);
-  return ranges;
-}, {});
-
-let stationPlanVisible = false;
+const stationRanges = Object.fromEntries(Object.keys(stationMaterials).map(key => [key, document.getElementById(key + '-range')]));
 function updateStationControls() {
-  const peopleValue = document.getElementById("people-value");
+  const peopleValue = document.getElementById('people-value');
   if (!peopleValue) return;
   peopleValue.textContent = peopleCount;
-  Object.entries(stationRanges).forEach(([key, range]) => {
-    document.getElementById(`${key}-output`).textContent = `${Number(range.value || 0).toLocaleString("es-GT")} kg`;
+  Object.entries(stationRanges).forEach(([key, field]) => {
+    document.getElementById(key + '-output').textContent = 'kg / semana';
   });
 }
-
-document.getElementById("people-minus")?.addEventListener("click", () => { peopleCount = Math.max(1, peopleCount - 1); updateStationControls(); if (stationPlanVisible) generateStationFromInputs(); });
-document.getElementById("people-plus")?.addEventListener("click", () => { peopleCount = Math.min(8, peopleCount + 1); updateStationControls(); if (stationPlanVisible) generateStationFromInputs(); });
-Object.values(stationRanges).filter(Boolean).forEach(range => range.addEventListener("input", () => { updateStationControls(); if (stationPlanVisible) generateStationFromInputs(); }));
-
 function containerSize(amount) {
-  const adjusted = amount;
-  if (adjusted <= 1.2) return "10 L";
-  if (adjusted <= 2.4) return "20 L";
-  if (adjusted <= 3.8) return "35 L";
-  return "50 L";
+  if (amount <= 1.2) return '10 L';
+  if (amount <= 2.4) return '20 L';
+  if (amount <= 3.8) return '35 L';
+  return '50 L o varios';
 }
-
 function buildStationPlan(plan, shouldSave = true) {
-  stationPlanVisible = true;
   peopleCount = plan.people;
-  Object.entries(plan.amounts).forEach(([key, value]) => { if (stationRanges[key]) stationRanges[key].value = value; });
   updateStationControls();
-  const active = Object.entries(plan.amounts).filter(([, amount]) => amount > 0);
-  const total = active.reduce((sum, [, amount]) => sum + amount, 0);
-  if (!total) {
-    document.getElementById("result-placeholder").innerHTML = `<div class="mini-station"><span></span><span></span><span></span></div><h3>Aún no hay residuos</h3><p>Selecciona al menos una cantidad para poder diseñar tu estación.</p>`;
-    document.getElementById("result-placeholder").hidden = false;
-    document.getElementById("result-content").hidden = true;
-    return;
-  }
+  const active = Object.entries(plan.amounts).filter(([, kilos]) => kilos > 0).sort((a, b) => b[1] - a[1]);
   const metrics = window.ecoImpact.calculateMetrics(active.map(([material, kilos]) => ({ material, kilos })));
+  const fmt = window.ecoImpact.formatNumber;
   for (const key of ['total', 'co2', 'energy', 'water', 'trees']) {
-    document.getElementById('station-' + key).textContent = window.ecoImpact.formatNumber(metrics[key], key === 'trees' ? 3 : 2);
+    document.getElementById('station-' + key).textContent = fmt(metrics[key], key === 'trees' ? 3 : 2);
   }
-  document.getElementById('station-projection-note').textContent = 'Beneficio potencial si reciclas todos los kilos de plástico, papel y vidrio indicados. No representa reciclaje realizado ni se suma al historial. Orgánicos: ' + window.ecoImpact.formatNumber(plan.amounts.organic, 2) + ' kg/semana, sin equivalencias asignadas. * Agua y árboles solo para papel y cartón. Contenedores orientativos; ajusta según el volumen real.';
-  const recoverable = Math.round(active.reduce((sum, [key, amount]) => sum + amount * stationMaterials[key].recovery, 0) / total * 100);
-  const priorityKey = active.sort((a, b) => b[1] * (2 - stationMaterials[b[0]].recovery) - a[1] * (2 - stationMaterials[a[0]].recovery))[0][0];
-  const priority = stationMaterials[priorityKey];
-  document.getElementById("plan-title").textContent = peopleCount === 1 ? "Estación individual" : `Estación para ${peopleCount} personas`;
-  document.getElementById("recommended-bins").innerHTML = active.map(([key, amount]) => {
-    const material = stationMaterials[key];
-    return `<div class="recommended-bin"><i style="--bin-color:${material.color}">${material.icon}</i><strong>${material.name}</strong><span>${containerSize(amount)}</span></div>`;
-  }).join("");
-  document.getElementById("impact-number").textContent = `${recoverable}%`;
-  document.getElementById("impact-ring").style.setProperty("--percentage", recoverable);
-  document.getElementById("priority-title").textContent = priority.name;
-  document.getElementById("priority-text").textContent = priority.action;
-  const highVolume = active.filter(([, amount]) => amount >= 3).map(([key]) => stationMaterials[key].name.toLowerCase());
-  const collection = highVolume.length ? `vacía ${highVolume.join(" y ")} dos veces por semana` : "revisa los contenedores cada fin de semana";
-  document.getElementById("routine-text").textContent = `Limpia y seca los reciclables al usarlos; ${collection}. Una vez al mes, lleva vidrio y residuos especiales a su punto de recolección.`;
-  document.getElementById("result-placeholder").hidden = true;
-  document.getElementById("result-content").hidden = false;
-  const saved = shouldSave ? ecoStorage.set("ecoguia-station", JSON.stringify(plan)) : true;
-  document.getElementById("saved-pill").textContent = shouldSave ? (saved ? "Guardado localmente" : "No se pudo guardar") : "Último plan guardado";
+  document.getElementById('station-projection-note').textContent = 'Ahorro potencial semanal si reciclas el plástico, papel y vidrio indicados, frente a enviarlos al vertedero. Los orgánicos se incluyen en el peso, pero no tienen equivalencias asignadas. * Agua y árboles solo para papel y cartón. Estas estimaciones no se suman al historial.';
+  document.getElementById('plan-title').textContent = metrics.total ? 'Tu semana de residuos' : 'Cada cambio empieza por conocer tus residuos';
+  document.getElementById('station-footprint-total').textContent = fmt(metrics.total, 2) + ' kg por semana';
+  document.getElementById('station-footprint-detail').textContent = metrics.total
+    ? fmt(metrics.total / peopleCount, 2) + ' kg por persona a la semana. Si mantienes este ritmo durante 52 semanas, serían ' + fmt(metrics.total * 52, 1) + ' kg al año en tu hogar.'
+    : 'Empieza con un material. Al escribir los kilos verás tu resumen y consejos para reducirlos.';
+  document.getElementById('station-material-shares').innerHTML = active.map(([key, kilos]) => '<div><span>' + stationMaterials[key].name + '</span><strong>' + fmt(kilos, 2) + ' kg · ' + fmt(kilos / metrics.total * 100, 1) + '%</strong><div class="station-share-track"><span style="width:' + (kilos / metrics.total * 100) + '%;background:' + stationMaterials[key].color + '"></span></div></div>').join('');
+  document.getElementById('station-reduction-goal').textContent = metrics.total
+    ? 'Tu material más abundante es ' + stationMaterials[active[0][0]].name.toLowerCase() + '. Como reto inicial, intenta generar un 20% menos en total: ' + fmt(metrics.total * .8, 2) + ' kg la próxima semana (' + fmt(metrics.total * .2, 2) + ' kg menos). Es una meta sugerida; ajústala a tu hogar.'
+    : 'Pesa lo que desechas durante una semana. Esa será tu referencia para elegir un cambio pequeño y comparar después.';
+  document.getElementById('station-advice-list').innerHTML = active.map(([key, kilos], index) => '<article><span class="station-advice-icon" aria-hidden="true">' + stationMaterials[key].icon + '</span><div><span class="station-advice-material">' + (index === 0 ? 'EMPIEZA AQUÍ · ' : '') + stationMaterials[key].name + ' · ' + fmt(kilos, 2) + ' kg/semana</span><h5>' + stationReductionTips[key].title + '</h5><p>' + stationReductionTips[key].text + '</p></div></article>').join('');
+  document.getElementById('recommended-bins').innerHTML = active.map(([key, kilos]) => '<div class="recommended-bin"><i style="--bin-color:' + stationMaterials[key].color + '">' + stationMaterials[key].icon + '</i><strong>' + stationMaterials[key].name + '</strong><span>' + containerSize(kilos) + '</span></div>').join('');
+  document.getElementById('routine-text').textContent = active.length ? 'Separa los materiales al usarlos. Revisa los contenedores al final de la semana y acuerda una entrega con tu recolector. Los orgánicos necesitan atención más frecuente para evitar olores.' : 'Añade tus cantidades para adaptar la organización a tu hogar.';
+  document.getElementById('result-placeholder').hidden = true;
+  document.getElementById('result-content').hidden = false;
+  const saved = shouldSave ? ecoStorage.set('ecoguia-station', JSON.stringify(plan)) : true;
+  document.getElementById('saved-pill').textContent = shouldSave ? (saved ? 'Actualizado y guardado' : 'Actualizado · sin guardar') : 'Tu último resumen';
 }
-
 function generateStationFromInputs() {
-  if (Object.values(stationRanges).some(field => !field.checkValidity())) {
-    Object.values(stationRanges).find(field => !field.checkValidity()).reportValidity();
-    document.getElementById("result-content").hidden = true;
+  const invalid = Object.values(stationRanges).find(field => !field.checkValidity());
+  const error = document.getElementById('station-input-error');
+  error.textContent = invalid ? 'Escribe kilos entre 0 y 10,000, con hasta dos decimales. El resumen se actualizará cuando corrijas la cantidad.' : '';
+  Object.values(stationRanges).forEach(field => field.setAttribute('aria-invalid', String(!field.checkValidity())));
+  if (invalid) {
+    document.getElementById('result-content').hidden = true;
+    document.getElementById('result-placeholder').hidden = false;
+    document.getElementById('result-placeholder').innerHTML = '<h3>Revisa la cantidad</h3><p>Usa un número desde cero, con hasta dos decimales, para ver el impacto actualizado.</p>';
     return;
   }
-  const amounts = Object.fromEntries(Object.entries(stationRanges).map(([key, range]) => [key, Number(range.value)]));
+  const amounts = Object.fromEntries(Object.entries(stationRanges).map(([key, field]) => [key, Number(field.value || 0)]));
   buildStationPlan({ version: 2, people: peopleCount, amounts });
 }
-document.getElementById("build-station")?.addEventListener("click", generateStationFromInputs);
-document.getElementById("reset-station")?.addEventListener("click", () => {
-  stationPlanVisible = false;
-  document.getElementById("result-content").hidden = true;
-  document.getElementById("result-placeholder").hidden = false;
-  document.getElementById("result-placeholder").innerHTML = `<div class="mini-station"><span></span><span></span><span></span></div><h3>Haz nuevos ajustes</h3><p>Cambia las cantidades y vuelve a generar tu recomendación.</p>`;
+document.getElementById('people-minus')?.addEventListener('click', () => { peopleCount = Math.max(1, peopleCount - 1); generateStationFromInputs(); });
+document.getElementById('people-plus')?.addEventListener('click', () => { peopleCount = Math.min(8, peopleCount + 1); generateStationFromInputs(); });
+Object.values(stationRanges).filter(Boolean).forEach(field => field.addEventListener('input', generateStationFromInputs));
+document.getElementById('reset-station')?.addEventListener('click', () => {
+  Object.values(stationRanges).forEach(field => { field.value = 0; });
+  generateStationFromInputs();
 });
-
 function isValidStationPlan(plan) {
-  const materialKeys = Object.keys(stationMaterials);
-  return Boolean(
-    plan && plan.version === 2 &&
-    Number.isInteger(plan.people) &&
-    plan.people >= 1 &&
-    plan.people <= 8 &&
-    plan.amounts &&
-    materialKeys.every(key => Number.isFinite(plan.amounts[key]) && plan.amounts[key] >= 0 && plan.amounts[key] <= 10000)
-  );
+  return Boolean(plan && plan.version === 2 && Number.isInteger(plan.people) && plan.people >= 1 && plan.people <= 8 && plan.amounts && Object.keys(stationMaterials).every(key => Number.isFinite(plan.amounts[key]) && plan.amounts[key] >= 0 && plan.amounts[key] <= 10000 && Math.abs(plan.amounts[key] * 100 - Math.round(plan.amounts[key] * 100)) < 1e-6));
 }
-
-if (document.getElementById("station-result")) {
-  updateStationControls();
+if (document.getElementById('station-result')) {
+  let restored = false;
   try {
-    const savedStation = JSON.parse(ecoStorage.get("ecoguia-station"));
-    if (isValidStationPlan(savedStation)) buildStationPlan(savedStation, false);
-    else if (savedStation !== null) ecoStorage.remove("ecoguia-station");
-  } catch { ecoStorage.remove("ecoguia-station"); }
+    const saved = JSON.parse(ecoStorage.get('ecoguia-station'));
+    if (isValidStationPlan(saved)) {
+      Object.entries(saved.amounts).forEach(([key, value]) => { stationRanges[key].value = value; });
+      buildStationPlan(saved, false);
+      restored = true;
+    }
+  } catch { /* Los controles siguen disponibles sin datos guardados. */ }
+  if (!restored) generateStationFromInputs();
 }
 
 const visualWasteRules = [
