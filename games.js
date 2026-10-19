@@ -111,20 +111,35 @@ document.addEventListener('pointerup',e=>{
 document.addEventListener('pointercancel',clearSortDrag);
 document.addEventListener('visibilitychange',()=>{sortLastTick=performance.now();clearSortDrag();});
 window.addEventListener('blur',()=>{if(sortRunning&&!sortPaused){sortPaused=true;clearSortDrag();if($('sort-pause'))$('sort-pause').textContent='Continuar';}});
+const memoryLimits={4:45,6:60,8:90};
+let memoryClockTimer=null,memoryDeadline=0,memoryStarted=false,memoryEnded=false;
+function updateMemoryClock(){
+ const remaining=memoryStarted?Math.max(0,Math.ceil((memoryDeadline-performance.now())/1000)):memoryLimits[memoryCount];
+ $('memory-clock').textContent=remaining+' s';$('memory-clock').classList.toggle('urgent',remaining<=10);
+ if(memoryStarted&&!memoryEnded&&remaining===0){
+  memoryEnded=true;memoryLock=true;clearInterval(memoryClockTimer);clearTimeout(memoryTimer);memoryFirst=null;
+  document.querySelectorAll('.memory-card').forEach(card=>{card.disabled=true;flip(card);});$('memory-peek').disabled=true;
+  $('memory-message').textContent='⏰ ¡Tiempo agotado! Encontraste '+memoryMatches+' de '+memoryCount+' parejas en '+memoryMoves+' movimientos. Vuelve a intentarlo; completa el tablero para ganar EcoPuntos.';
+ }
+}
+function startMemoryClock(){
+ if(memoryStarted||memoryEnded)return;
+ memoryStarted=true;memoryDeadline=performance.now()+memoryLimits[memoryCount]*1000;memoryClockTimer=setInterval(updateMemoryClock,100);updateMemoryClock();
+}
 let memoryFirst=null,memoryLock=false,memoryMoves=0,memoryMatches=0,memoryTimer,memoryCount=6,memoryPeek=false;
 function buildMemory(){
- clearTimeout(memoryTimer);memoryFirst=null;memoryLock=false;memoryMoves=memoryMatches=0;memoryPeek=false;
+ clearInterval(memoryClockTimer);memoryStarted=false;memoryEnded=false;memoryDeadline=0;clearTimeout(memoryTimer);memoryFirst=null;memoryLock=false;memoryMoves=memoryMatches=0;memoryPeek=false;
  const chosen=shuffle(memoryPairs).slice(0,memoryCount),cards=shuffle(chosen.flatMap((p,id)=>[{id,text:p[0]},{id,text:p[1]}]));
  $('memory-board').innerHTML=cards.map((c,i)=>'<button class="memory-card" data-pair="'+c.id+'" aria-label="Tarjeta '+(i+1)+', oculta"><span class="card-back">♻</span><span class="card-front">'+c.text+'</span></button>').join('');
- $('memory-moves').textContent=0;$('memory-message').textContent='Encuentra '+memoryCount+' parejas. ¡Observa y recuerda!';$('memory-peek').disabled=false;
+ $('memory-moves').textContent=0;$('memory-message').textContent='Tienes '+memoryLimits[memoryCount]+' segundos para encontrar '+memoryCount+' parejas. El reloj comienza al voltear una tarjeta o pedir un vistazo y sigue aunque cambies de juego.';$('memory-peek').disabled=false;updateMemoryClock();
 }
 function flip(card){card.classList.add('flipped');card.setAttribute('aria-label',card.querySelector('.card-front').textContent);}
 function hideCard(card){card.classList.remove('flipped');card.setAttribute('aria-label','Tarjeta oculta');}
 function selectCard(card){
- if(memoryLock||card.disabled||card===memoryFirst)return;flip(card);if(!memoryFirst){memoryFirst=card;return;}
+ if(memoryEnded)return;updateMemoryClock();if(memoryEnded||memoryLock||card.disabled||card===memoryFirst)return;startMemoryClock();flip(card);if(!memoryFirst){memoryFirst=card;return;}
  memoryMoves++;$('memory-moves').textContent=memoryMoves;const first=memoryFirst;memoryFirst=null;
  if(first.dataset.pair===card.dataset.pair){[first,card].forEach(c=>{c.classList.add('matched');c.disabled=true;});memoryMatches++;$('memory-message').textContent='¡Pareja encontrada! '+memoryMatches+' de '+memoryCount;
- if(memoryMatches===memoryCount){const score=Math.max(10,memoryCount*20-(memoryMoves-memoryCount)*5-(memoryPeek?15:0)),r=reward('memory-'+memoryCount,score);$('memory-message').textContent='🏆 ¡Completado en '+memoryMoves+' movimientos! '+score+' puntos · Récord: '+r.best+' · +'+r.earned+' EcoPuntos nuevos.';celebrate($('memory-board'));$('memory-peek').disabled=true;}return;}
+ if(memoryMatches===memoryCount){memoryEnded=true;clearInterval(memoryClockTimer);const seconds=Math.max(0,Math.ceil((memoryDeadline-performance.now())/1000));const score=Math.max(10,memoryCount*20-(memoryMoves-memoryCount)*5-(memoryPeek?15:0)),r=reward('memory-'+memoryCount,score);$('memory-message').textContent='🏆 ¡Completado con '+seconds+' s restantes y '+memoryMoves+' movimientos! '+score+' puntos · Récord: '+r.best+' · +'+r.earned+' EcoPuntos nuevos.';celebrate($('memory-board'));$('memory-peek').disabled=true;}return;}
  memoryLock=true;$('memory-message').textContent='Observa sus posiciones y prueba otra pareja.';memoryTimer=setTimeout(()=>{hideCard(first);hideCard(card);memoryLock=false;},900);
 }
 let truthOrder,truthIndex,truthScore,truthAnswered,truthStreak,truthCorrect;
@@ -141,8 +156,8 @@ document.addEventListener('click',e=>{
  if(b.closest('.truth-options')&&!truthAnswered){truthAnswered=true;const item=truthOrder[truthIndex],correct=(b.dataset.value==='true')===item[1];truthStreak=correct?truthStreak+1:0;const earned=correct?10+Math.min(10,(truthStreak-1)*5):0;truthScore+=earned;if(correct)truthCorrect++;$('truth-score').textContent=truthCorrect;document.querySelectorAll('.truth-options button').forEach(o=>{o.disabled=true;o.classList.toggle('correct',(o.dataset.value==='true')===item[1]);});if(!correct)b.classList.add('wrong');$('truth-feedback').textContent=(correct?'¡Acertaste! +'+earned+' puntos. ':'Misterio resuelto: ')+item[2];$('truth-next').hidden=false;$('truth-next').textContent=truthIndex===truthOrder.length-1?'Ver resultados 🏆':'Siguiente decisión →';return;}
  if(b.id==='truth-next'&&truthAnswered){if(++truthIndex<truthOrder.length)renderTruth();else complete('truth',truthScore,145,truthCorrect+' respuestas correctas de '+truthOrder.length+'.');}
 });
-const controls=document.createElement('div');controls.className='game-tools';controls.innerHTML='<label for="memory-size">Tu desafío <select id="memory-size"><option value="4">Fácil · 4 parejas</option><option value="6" selected>Normal · 6 parejas</option><option value="8">Experto · 8 parejas</option></select></label><button id="memory-peek" type="button">👀 Vistazo · −15 puntos</button>';$('memory-board').before(controls);
+const controls=document.createElement('div');controls.className='game-tools';controls.innerHTML='<label for="memory-size">Tu desafío <select id="memory-size"><option value="4">Fácil · 4 parejas · 45 s</option><option value="6" selected>Normal · 6 parejas · 60 s</option><option value="8">Experto · 8 parejas · 90 s</option></select></label><strong id="memory-clock" class="memory-clock" role="timer" aria-label="Tiempo restante de memoria">60 s</strong><button id="memory-peek" type="button">👀 Vistazo · −15 puntos</button>';$('memory-board').before(controls);
 $('memory-size').addEventListener('change',e=>{memoryCount=Number(e.target.value);buildMemory();});
 $('memory-restart').addEventListener('click',buildMemory);
-$('memory-peek').addEventListener('click',()=>{if(memoryLock||memoryPeek)return;memoryPeek=true;memoryLock=true;$('memory-peek').disabled=true;const cards=[...document.querySelectorAll('.memory-card:not(.matched)')];const first=memoryFirst;cards.forEach(flip);memoryTimer=setTimeout(()=>{cards.forEach(c=>{if(c!==first)hideCard(c);});memoryLock=false;},1800);});
+$('memory-peek').addEventListener('click',()=>{if(memoryEnded)return;updateMemoryClock();if(memoryEnded||memoryLock||memoryPeek)return;startMemoryClock();memoryPeek=true;memoryLock=true;$('memory-peek').disabled=true;const cards=[...document.querySelectorAll('.memory-card:not(.matched)')];const first=memoryFirst;cards.forEach(flip);memoryTimer=setTimeout(()=>{cards.forEach(c=>{if(c!==first)hideCard(c);});memoryLock=false;},1800);});
 updateProfile();startSort();buildMemory();startTruth();

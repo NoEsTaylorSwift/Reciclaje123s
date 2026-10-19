@@ -96,8 +96,9 @@ function buildStationPlan(plan, shouldSave = true) {
   for (const key of ['total', 'co2', 'energy', 'water', 'trees']) {
     document.getElementById('station-' + key).textContent = fmt(metrics[key], key === 'trees' ? 3 : 2);
   }
-  document.getElementById('station-projection-note').textContent = 'Ahorro potencial semanal si reciclas el plástico, papel y vidrio indicados, frente a enviarlos al vertedero. Los orgánicos se incluyen en el peso, pero no tienen equivalencias asignadas. * Agua y árboles solo para papel y cartón. Estas estimaciones no se suman al historial.';
-  document.getElementById('plan-title').textContent = metrics.total ? 'Tu semana de residuos' : 'Cada cambio empieza por conocer tus residuos';
+  document.getElementById('station-projection-note').textContent = 'Ahorro potencial semanal si reciclas el plástico, papel y vidrio indicados, frente a enviarlos al vertedero. Los orgánicos se incluyen en el peso, pero no tienen equivalencias asignadas. * Agua y árboles solo para papel y cartón. Son equivalencias educativas de ahorro potencial.';
+  document.getElementById('plan-title').textContent = peopleCount === 1 ? 'Tu estación personal' : 'Una estación para ' + peopleCount + ' personas';
+  document.getElementById('station-overview').textContent = metrics.total ? fmt(metrics.total, 2) + ' kg por semana · ' + active.length + ' materiales para separar en casa.' : 'Estos son tus cuatro espacios de separación. Añade las cantidades para adaptar tu estación.';
   document.getElementById('station-footprint-total').textContent = fmt(metrics.total, 2) + ' kg por semana';
   document.getElementById('station-footprint-detail').textContent = metrics.total
     ? fmt(metrics.total / peopleCount, 2) + ' kg por persona a la semana. Si mantienes este ritmo durante 52 semanas, serían ' + fmt(metrics.total * 52, 1) + ' kg al año en tu hogar.'
@@ -107,7 +108,10 @@ function buildStationPlan(plan, shouldSave = true) {
     ? 'Tu material más abundante es ' + stationMaterials[active[0][0]].name.toLowerCase() + '. Como reto inicial, intenta generar un 20% menos en total: ' + fmt(metrics.total * .8, 2) + ' kg la próxima semana (' + fmt(metrics.total * .2, 2) + ' kg menos). Es una meta sugerida; ajústala a tu hogar.'
     : 'Pesa lo que desechas durante una semana. Esa será tu referencia para elegir un cambio pequeño y comparar después.';
   document.getElementById('station-advice-list').innerHTML = active.map(([key, kilos], index) => '<article><span class="station-advice-icon" aria-hidden="true">' + stationMaterials[key].icon + '</span><div><span class="station-advice-material">' + (index === 0 ? 'EMPIEZA AQUÍ · ' : '') + stationMaterials[key].name + ' · ' + fmt(kilos, 2) + ' kg/semana</span><h5>' + stationReductionTips[key].title + '</h5><p>' + stationReductionTips[key].text + '</p></div></article>').join('');
-  document.getElementById('recommended-bins').innerHTML = active.map(([key, kilos]) => '<div class="recommended-bin"><i style="--bin-color:' + stationMaterials[key].color + '">' + stationMaterials[key].icon + '</i><strong>' + stationMaterials[key].name + '</strong><span>' + containerSize(kilos) + '</span></div>').join('');
+  document.getElementById('recommended-bins').innerHTML = Object.entries(stationMaterials).map(([key, material]) => {
+    const kilos = plan.amounts[key];
+    return '<article class="recommended-bin' + (kilos ? '' : ' station-bin-inactive') + '"><div class="station-bin-illustration" style="--bin-color:' + material.color + '"><span aria-hidden="true">' + material.icon + '</span></div><strong>' + material.name + '</strong><span>' + fmt(kilos, 2) + ' kg / semana</span><b>' + (kilos ? containerSize(kilos) : 'Sin residuos indicados') + '</b></article>';
+  }).join('');
   document.getElementById('routine-text').textContent = active.length ? 'Separa los materiales al usarlos. Revisa los contenedores al final de la semana y acuerda una entrega con tu recolector. Los orgánicos necesitan atención más frecuente para evitar olores.' : 'Añade tus cantidades para adaptar la organización a tu hogar.';
   document.getElementById('result-placeholder').hidden = true;
   document.getElementById('result-content').hidden = false;
@@ -128,10 +132,31 @@ function generateStationFromInputs() {
   const amounts = Object.fromEntries(Object.entries(stationRanges).map(([key, field]) => [key, Number(field.value || 0)]));
   buildStationPlan({ version: 2, people: peopleCount, amounts });
 }
+function setStationImpactOpen(open) {
+  const panel = document.getElementById('station-impact-panel');
+  const button = document.getElementById('station-impact-toggle');
+  if (!panel || !button) return;
+  panel.hidden = !open;
+  button.setAttribute('aria-expanded', String(open));
+  button.innerHTML = open ? 'Ocultar impacto y consejos <span aria-hidden="true">↑</span>' : 'Ver mi impacto y cómo mejorar <span aria-hidden="true">↗</span>';
+}
+document.getElementById('station-impact-toggle')?.addEventListener('click', () => {
+  const open = document.getElementById('station-impact-panel').hidden;
+  setStationImpactOpen(open);
+});
+function openStationImpactFromHash() {
+  if (window.location.hash !== '#consejos' || !document.getElementById('station-impact-panel')) return;
+  setStationImpactOpen(true);
+  document.getElementById('consejos').scrollIntoView({ block: 'start' });
+}
+if (document.getElementById('station-impact-panel')) {
+  window.addEventListener('hashchange', openStationImpactFromHash);
+}
 document.getElementById('people-minus')?.addEventListener('click', () => { peopleCount = Math.max(1, peopleCount - 1); generateStationFromInputs(); });
 document.getElementById('people-plus')?.addEventListener('click', () => { peopleCount = Math.min(8, peopleCount + 1); generateStationFromInputs(); });
 Object.values(stationRanges).filter(Boolean).forEach(field => field.addEventListener('input', generateStationFromInputs));
 document.getElementById('reset-station')?.addEventListener('click', () => {
+  setStationImpactOpen(false);
   Object.values(stationRanges).forEach(field => { field.value = 0; });
   generateStationFromInputs();
 });
@@ -149,6 +174,7 @@ if (document.getElementById('station-result')) {
     }
   } catch { /* Los controles siguen disponibles sin datos guardados. */ }
   if (!restored) generateStationFromInputs();
+  openStationImpactFromHash();
 }
 
 const visualWasteRules = [

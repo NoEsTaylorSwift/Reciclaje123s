@@ -23,7 +23,7 @@ Después visita `http://localhost:8000`.
 
 - `index.html`: bienvenida y acceso a cada experiencia
 - `aprender.html`: guía visual y regla de las 3R
-- `estacion.html`: planificador doméstico, historial de reciclaje y calculadora de impacto en un mismo recorrido
+- `estacion.html`: residuos semanales, cálculo instantáneo de impacto potencial y consejos de reducción
 - `ecoscan.html`: flujo continuo para escribir o fotografiar un objeto, recibir orientación, obtener ideas de reutilización, separarlo y calcular su impacto
 - `ecoia.html` y `upcycling.html`: vistas anteriores conservadas por compatibilidad
 - `upcycling.js`: recetas, selección segura y análisis visual para reutilización
@@ -97,3 +97,7 @@ El sitio no incluye cuentas, anuncios, analítica ni rastreadores propios. Googl
 La estación recibe kilos semanales por material y calcula automáticamente el beneficio potencial con los mismos factores de EcoImpacto. Los cambios actualizan el plan y su proyección; estas cantidades no se añaden al historial de reciclaje realizado. Los planes anteriores por niveles se reemplazan al generar un plan en kilos.
 
 La experiencia muestra el impacto al escribir, sin botón de cálculo. Resume residuos semanales, peso por persona, proyección a 52 semanas y proporciones por material. Los consejos se ordenan por el material más abundante e incluyen un reto opcional de reducción del 20%. La proyección ambiental expresa ahorro potencial por reciclaje, no una huella total de producir residuos.
+
+La página de estación ya no muestra el formulario de registro ni el resumen mensual. El cálculo instantáneo y los consejos son la experiencia principal; se conservan los datos locales existentes.
+
+La estación de reciclaje es la vista principal, con cuatro contenedores y rutina adaptados a las cantidades. El botón «Ver mi impacto y cómo mejorar» despliega el resumen y los consejos en la misma tarjeta. Mientras están abiertos, se actualizan con los controles; el restablecimiento vuelve a ocultarlos.
