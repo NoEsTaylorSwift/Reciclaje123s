@@ -187,3 +187,25 @@
 @media(max-width:600px) { .station-bins-preview { grid-template-columns:repeat(2,minmax(0,1fr)); } .station-impact-toggle { font-size:13px; } }
 
 .memory-clock{padding:10px 16px;border-radius:99px;background:var(--ink);color:var(--lime);font-size:22px;font-variant-numeric:tabular-nums;white-space:nowrap}.memory-clock.urgent{background:#a52232;color:white}
+
+/* Estación en libras: contenedores legibles y panel nativo accesible. */
+.station-impact-page .station-result::before { pointer-events:none; }
+.station-impact-page .station-app { grid-template-columns:minmax(270px,.85fr) minmax(0,1.25fr); align-items:start; background:#18392f; }
+.station-impact-page .station-controls { align-self:stretch; }
+.station-impact-page .station-bins-preview { grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.station-bins-preview .recommended-bin { position:relative; padding:24px 18px 20px; border-radius:18px; background:linear-gradient(160deg,#ffffff12,#ffffff05); text-align:left; }
+.station-bin-illustration { width:64px; height:84px; margin:12px auto 22px; }
+.station-bins-preview .recommended-bin strong { font-size:16px; }
+.station-bins-preview .recommended-bin>span { font-size:14px; font-weight:700; color:#fff; }
+.station-bins-preview .recommended-bin>b { font-size:10px; margin:8px 0; }
+.station-bins-preview .recommended-bin>small { display:block; color:#c8d9cd; font-size:12px; line-height:1.6; }
+.station-bins-preview .station-bin-inactive { border-style:dashed; }
+.station-impact-toggle { min-height:60px; cursor:pointer; list-style:none; border:0; border-radius:12px; padding:18px 20px; font-weight:800; }
+.station-impact-toggle::-webkit-details-marker { display:none; }
+.station-impact-toggle>span:last-child { flex:none; display:grid; place-items:center; width:26px; height:26px; border-radius:50%; background:#18392f; color:var(--lime); font-size:20px; }
+.station-impact-toggle:hover { background:#e8ff9b; }
+.station-impact-disclosure:not([open])>.station-impact-panel { display:none; }
+.station-impact-panel { scroll-margin-top:80px; }
+.station-impact-disclosure[open]>.station-impact-toggle { margin-bottom:16px; }
+@media(max-width:900px) { .station-impact-page .station-app { grid-template-columns:1fr; } .station-impact-page .station-controls { border-right:0; } }
+@media(max-width:400px) { .station-bins-preview .recommended-bin { padding:20px 12px 16px; } .station-bins-preview .recommended-bin strong { font-size:14px; } .station-impact-toggle { padding:16px 12px; } }

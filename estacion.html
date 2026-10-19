@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=3-libras">
 </head>
 <body class="inner-page station-impact-page">
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -51,12 +51,12 @@
         <div class="station-app reveal">
           <div class="station-controls">
             <div class="people-control"><div><span class="control-label">Personas en casa</span><strong><b id="people-value">3</b> personas</strong></div><div class="stepper"><button type="button" id="people-minus" aria-label="Restar una persona">−</button><button type="button" id="people-plus" aria-label="Agregar una persona">+</button></div></div>
-            <p class="control-intro">¿Cuántos kilos generan por semana?</p>
-            <p class="station-input-help" id="station-input-help">Kilos de todo el hogar, no por persona. Si no lo sabes, pesa tus residuos durante una semana.</p><div class="waste-sliders">
-              <label><span><i class="material-dot organic"></i> Orgánico <b id="organic-output">kg/semana</b></span><input type="number" id="organic-range" min="0" max="10000" step="0.01" value="0" inputmode="decimal" aria-label="Cantidad de residuos orgánicos" aria-describedby="organic-example station-input-help"><small id="organic-example">Cáscaras y restos de alimentos</small></label>
-              <label><span><i class="material-dot plastic"></i> Plástico <b id="plastic-output">kg/semana</b></span><input type="number" id="plastic-range" min="0" max="10000" step="0.01" value="0" inputmode="decimal" aria-label="Cantidad de plástico" aria-describedby="plastic-example station-input-help"><small id="plastic-example">Botellas y envases plásticos</small></label>
-              <label><span><i class="material-dot paper"></i> Papel <b id="paper-output">kg/semana</b></span><input type="number" id="paper-range" min="0" max="10000" step="0.01" value="0" inputmode="decimal" aria-label="Cantidad de papel y cartón" aria-describedby="paper-example station-input-help"><small id="paper-example">Hojas, cajas y empaques de cartón</small></label>
-              <label><span><i class="material-dot glass"></i> Vidrio <b id="glass-output">kg/semana</b></span><input type="number" id="glass-range" min="0" max="10000" step="0.01" value="0" inputmode="decimal" aria-label="Cantidad de vidrio" aria-describedby="glass-example station-input-help"><small id="glass-example">Frascos y botellas de vidrio</small></label>
+            <p class="control-intro">¿Cuántas libras generan por semana?</p>
+            <p class="station-input-help" id="station-input-help">Libras (lb) de todo el hogar, no por persona. Si no lo sabes, pesa tus residuos durante una semana.</p><div class="waste-sliders">
+              <label><span><i class="material-dot organic"></i> Orgánico <b id="organic-output">lb/semana</b></span><input type="number" id="organic-range" min="0" max="100000" step="0.01" value="0" inputmode="decimal" aria-label="Libras de residuos orgánicos por semana" aria-describedby="organic-example station-input-help"><small id="organic-example">Cáscaras y restos de alimentos</small></label>
+              <label><span><i class="material-dot plastic"></i> Plástico <b id="plastic-output">lb/semana</b></span><input type="number" id="plastic-range" min="0" max="100000" step="0.01" value="0" inputmode="decimal" aria-label="Libras de plástico por semana" aria-describedby="plastic-example station-input-help"><small id="plastic-example">Botellas y envases plásticos</small></label>
+              <label><span><i class="material-dot paper"></i> Papel <b id="paper-output">lb/semana</b></span><input type="number" id="paper-range" min="0" max="100000" step="0.01" value="0" inputmode="decimal" aria-label="Libras de papel y cartón por semana" aria-describedby="paper-example station-input-help"><small id="paper-example">Hojas, cajas y empaques de cartón</small></label>
+              <label><span><i class="material-dot glass"></i> Vidrio <b id="glass-output">lb/semana</b></span><input type="number" id="glass-range" min="0" max="100000" step="0.01" value="0" inputmode="decimal" aria-label="Libras de vidrio por semana" aria-describedby="glass-example station-input-help"><small id="glass-example">Frascos y botellas de vidrio</small></label>
             </div>
             <p class="station-live-hint"><span aria-hidden="true">●</span> Tu estación se adapta mientras ajustas las cantidades.</p><p class="station-input-error" id="station-input-error" role="status"></p>
           </div>
@@ -67,14 +67,14 @@
               
               <p class="station-overview" id="station-overview"></p>
               <div class="recommended-bins station-bins-preview" id="recommended-bins"></div>
-              <p class="station-bin-note">Capacidades orientativas; ajusta cada contenedor al volumen real. Los colores solo identifican los materiales en esta guía.</p>
+              <p class="station-bin-note">Elige recipientes según el espacio de tu hogar. Los colores identifican materiales en esta guía; confirma las reglas de tu recolector.</p>
               <div class="weekly-plan"><span>Tu rutina en casa</span><p id="routine-text"></p></div>
-              <button class="button station-impact-toggle" id="station-impact-toggle" type="button" aria-expanded="false" aria-controls="station-impact-panel">Ver mi impacto y cómo mejorar <span aria-hidden="true">↗</span></button>
-              <div id="station-impact-panel" class="station-impact-panel" hidden>
-              <section class="station-projection" aria-labelledby="projection-title"><span class="result-kicker">SEGÚN TUS RESIDUOS SEMANALES</span><h4 id="projection-title">Lo que puedes evitar al reciclar</h4><div class="station-projection-grid"><article><strong id="station-total">0</strong><span>kg generados / semana</span></article><article><strong id="station-co2">0</strong><span>kg CO₂e evitados / semana</span></article><article><strong id="station-energy">0</strong><span>kWh ahorrados / semana</span></article><article><strong id="station-water">0</strong><span>litros de agua / semana*</span></article><article><strong id="station-trees">0</strong><span>árboles equivalentes / semana*</span></article></div><p id="station-projection-note"></p><a href="#metodologia">Ver factores y límites del cálculo</a></section><div class="station-footprint"><strong id="station-footprint-total">0 kg</strong><p id="station-footprint-detail">Indica tus cantidades para conocer tu semana.</p><div id="station-material-shares" class="station-material-shares" aria-label="Distribución de tus residuos"></div></div>
+              <details id="station-impact-disclosure" class="station-impact-disclosure"><summary class="button station-impact-toggle" id="station-impact-toggle" aria-controls="station-impact-panel"><span id="station-impact-toggle-label">Ver mi impacto y cómo mejorar</span><span id="station-impact-toggle-icon" aria-hidden="true">+</span></summary>
+              <div id="station-impact-panel" class="station-impact-panel">
+              <section class="station-projection" aria-labelledby="projection-title"><span class="result-kicker">SEGÚN TUS RESIDUOS SEMANALES</span><h4 id="projection-title">Lo que puedes evitar al reciclar</h4><div class="station-projection-grid"><article><strong id="station-total">0</strong><span>lb generadas / semana</span></article><article><strong id="station-co2">0</strong><span>lb CO₂e evitadas / semana</span></article><article><strong id="station-energy">0</strong><span>kWh ahorrados / semana</span></article><article><strong id="station-water">0</strong><span>litros de agua / semana*</span></article><article><strong id="station-trees">0</strong><span>árboles equivalentes / semana*</span></article></div><p id="station-projection-note"></p><a href="#metodologia">Ver factores y límites del cálculo</a></section><div class="station-footprint"><strong id="station-footprint-total">0 lb</strong><p id="station-footprint-detail">Indica tus cantidades para conocer tu semana.</p><div id="station-material-shares" class="station-material-shares" aria-label="Distribución de tus residuos"></div></div>
               <section class="station-advice" id="consejos" aria-labelledby="station-advice-title"><span class="result-kicker">PEQUEÑOS CAMBIOS QUE SUMAN</span><h4 id="station-advice-title">Por dónde empezar a reducir</h4><p id="station-reduction-goal"></p><div id="station-advice-list"></div></section>
               </div>
-
+              </details>
               <button type="button" class="text-button" id="reset-station">Empezar de cero ↻</button>
             </div>
           </div>
@@ -85,7 +85,7 @@
     <section class="section impact-method" id="metodologia">
       <div class="container">
         <div class="section-heading reveal"><div><p class="eyebrow dark"><span></span> Paso 3 · Comprende</p><h2>De dónde salen<br>las equivalencias</h2></div><p>Son estimaciones educativas basadas en promedios nacionales de Estados Unidos. Sirven para visualizar tendencias, no para una auditoría ambiental local.</p></div>
-        <div class="impact-method-grid"><article class="reveal"><span>01</span><h3>CO₂ y energía</h3><p>Para papel, plástico, vidrio, metal y mezclas se usa el beneficio promedio de reciclar materiales mixtos en vez de enviarlos al vertedero: <b>3.12 kg CO₂e</b> y <b>4.81 kWh</b> por kilogramo.</p></article><article class="reveal"><span>02</span><h3>Agua y árboles</h3><p>Solo se calculan para papel y cartón: <b>29.2 litros</b> y <b>0.0187 árboles</b> equivalentes por kilogramo. No se asigna este beneficio a los demás materiales.</p></article><article class="reveal"><span>03</span><h3>Límites claros</h3><p>Electrónicos, orgánicos, textiles, madera, muebles y residuos generales se suman al peso, pero no reciben equivalencias sin un factor confiable para su tratamiento. Los resultados reales dependen del sistema local.</p></article></div>
+        <div class="impact-method-grid"><article class="reveal"><span>01</span><h3>CO₂ y energía</h3><p>Para papel, plástico, vidrio, metal y mezclas se usa el beneficio promedio de reciclar materiales mixtos en vez de enviarlos al vertedero: <b>3.119 lb CO₂e</b> y <b>2.18 kWh</b> por libra.</p></article><article class="reveal"><span>02</span><h3>Agua y árboles</h3><p>Solo se calculan para papel y cartón: <b>13.24 litros</b> y <b>0.00848 árboles</b> equivalentes por libra. No se asigna este beneficio a los demás materiales.</p></article><article class="reveal"><span>03</span><h3>Límites claros</h3><p>Electrónicos, orgánicos, textiles, madera, muebles y residuos generales se suman al peso, pero no reciben equivalencias sin un factor confiable para su tratamiento. Los resultados reales dependen del sistema local.</p></article></div>
         <p class="impact-sources reveal">Fuentes: <a href="https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator-calculations-and-references" target="_blank" rel="noopener noreferrer">Calculadora de equivalencias de EPA</a>, <a href="https://www.epa.gov/system/files/documents/2024-01/warm_management_practices_v16_dec.pdf" target="_blank" rel="noopener noreferrer">modelo WARM v16</a> y <a href="https://archive.epa.gov/wastes/conserve/tools/localgov/web/html/index-2.html" target="_blank" rel="noopener noreferrer">equivalencias de papel y agua</a>.</p><p class="impact-paper-note">* Las métricas de agua y árboles corresponden únicamente al papel y cartón indicados.</p>
       </div>
     </section>
@@ -95,6 +95,7 @@
 
   <footer><div class="container footer-inner"><a class="brand footer-brand" href="index.html"><span class="brand-mark">↻</span><span>EcoGuía</span></a><p class="footer-links"><a href="etica.html">Ética y privacidad</a><span aria-hidden="true">·</span><a href="#metodologia">Metodología</a></p><p>Hecho con cuidado por nuestro planeta <span>♥</span></p></div></footer>
   <script src="impacto.js"></script>
-  <script src="app.js"></script>
+  <script src="station.js?v=3-libras"></script>
+  <script src="site.js"></script>
 </body>
 </html>

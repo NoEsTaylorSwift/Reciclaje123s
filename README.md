@@ -101,3 +101,5 @@ La experiencia muestra el impacto al escribir, sin botón de cálculo. Resume re
 La página de estación ya no muestra el formulario de registro ni el resumen mensual. El cálculo instantáneo y los consejos son la experiencia principal; se conservan los datos locales existentes.
 
 La estación de reciclaje es la vista principal, con cuatro contenedores y rutina adaptados a las cantidades. El botón «Ver mi impacto y cómo mejorar» despliega el resumen y los consejos en la misma tarjeta. Mientras están abiertos, se actualizan con los controles; el restablecimiento vuelve a ocultarlos.
+
+La estación usa libras (lb), incluyendo el peso de CO₂e. Los planes versión 2 se convierten a versión 3 (unit: lb) al abrirlos. Los factores ambientales y el historial interno conservan kilogramos: la interfaz convierte usando 1 lb = 0.45359237 kg. station.js contiene la lógica de la estación y el panel de impacto usa details/summary nativo, independiente del controlador del resto de herramientas.

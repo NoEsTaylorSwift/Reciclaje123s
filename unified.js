@@ -263,10 +263,11 @@ flowImpactForm?.addEventListener("submit", event => {
   const kilosField = document.getElementById("flow-impact-kilos");
   const dateField = document.getElementById("flow-impact-date");
   const status = document.getElementById("flow-impact-status");
-  const kilos = Number(kilosField.value);
+  const pounds = Number(kilosField.value);
+  const kilos = pounds * 0.45359237;
   const date = dateField.value;
 
-  if (!impactApi || !impactApi.materials[activeImpactMaterial] || !/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(kilos) || kilos <= 0 || kilos > 10000) {
+  if (!impactApi || !impactApi.materials[activeImpactMaterial] || !/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(kilos) || kilos <= 0 || pounds > 10000) {
     status.textContent = "Revisa el peso y la fecha antes de guardar.";
     return;
   }
@@ -283,14 +284,14 @@ flowImpactForm?.addEventListener("submit", event => {
   const material = impactApi.materials[activeImpactMaterial];
   const eligible = material.eligible;
   const isPaper = activeImpactMaterial === "paper";
-  document.getElementById("flow-impact-total").textContent = impactApi.formatNumber(metrics.total, 2);
-  document.getElementById("flow-impact-co2").textContent = eligible ? impactApi.formatNumber(metrics.co2, 1) : "—";
+  document.getElementById("flow-impact-total").textContent = impactApi.formatNumber(metrics.total / 0.45359237, 2);
+  document.getElementById("flow-impact-co2").textContent = eligible ? impactApi.formatNumber(metrics.co2 / 0.45359237, 1) : "—";
   document.getElementById("flow-impact-energy").textContent = eligible ? impactApi.formatNumber(metrics.energy, 1) : "—";
   document.getElementById("flow-impact-water").textContent = isPaper ? impactApi.formatNumber(metrics.water, 0) : "—";
   document.getElementById("flow-impact-trees").textContent = isPaper ? impactApi.formatNumber(metrics.trees, metrics.trees < 1 ? 2 : 1) : "—";
-  document.getElementById("flow-impact-month-total").textContent = `${impactApi.formatNumber(monthMetrics.total, 2)} kg`;
+  document.getElementById("flow-impact-month-total").textContent = `${impactApi.formatNumber(monthMetrics.total / 0.45359237, 2)} lb`;
   document.getElementById("flow-impact-result").hidden = false;
-  status.textContent = `${impactApi.formatNumber(kilos, 2)} kg de ${material.label.toLowerCase()} se guardaron en tu estación.`;
+  status.textContent = `${impactApi.formatNumber(pounds, 2)} lb de ${material.label.toLowerCase()} se guardaron en tu estación.`;
   kilosField.value = "";
   setFlowProgress(4);
 });
