@@ -60,6 +60,14 @@ document.querySelectorAll(".waste-tab").forEach(tab => tab.addEventListener("cli
 if (document.getElementById("category-panel")) renderCategory("organico");
 
 const visualWasteRules = [
+  { terms: ["plástico reciclable", "plastico reciclable"], category: "Plástico reciclable", icon: "♳", instruction: "Vacía, enjuaga y seca el objeto. Verifica el tipo de plástico aceptado en tu localidad." },
+  { terms: ["vidrio reciclable", "vidrio"], category: "Vidrio", icon: "◇", instruction: "Vacía y enjuaga el envase. Retira tapas y no lo mezcles con cerámica, espejos o cristal templado." },
+  { terms: ["papel y cartón", "papel y carton"], category: "Papel y cartón", icon: "▤", instruction: "Debe estar limpio y seco. Aplánalo y retira cualquier parte plástica o metálica." },
+  { terms: ["metal reciclable"], category: "Metal reciclable", icon: "◉", instruction: "Límpialo, sécalo y protege cualquier borde afilado antes de entregarlo." },
+  { terms: ["orgánico", "organico"], category: "Orgánico", icon: "♧", instruction: "Retira cualquier empaque y sepáralo para composta si tu sistema acepta ese residuo." },
+  { terms: ["tela o ropa", "ropo y tela", "textil"], category: "Tela o ropa", icon: "♢", instruction: "Si está limpia y seca, repárala, dónala o entrégala en una recolección textil." },
+  { terms: ["residuo especial"], category: "Residuo especial", icon: "⚡", instruction: "Guárdalo seco, no lo abras y llévalo a un punto de recolección autorizado." },
+  { terms: ["no reciclable"], category: "No reciclable", icon: "×", instruction: "Deposítalo en la basura general y mantenlo separado de los materiales reciclables." },
   { terms: ["cellular telephone", "laptop", "notebook computer", "desktop computer", "computer keyboard", "computer mouse", "remote control", "monitor", "radio", "cassette player", "digital clock", "electric fan", "hair dryer", "flashlight", "battery"], category: "Residuo especial", icon: "⚡", instruction: "Es un aparato, batería o componente que requiere un punto de recolección especial. No lo mezcles con la basura común." },
   { terms: ["paper towel", "toilet tissue", "diaper"], category: "No reciclable", icon: "×", instruction: "El papel sanitario o absorbente usado no debe mezclarse con papel reciclable. Deposítalo en la basura general." },
   { terms: ["jersey", "sweatshirt", "cardigan", "poncho", "shirt", "t-shirt", "jean", "denim", "sock", "apron", "handbag", "backpack"], category: "Tela o ropa", icon: "♢", instruction: "Si está limpia y seca, puedes repararla, donarla o transformarla en un nuevo objeto." },
@@ -128,6 +136,7 @@ let visionModelPromise = null;
 let detectionModel = null;
 let detectionModelPromise = null;
 let visionModelsPromise = null;
+let visionModelKind = "general";
 let pendingVisualAnalysis = null;
 let lastVisualContext = null;
 let cameraStream = null;
@@ -139,8 +148,11 @@ const modelStatus = document.getElementById("model-status");
 const scanMessage = document.getElementById("scan-message");
 
 if (cameraVideo && modelStatus && scanMessage) {
-  modelStatus.textContent = "Modelos bajo demanda";
-  scanMessage.textContent = "Los modelos se descargarán al abrir la cámara o elegir una foto. La imagen se procesa en este dispositivo.";
+  const hasSpecializedModel = Boolean(window.ECOGUIA_MODEL_CONFIG?.teachableMachineUrl?.trim());
+  modelStatus.textContent = hasSpecializedModel ? "Modelo especializado disponible" : "Modelos bajo demanda";
+  scanMessage.textContent = hasSpecializedModel
+    ? "El modelo especializado se cargará al abrir la cámara o elegir una foto. La imagen se procesa en este dispositivo."
+    : "Los modelos se descargarán al abrir la cámara o elegir una foto. La imagen se procesa en este dispositivo.";
 }
 
 function setScanMessage(message, isError = false) {
@@ -148,27 +160,63 @@ function setScanMessage(message, isError = false) {
   scanMessage.classList.toggle("error", isError);
 }
 
+function getSpecializedModelUrl() {
+  const url = window.ECOGUIA_MODEL_CONFIG?.teachableMachineUrl?.trim() || "";
+  return url && !url.endsWith("/") ? `${url}/` : url;
+}
+
+async function loadSpecializedVisionModel() {
+  const baseUrl = getSpecializedModelUrl();
+  if (!baseUrl) return null;
+  if (typeof tmImage === "undefined") throw new Error("No se pudo iniciar el lector del modelo especializado.");
+  const model = await tmImage.load(`${baseUrl}model.json`, `${baseUrl}metadata.json`);
+  return {
+    async classify(source, limit = 7) {
+      const predictions = await model.predict(source);
+      return predictions.sort((a, b) => b.probability - a.probability).slice(0, limit);
+    },
+    dispose() { model.dispose?.(); }
+  };
+}
+
 async function loadVisionModel() {
   if (visionModel && detectionModel) return { visionModel, detectionModel };
   if (window.ecoVisionModels) {
     visionModel = window.ecoVisionModels.classifier;
     detectionModel = window.ecoVisionModels.detector;
-    modelStatus.textContent = "2 modelos listos";
-    setScanMessage("Sistema híbrido listo. La fotografía se procesará en este dispositivo.");
+    visionModelKind = window.ecoVisionModels.kind || "general";
+    modelStatus.textContent = visionModelKind === "specialized" ? "Modelo especializado listo" : "2 modelos listos";
+    setScanMessage(visionModelKind === "specialized" ? "Modelo EcoGuía listo. La fotografía se procesará en este dispositivo." : "Sistema híbrido listo. La fotografía se procesará en este dispositivo.");
     return { visionModel, detectionModel };
   }
   if (visionModelsPromise) return visionModelsPromise;
   if (typeof tf === "undefined" || typeof mobilenet === "undefined" || typeof cocoSsd === "undefined") throw new Error("No se pudieron descargar los modelos de IA. Revisa tu conexión a internet.");
-  modelStatus.textContent = "Cargando análisis preciso...";
-  setScanMessage("Preparando detección y reconocimiento de alta precisión. La primera carga puede tardar unos segundos.");
+  const specializedUrl = getSpecializedModelUrl();
+  modelStatus.textContent = specializedUrl ? "Cargando modelo especializado..." : "Cargando análisis preciso...";
+  setScanMessage(specializedUrl ? "Preparando el modelo entrenado para residuos y el detector de objetos." : "Preparando detección y reconocimiento de alta precisión. La primera carga puede tardar unos segundos.");
   visionModelsPromise = (async () => {
     await tf.ready();
-    if (!visionModelPromise) visionModelPromise = mobilenet.load({ version: 2, alpha: 1.0 });
     if (!detectionModelPromise) detectionModelPromise = cocoSsd.load({ base: "mobilenet_v2" });
-    [visionModel, detectionModel] = await Promise.all([visionModelPromise, detectionModelPromise]);
-    window.ecoVisionModels = { classifier: visionModel, detector: detectionModel };
-    modelStatus.textContent = "2 modelos listos";
-    setScanMessage("Sistema híbrido listo. La fotografía se procesará en este dispositivo.");
+    let specializedModel = null;
+    if (specializedUrl) {
+      try {
+        specializedModel = await loadSpecializedVisionModel();
+      } catch (error) {
+        console.warn("No se pudo cargar el modelo especializado; se usará el modelo general.", error);
+      }
+    }
+    if (specializedModel) {
+      visionModel = specializedModel;
+      visionModelKind = "specialized";
+    } else {
+      if (!visionModelPromise) visionModelPromise = mobilenet.load({ version: 2, alpha: 1.0 });
+      visionModel = await visionModelPromise;
+      visionModelKind = "general";
+    }
+    detectionModel = await detectionModelPromise;
+    window.ecoVisionModels = { classifier: visionModel, detector: detectionModel, kind: visionModelKind };
+    modelStatus.textContent = visionModelKind === "specialized" ? "Modelo especializado listo" : "2 modelos listos";
+    setScanMessage(visionModelKind === "specialized" ? "Modelo EcoGuía listo. La fotografía se procesará en este dispositivo." : "Sistema híbrido listo. La fotografía se procesará en este dispositivo.");
     return { visionModel, detectionModel };
   })();
   try {
@@ -371,9 +419,15 @@ function classifyVisualPredictions(predictionSets, qualityScore) {
   const best = ranked[0];
   const second = ranked[1];
   const margin = best ? best.confidence - (second?.confidence || 0) : 0;
-  const threshold = qualityScore < .5 ? .2 : .14;
+  const specializedConfig = window.ECOGUIA_MODEL_CONFIG || {};
+  const threshold = visionModelKind === "specialized"
+    ? Math.max(.5, Number(specializedConfig.minimumConfidence) || .72)
+    : qualityScore < .5 ? .2 : .14;
+  const requiredMargin = visionModelKind === "specialized"
+    ? Math.max(.05, Number(specializedConfig.minimumMargin) || .12)
+    : .055;
   const conflictingViews = Boolean(best && second && best.support === 1 && second.support === 1 && second.confidence >= Math.max(.08, best.confidence * .42));
-  const conclusive = Boolean(best && !conflictingViews && best.confidence >= threshold && (best.support > 1 || margin >= .055 || best.peak >= .35));
+  const conclusive = Boolean(best && !conflictingViews && best.confidence >= threshold && (best.support > 1 || margin >= requiredMargin || best.peak >= Math.max(.35, threshold)));
   if (!conclusive) {
     const firstPrediction = predictionSets[0]?.predictions[0];
     return { category: "Resultado no concluyente", icon: "?", instruction: "Los modelos no alcanzaron un acuerdo suficiente. Prueba otra foto con un solo objeto, buena luz y un fondo simple.", confidence: best?.confidence || 0, prediction: firstPrediction, margin, conclusive: false };
@@ -464,7 +518,12 @@ async function analyzeImage(source) {
     const visualResult = classifyVisualPredictions(predictionSets, quality.score);
     const primaryDetection = usefulDetections.find(item => (detectedObjectRules[item.class] || ambiguousObjects.has(item.class)) && item.score >= .3);
     if (primaryDetection && ambiguousObjects.has(primaryDetection.class)) {
-      askForMaterial({ label: objectNames[primaryDetection.class] || primaryDetection.class, confidence: primaryDetection.score }, usefulDetections, predictionSets, quality);
+      if (visionModelKind === "specialized" && visualResult.conclusive && !visualResult.requiresMaterial) {
+        showVisualResult(visualResult, visualResult.confidence, `Clasificación del modelo especializado: ${visualResult.prediction.className}.`, usefulDetections, predictionSets, quality);
+        setScanMessage(quality.warning || "El modelo especializado identificó el material. Revisa la recomendación local.");
+      } else {
+        askForMaterial({ label: objectNames[primaryDetection.class] || primaryDetection.class, confidence: primaryDetection.score }, usefulDetections, predictionSets, quality);
+      }
     } else if (primaryDetection && detectedObjectRules[primaryDetection.class]) {
       const detectedResult = detectedObjectRules[primaryDetection.class];
       const modelsAgree = visualResult.conclusive && visualResult.category === detectedResult.category;
