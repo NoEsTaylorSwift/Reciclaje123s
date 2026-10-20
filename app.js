@@ -76,7 +76,7 @@ const visualWasteRules = [
   { terms: ["plastic bag", "shower cap", "rubber eraser", "bucket"], category: "Plástico reciclable", icon: "♳", instruction: "Comprueba que sea un plástico aceptado en tu localidad; vacíalo, enjuágalo y déjalo secar antes de separarlo." },
   { terms: ["envelope", "carton", "book jacket", "comic book", "menu"], category: "Papel y cartón", icon: "▤", instruction: "Si está limpio y seco, aplánalo y colócalo con papel. Retira partes plásticas o metálicas cuando sea posible." },
   { terms: ["tin can", "oil filter", "chain", "padlock", "nail", "screw", "washer"], category: "Metal reciclable", icon: "◉", instruction: "Límpialo y sécalo. Protege cualquier borde afilado antes de llevarlo al punto de reciclaje." },
-  { terms: ["beer bottle", "wine bottle", "pill bottle", "water bottle", "pop bottle", "bottlecap", "vase", "goblet"], category: "Material por confirmar", icon: "?", instruction: "Confirma el material antes de decidir dónde depositarlo.", requiresMaterial: true }
+  { terms: ["beer bottle", "wine bottle", "pill bottle", "water bottle", "pop bottle", "bottlecap", "vase", "goblet"], category: "Resultado no concluyente", icon: "?", instruction: "La forma puede corresponder a distintos materiales. Usa una foto más cercana y con el objeto centrado." }
 ];
 
 const detectedObjectRules = {
@@ -120,25 +120,12 @@ const objectNames = {
   toaster: "tostadora", refrigerator: "refrigerador", toothbrush: "cepillo de dientes",
   chair: "silla", bench: "banco", "dining table": "mesa", couch: "sofá"
 };
-const materialResults = {
-  plastic: { category: "Plástico reciclable", icon: "♳", instruction: "Vacía, enjuaga y seca el objeto. Verifica el número o tipo de plástico aceptado en tu localidad." },
-  glass: { category: "Vidrio", icon: "◇", instruction: "Vacía y enjuaga. Retira tapas y no lo mezcles con cerámica, espejos o cristal templado." },
-  paper: { category: "Papel y cartón", icon: "▤", instruction: "Debe estar limpio y seco. Aplánalo y retira cualquier parte plástica o metálica." },
-  metal: { category: "Metal reciclable", icon: "◉", instruction: "Límpialo, sécalo y protege cualquier borde afilado antes de entregarlo." },
-  organic: { category: "Orgánico", icon: "♧", instruction: "Retira cualquier empaque y sepáralo para composta solo si tu sistema acepta ese tipo de residuo." },
-  textile: { category: "Tela o ropa", icon: "♢", instruction: "Si está limpio y seco, repáralo, dónalo o entrégalo en una recolección textil." },
-  electronics: { category: "Residuo especial", icon: "⚡", instruction: "Guárdalo seco, no lo abras y llévalo completo a un punto de recolección autorizado." },
-  general: { category: "Revisión manual", icon: "?", instruction: "El material no coincide con una categoría segura. Consulta las reglas locales o escribe el nombre en EcoIA." }
-};
-
 let visionModel = null;
 let visionModelPromise = null;
 let detectionModel = null;
 let detectionModelPromise = null;
 let visionModelsPromise = null;
 let visionModelKind = "general";
-let pendingVisualAnalysis = null;
-let lastVisualContext = null;
 let cameraStream = null;
 let analysisRunId = 0;
 const cameraVideo = document.getElementById("camera-video");
@@ -277,7 +264,6 @@ async function startCamera() {
   document.getElementById("analyzing-layer").hidden = true;
   document.getElementById("camera-stage").removeAttribute("aria-busy");
   document.getElementById("scan-result").hidden = true;
-  document.getElementById("material-question").hidden = true;
   document.getElementById("scan-guide").hidden = false;
   if (!navigator.mediaDevices?.getUserMedia) {
     setScanMessage("La cámara requiere abrir el proyecto desde HTTPS o localhost. También puedes elegir una foto.", true);
@@ -466,9 +452,8 @@ function classifyVisualPredictions(predictionSets, qualityScore) {
 
 function showVisualResult(result, confidence, detectedText, detections = [], predictionSets = [], quality = null) {
   document.getElementById("scan-guide").hidden = true;
-  document.getElementById("material-question").hidden = true;
   document.getElementById("scan-result-icon").textContent = result.icon;
-  document.getElementById("scan-confidence").textContent = result.category === "Resultado no concluyente" ? "REVISIÓN NECESARIA" : confidence >= 0 ? `CONFIANZA ${Math.round(confidence * 100)}%` : "CONFIRMADO POR MATERIAL";
+  document.getElementById("scan-confidence").textContent = result.category === "Resultado no concluyente" ? "REVISIÓN NECESARIA" : confidence >= 0 ? `CONFIANZA ${Math.round(confidence * 100)}%` : "CLASIFICACIÓN AUTOMÁTICA";
   const confidenceBar = document.getElementById("scan-confidence-bar");
   if (confidenceBar) confidenceBar.style.width = `${confidence >= 0 ? Math.max(8, Math.round(confidence * 100)) : 100}%`;
   document.getElementById("scan-category").textContent = result.category;
@@ -494,20 +479,9 @@ function showVisualResult(result, confidence, detectedText, detections = [], pre
     impactLink.href = integratedImpact ? "#medir" : (impactMaterial ? `estacion.html?material=${impactMaterial}#registro` : "estacion.html#registro");
   }
   document.getElementById("scan-result").hidden = false;
-  lastVisualContext = { observation: { label: "objeto fotografiado" }, detections, predictionSets, quality };
   window.dispatchEvent(new CustomEvent("ecoguia:scan-result", {
     detail: { category: result.category, confidence, instruction: result.instruction, icon: result.icon }
   }));
-}
-
-function askForMaterial(observation, detections, predictionSets, quality) {
-  pendingVisualAnalysis = { observation, detections, predictionSets, quality };
-  document.getElementById("scan-guide").hidden = true;
-  document.getElementById("scan-result").hidden = true;
-  document.getElementById("material-question-title").textContent = "Confirma el material del objeto";
-  document.getElementById("material-question-text").textContent = "La forma del objeto está clara, pero una cámara no siempre distingue su material. Elige una opción para completar la clasificación.";
-  document.getElementById("material-question").hidden = false;
-  setScanMessage("Objeto detectado. Confirma su material para obtener una recomendación precisa.");
 }
 
 async function analyzeImage(source) {
@@ -517,7 +491,6 @@ async function analyzeImage(source) {
   layer.hidden = false;
   stage.setAttribute("aria-busy", "true");
   document.getElementById("scan-result").hidden = true;
-  document.getElementById("material-question").hidden = true;
   document.getElementById("scan-guide").hidden = false;
   try {
     const analysisSource = prepareAnalysisSource(source, getSpecializedModelUrl() ? 720 : 1600);
@@ -563,11 +536,13 @@ async function analyzeImage(source) {
     const visualResult = classifyVisualPredictions(predictionSets, quality.score);
     const primaryDetection = usefulDetections.find(item => (detectedObjectRules[item.class] || ambiguousObjects.has(item.class)) && item.score >= .3);
     if (primaryDetection && ambiguousObjects.has(primaryDetection.class)) {
-      if (visionModelKind === "specialized" && visualResult.conclusive && !visualResult.requiresMaterial) {
+      if (visualResult.conclusive && !visualResult.requiresMaterial) {
         showVisualResult(visualResult, visualResult.confidence, `Clasificación del modelo especializado: ${visualResult.prediction.className}.`, usefulDetections, predictionSets, quality);
-        setScanMessage(quality.warning || "El modelo especializado identificó el material. Revisa la recomendación local.");
+        setScanMessage(quality.warning || "La IA identificó el material automáticamente. Revisa la recomendación local.");
       } else {
-        askForMaterial({ label: objectNames[primaryDetection.class] || primaryDetection.class, confidence: primaryDetection.score }, usefulDetections, predictionSets, quality);
+        const inconclusive = { category: "Resultado no concluyente", icon: "?", instruction: "La forma fue reconocida, pero no existe suficiente certeza sobre el material. Prueba otra foto más cerca y con mejor iluminación." };
+        showVisualResult(inconclusive, 0, `Objeto posible: ${objectNames[primaryDetection.class] || primaryDetection.class}; material no confirmado.`, usefulDetections, predictionSets, quality);
+        setScanMessage("La IA no alcanzó suficiente certeza. Toma otra fotografía; no necesitas confirmar el material.", true);
       }
     } else if (primaryDetection && detectedObjectRules[primaryDetection.class]) {
       const detectedResult = detectedObjectRules[primaryDetection.class];
@@ -585,7 +560,9 @@ async function analyzeImage(source) {
         setScanMessage("Los modelos dieron respuestas distintas. Es mejor repetir la foto antes de desechar el objeto.", true);
       }
     } else if (visualResult.conclusive && visualResult.requiresMaterial) {
-      askForMaterial({ label: visualResult.prediction.className.split(",")[0], confidence: visualResult.confidence }, usefulDetections, predictionSets, quality);
+      const inconclusive = { category: "Resultado no concluyente", icon: "?", instruction: "La fotografía muestra un objeto que puede fabricarse con distintos materiales. Prueba otra toma más cercana y con el material visible." };
+      showVisualResult(inconclusive, 0, `Objeto reconocido: ${visualResult.prediction.className}; material no concluyente.`, usefulDetections, predictionSets, quality);
+      setScanMessage("No se pudo distinguir el material automáticamente. Intenta otra fotografía.", true);
     } else if (visualResult.conclusive) {
       showVisualResult(visualResult, visualResult.confidence, `Coincidencia visual: ${visualResult.prediction.className}; acuerdo en ${visualResult.support} encuadre${visualResult.support === 1 ? "" : "s"}.`, usefulDetections, predictionSets, quality);
       setScanMessage(quality.warning || "Clasificación completada mediante consenso entre dos encuadres.");
@@ -632,34 +609,10 @@ document.getElementById("image-upload")?.addEventListener("change", event => {
   document.getElementById("start-camera").hidden = false;
 });
 
-document.getElementById("material-options")?.addEventListener("click", event => {
-  const button = event.target.closest("[data-material]");
-  if (!button || !pendingVisualAnalysis) return;
-  const result = materialResults[button.dataset.material];
-  const { observation, detections, predictionSets, quality } = pendingVisualAnalysis;
-  showVisualResult(result, -1, `Objeto reconocido: ${observation.label}; material indicado: ${button.textContent.trim()}`, detections, predictionSets, quality);
-  pendingVisualAnalysis = null;
-  setScanMessage("Clasificación completada combinando visión artificial y confirmación del material.");
-});
-
-document.getElementById("scan-correct-material")?.addEventListener("click", () => {
-  if (!lastVisualContext) return;
-  pendingVisualAnalysis = lastVisualContext;
-  document.getElementById("scan-result").hidden = true;
-  document.getElementById("scan-guide").hidden = true;
-  document.getElementById("material-question-title").textContent = "Corrige el material";
-  document.getElementById("material-question-text").textContent = "Tu confirmación tiene prioridad sobre la predicción visual.";
-  document.getElementById("material-question").hidden = false;
-  setScanMessage("Selecciona el material principal para corregir la clasificación.");
-});
-
 document.getElementById("scan-again")?.addEventListener("click", () => {
   analysisRunId += 1;
   stopCamera();
-  pendingVisualAnalysis = null;
-  lastVisualContext = null;
   document.getElementById("scan-result").hidden = true;
-  document.getElementById("material-question").hidden = true;
   document.getElementById("scan-guide").hidden = false;
   document.getElementById("camera-placeholder").hidden = false;
   document.getElementById("focus-frame").hidden = true;
@@ -711,7 +664,7 @@ function findWasteMatch(query) {
   if (candidates[0]) return candidates[0].entry;
   const ambiguousTerms = ["botella", "vaso", "taza", "recipiente", "envase", "caja", "bolsa", "bandeja"];
   if (ambiguousTerms.some(term => termMatches(cleaned, term))) {
-    return { category: "Material por confirmar", icon: "?", requiresMaterial: true, instruction: "Ese objeto puede fabricarse con distintos materiales. Confirma si es plástico, vidrio, papel, metal u otro material." };
+    return { category: "Resultado no concluyente", icon: "?", instruction: "Ese nombre puede corresponder a distintos materiales. La herramienta no tomará una decisión insegura; puedes usar una fotografía para obtener un resultado visual." };
   }
   return null;
 }
@@ -721,8 +674,7 @@ function classifyWaste(query) {
   chatArea.querySelectorAll(".message:not(:first-child)").forEach(message => message.remove());
   addMessage(query, "user-message");
   window.setTimeout(() => {
-    if (match?.requiresMaterial) addMessage(`${match.icon} <strong>Necesito confirmar el material.</strong><small>${match.instruction}</small>`, "bot-message result-message");
-    else if (match) addMessage(`${match.icon} Lo clasificaría como <strong>${match.category}</strong>.<small>${match.instruction} Consulta siempre las reglas de recolección de tu municipio.</small>`, "bot-message result-message");
+    if (match) addMessage(`${match.icon} Lo clasificaría como <strong>${match.category}</strong>.<small>${match.instruction} Consulta siempre las reglas de recolección de tu municipio.</small>`, "bot-message result-message");
     else addMessage(`No reconozco ese residuo con suficiente seguridad.<small>Busca el material principal del objeto o consulta con el servicio de recolección de tu localidad. También puedes probar palabras como “papel”, “lata” o “pila”.</small>`, "bot-message result-message");
     window.dispatchEvent(new CustomEvent("ecoguia:text-result", { detail: { query, match: match || null } }));
   }, 320);

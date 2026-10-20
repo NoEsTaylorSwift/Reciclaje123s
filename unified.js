@@ -39,17 +39,6 @@ const stationGuidance = {
   general: { icon: "×", title: "Contenedor de basura general", instruction: "Aísla objetos sanitarios o con filo y sigue las reglas locales. No lo mezcles con reciclables limpios." }
 };
 
-const manualOutcomeMaterials = {
-  plastic: { category: "Plástico reciclable", icon: "♳", instruction: "Vacía, enjuaga y seca el objeto. Confirma que ese tipo de plástico sea aceptado en tu localidad." },
-  glass: { category: "Vidrio", icon: "◇", instruction: "Vacía y enjuaga. Retira tapas y no lo mezcles con cerámica, espejos o cristal templado." },
-  paper: { category: "Papel y cartón", icon: "▤", instruction: "Debe estar limpio y seco. Aplánalo y retira partes plásticas, metálicas o con grasa." },
-  metal: { category: "Metal reciclable", icon: "◉", instruction: "Límpialo, sécalo y protege cualquier borde afilado antes de entregarlo." },
-  organic: { category: "Orgánico", icon: "♧", instruction: "Retira empaques. Si tu sistema lo acepta, sepáralo para composta." },
-  textile: { category: "Tela o ropa", icon: "♢", instruction: "Si está limpio y seco, repáralo, dónalo o llévalo a una recolección textil." },
-  electronics: { category: "Residuo especial", icon: "⚡", instruction: "Guárdalo seco y sin abrir. Llévalo completo a un punto autorizado." },
-  general: { category: "Revisión manual", icon: "?", instruction: "El material no coincide con una categoría segura. Consulta las reglas locales antes de desecharlo." }
-};
-
 function selectIntakeMode(mode, { focus = false, updateHash = true } = {}) {
   const selected = intakeButtons.find(button => button.dataset.intakeMode === mode) || intakeButtons[0];
   intakeButtons.forEach(button => {
@@ -176,15 +165,13 @@ function showOutcome({ item, category, instruction, icon = "✦", confidence = n
   confidenceElement.hidden = !(Number.isFinite(confidence) && confidence >= 0);
   if (!confidenceElement.hidden) confidenceElement.textContent = `Confianza visual: ${Math.round(confidence * 100)} %`;
 
-  const materialCheck = document.getElementById("outcome-material-check");
-  const needsMaterial = category === "Material por confirmar" || category === "Resultado no concluyente";
-  materialCheck.hidden = !needsMaterial;
+  const unresolved = category === "Material por confirmar" || category === "Resultado no concluyente";
 
   const impactLink = document.getElementById("outcome-impact-link");
-  const hasImpact = !needsMaterial && prepareImpact(category || "");
+  const hasImpact = !unresolved && prepareImpact(category || "");
   impactLink.hidden = !hasImpact;
 
-  const hasIdea = !needsMaterial && prepareIdeas(item, category || "");
+  const hasIdea = !unresolved && prepareIdeas(item, category || "");
   const ideaLink = document.getElementById("outcome-ideas-link");
   ideaLink.hidden = !hasIdea;
   outcome.hidden = false;
@@ -241,13 +228,6 @@ document.querySelector(".ideas-next-action button")?.addEventListener("click", e
   impactSection.hidden = false;
   setFlowProgress(4);
   impactSection.scrollIntoView({ behavior: "smooth", block: "start" });
-});
-
-document.getElementById("outcome-material-check")?.addEventListener("click", event => {
-  const button = event.target.closest("[data-outcome-material]");
-  const result = manualOutcomeMaterials[button?.dataset.outcomeMaterial];
-  if (!result || !activeOutcome) return;
-  showOutcome({ item: activeOutcome.item, category: result.category, instruction: result.instruction, icon: result.icon, source: activeOutcome.source });
 });
 
 document.getElementById("recipe-reset")?.addEventListener("click", () => {
