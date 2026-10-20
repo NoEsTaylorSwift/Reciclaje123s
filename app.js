@@ -179,8 +179,32 @@ async function loadSpecializedVisionModel() {
   };
 }
 
+const externalScriptPromises = new Map();
+
+function loadExternalScript(src, globalName) {
+  if (window[globalName]) return Promise.resolve();
+  if (externalScriptPromises.has(src)) return externalScriptPromises.get(src);
+  const promise = new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = src;
+    script.async = true;
+    script.onload = () => window[globalName] ? resolve() : reject(new Error(`No se inició ${globalName}.`));
+    script.onerror = () => reject(new Error(`No se pudo descargar ${globalName}.`));
+    document.head.appendChild(script);
+  });
+  externalScriptPromises.set(src, promise);
+  return promise;
+}
+
+async function ensureGeneralVisionLibraries() {
+  await Promise.all([
+    loadExternalScript("https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js", "cocoSsd"),
+    loadExternalScript("https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js", "mobilenet")
+  ]);
+}
+
 async function loadVisionModel() {
-  if (visionModel && detectionModel) return { visionModel, detectionModel };
+  if (visionModel && (visionModelKind === "specialized" || detectionModel)) return { visionModel, detectionModel };
   if (window.ecoVisionModels) {
     visionModel = window.ecoVisionModels.classifier;
     detectionModel = window.ecoVisionModels.detector;
@@ -190,13 +214,12 @@ async function loadVisionModel() {
     return { visionModel, detectionModel };
   }
   if (visionModelsPromise) return visionModelsPromise;
-  if (typeof tf === "undefined" || typeof mobilenet === "undefined" || typeof cocoSsd === "undefined") throw new Error("No se pudieron descargar los modelos de IA. Revisa tu conexión a internet.");
+  if (typeof tf === "undefined") throw new Error("No se pudo iniciar TensorFlow. Revisa tu conexión a internet.");
   const specializedUrl = getSpecializedModelUrl();
   modelStatus.textContent = specializedUrl ? "Cargando modelo especializado..." : "Cargando análisis preciso...";
-  setScanMessage(specializedUrl ? "Preparando el modelo entrenado para residuos y el detector de objetos." : "Preparando detección y reconocimiento de alta precisión. La primera carga puede tardar unos segundos.");
+  setScanMessage(specializedUrl ? "Preparando el modelo rápido entrenado para residuos. La primera carga depende de tu conexión." : "Preparando detección y reconocimiento de alta precisión. La primera carga puede tardar unos segundos.");
   visionModelsPromise = (async () => {
     await tf.ready();
-    if (!detectionModelPromise) detectionModelPromise = cocoSsd.load({ base: "mobilenet_v2" });
     let specializedModel = null;
     if (specializedUrl) {
       try {
@@ -207,13 +230,17 @@ async function loadVisionModel() {
     }
     if (specializedModel) {
       visionModel = specializedModel;
+      detectionModel = null;
       visionModelKind = "specialized";
     } else {
+      modelStatus.textContent = "Cargando modelos de respaldo...";
+      setScanMessage("El modelo especializado no estuvo disponible. Preparando el análisis general de respaldo.");
+      await ensureGeneralVisionLibraries();
       if (!visionModelPromise) visionModelPromise = mobilenet.load({ version: 2, alpha: 1.0 });
-      visionModel = await visionModelPromise;
+      if (!detectionModelPromise) detectionModelPromise = cocoSsd.load({ base: "mobilenet_v2" });
+      [visionModel, detectionModel] = await Promise.all([visionModelPromise, detectionModelPromise]);
       visionModelKind = "general";
     }
-    detectionModel = await detectionModelPromise;
     window.ecoVisionModels = { classifier: visionModel, detector: detectionModel, kind: visionModelKind };
     modelStatus.textContent = visionModelKind === "specialized" ? "Modelo especializado listo" : "2 modelos listos";
     setScanMessage(visionModelKind === "specialized" ? "Modelo EcoGuía listo. La fotografía se procesará en este dispositivo." : "Sistema híbrido listo. La fotografía se procesará en este dispositivo.");
@@ -223,7 +250,9 @@ async function loadVisionModel() {
     return await visionModelsPromise;
   } catch (error) {
     visionModelsPromise = null;
+    visionModel = null;
     visionModelPromise = null;
+    detectionModel = null;
     detectionModelPromise = null;
     modelStatus.textContent = "Modelos no disponibles";
     throw error;
@@ -491,7 +520,7 @@ async function analyzeImage(source) {
   document.getElementById("material-question").hidden = true;
   document.getElementById("scan-guide").hidden = false;
   try {
-    const analysisSource = prepareAnalysisSource(source);
+    const analysisSource = prepareAnalysisSource(source, getSpecializedModelUrl() ? 720 : 1600);
     const quality = assessImageQuality(analysisSource);
     if (quality.blockingMessage) {
       setScanMessage(quality.blockingMessage, true);
@@ -499,6 +528,22 @@ async function analyzeImage(source) {
     }
     const models = await loadVisionModel();
     if (runId !== analysisRunId) return;
+    if (visionModelKind === "specialized") {
+      setScanMessage("Clasificando el residuo con el modelo especializado...");
+      const predictions = await models.visionModel.classify(analysisSource, 8);
+      if (runId !== analysisRunId) return;
+      const predictionSets = [{ label: "Modelo especializado", weight: 1, predictions }];
+      const visualResult = classifyVisualPredictions(predictionSets, quality.score);
+      if (visualResult.conclusive) {
+        showVisualResult(visualResult, visualResult.confidence, `Clasificación rápida: ${visualResult.prediction.className}.`, [], predictionSets, quality);
+        setScanMessage(quality.warning || "Clasificación rápida completada. Revisa la recomendación local.");
+      } else {
+        const detectedText = visualResult.prediction ? `Mejor posibilidad: ${visualResult.prediction.className}; confianza insuficiente.` : "Sin coincidencias disponibles";
+        showVisualResult(visualResult, 0, detectedText, [], predictionSets, quality);
+        setScanMessage("No hubo suficiente certeza. Acerca el objeto, mejora la iluminación y vuelve a intentarlo.", true);
+      }
+      return;
+    }
     setScanMessage("Localizando el objeto y comparando dos encuadres...");
     const [detections, fullPredictions] = await Promise.all([
       models.detectionModel.detect(analysisSource, 12, .18),
@@ -628,6 +673,14 @@ document.getElementById("scan-again")?.addEventListener("click", () => {
 });
 
 window.addEventListener("pagehide", stopCamera);
+
+if (cameraVideo && getSpecializedModelUrl()) {
+  const preloadSpecializedModel = () => loadVisionModel().catch(() => {
+    setScanMessage("El modelo se volverá a intentar cuando selecciones una fotografía.", true);
+  });
+  if ("requestIdleCallback" in window) window.requestIdleCallback(preloadSpecializedModel, { timeout: 1200 });
+  else window.setTimeout(preloadSpecializedModel, 250);
+}
 
 const chatArea = document.getElementById("chat-area");
 const chatForm = document.getElementById("chat-form");
